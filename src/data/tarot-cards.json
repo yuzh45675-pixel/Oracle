@@ -1,0 +1,420 @@
+[
+  {
+    "id": "major-00",
+    "name": "愚者",
+    "nameEn": "The Fool",
+    "arcana": "major",
+    "suit": "none",
+    "number": 0,
+    "image": "/cards/major-00.png",
+    "keywords": ["启程", "自由", "信任", "未知"],
+    "description": "站在悬崖边缘的旅人，怀抱着对世界的纯粹好奇。",
+    "upright": {
+      "summary": "新的旅程正在展开，请以轻盈的心态踏入未知。",
+      "detail": "正位的愚者象征放下执念、拥抱可能。你或许正站在某个选择的入口——不必过度规划，但需保持觉察。信任直觉，同时留意脚下的路。"
+    },
+    "reversed": {
+      "summary": "鲁莽或逃避可能让你偏离本心。",
+      "detail": "逆位愚者提醒审视冲动：是在勇敢启程，还是在用随性掩盖恐惧？放慢脚步，厘清动机后再行动。"
+    }
+  },
+  {
+    "id": "major-01",
+    "name": "魔术师",
+    "nameEn": "The Magician",
+    "arcana": "major",
+    "suit": "none",
+    "number": 1,
+    "image": "/cards/major-01.png",
+    "keywords": ["意志", "创造", "专注", "显化"],
+    "description": "一手指天，一手指地——天地能量在掌心汇聚。",
+    "upright": {
+      "summary": "你拥有将想法化为现实的一切资源。",
+      "detail": "正位魔术师代表清晰的意图与执行力。此刻适合启动项目、表达自我。集中意志，把分散的才华编织成一条明确的路径。"
+    },
+    "reversed": {
+      "summary": "才华未聚焦，或存在自我欺骗。",
+      "detail": "逆位魔术师暗示能量分散、技巧未用正途，或高估掌控力。回归本质：你真正想创造的是什么？"
+    }
+  },
+  {
+    "id": "major-02",
+    "name": "女祭司",
+    "nameEn": "The High Priestess",
+    "arcana": "major",
+    "suit": "none",
+    "number": 2,
+    "image": "/cards/major-02.png",
+    "keywords": ["直觉", "静默", "潜意识", "神秘"],
+    "description": "端坐于黑白柱之间的守护者，手持未被揭开的卷轴。",
+    "upright": {
+      "summary": "答案在静默与内在深处，而非喧嚣外界。",
+      "detail": "正位女祭司邀请你倾听潜意识、梦境与身体信号。不必急于行动，让真相在独处中自然浮现。"
+    },
+    "reversed": {
+      "summary": "忽视内在声音，或被情绪迷雾遮蔽。",
+      "detail": "逆位女祭司提示与直觉失联，或秘密、情绪被压抑。创造空间与自己诚实对话。"
+    }
+  },
+  {
+    "id": "major-03",
+    "name": "皇后",
+    "nameEn": "The Empress",
+    "arcana": "major",
+    "suit": "none",
+    "number": 3,
+    "image": "/cards/major-03.png",
+    "keywords": ["丰饶", "滋养", "感官", "创造"],
+    "description": "被金色麦田环绕的母亲，象征生命自然的流动。",
+    "upright": {
+      "summary": "丰盛、美感与关怀正在生长。",
+      "detail": "正位皇后代表滋养关系、创意项目或自我照顾。允许自己接受美好，并以温柔的方式培育所珍视的事物。"
+    },
+    "reversed": {
+      "summary": "过度依赖或匮乏感阻碍流动。",
+      "detail": "逆位皇后可能暗示忽视自我、创造力枯竭，或过度控制。重新连接身体与自然节律。"
+    }
+  },
+  {
+    "id": "major-04",
+    "name": "皇帝",
+    "nameEn": "The Emperor",
+    "arcana": "major",
+    "suit": "none",
+    "number": 4,
+    "image": "/cards/major-04.png",
+    "keywords": ["结构", "权威", "边界", "稳定"],
+    "description": "石座上的统治者，以秩序守护疆土。",
+    "upright": {
+      "summary": "建立清晰的边界与结构，方能稳固前行。",
+      "detail": "正位皇帝象征领导力、纪律与长远规划。适合制定规则、承担责任，以理性框架支撑愿景。"
+    },
+    "reversed": {
+      "summary": "僵化控制或逃避责任。",
+      "detail": "逆位皇帝提醒检视权力动态：是保护，还是压迫？亦可能暗示缺乏自律与方向。"
+    }
+  },
+  {
+    "id": "major-05",
+    "name": "教皇",
+    "nameEn": "The Hierophant",
+    "arcana": "major",
+    "suit": "none",
+    "number": 5,
+    "image": "/cards/major-05.png",
+    "keywords": ["传统", "信仰", "教导", "仪式"],
+    "description": "神圣殿堂中的传道者，连接人间与更高智慧。",
+    "upright": {
+      "summary": "从传统、导师或共同价值中获得指引。",
+      "detail": "正位教皇代表学习、仪式与群体认同。寻求值得信赖的体系或前辈，亦可能成为他人的引路人。"
+    },
+    "reversed": {
+      "summary": "质疑教条，寻找属于自己的真理。",
+      "detail": "逆位教皇鼓励打破不适配的信念，走个性化的精神路径。警惕盲从，但不必否定一切传承。"
+    }
+  },
+  {
+    "id": "major-06",
+    "name": "恋人",
+    "nameEn": "The Lovers",
+    "arcana": "major",
+    "suit": "none",
+    "number": 6,
+    "image": "/cards/major-06.png",
+    "keywords": ["选择", "联结", "价值", "和谐"],
+    "description": "天使祝福下的两个人，面对关乎本心的抉择。",
+    "upright": {
+      "summary": "真诚的关系与价值一致的选择。",
+      "detail": "正位恋人关乎爱情、合作与道德对齐。做出符合真实自我的决定，关系将因坦诚而深化。"
+    },
+    "reversed": {
+      "summary": "价值冲突或逃避选择。",
+      "detail": "逆位恋人暗示不和谐、三角关系或内心分裂。厘清你真正重视的是什么。"
+    }
+  },
+  {
+    "id": "major-07",
+    "name": "战车",
+    "nameEn": "The Chariot",
+    "arcana": "major",
+    "suit": "none",
+    "number": 7,
+    "image": "/cards/major-07.png",
+    "keywords": ["胜利", "意志", "前进", "掌控"],
+    "description": "驾驭黑白狮身人面兽的战士，朝着目标疾驰。",
+    "upright": {
+      "summary": "以坚定意志突破障碍，胜利在望。",
+      "detail": "正位战车代表自律、专注与外在进展。调和内在对立的力量，你将抵达目的地。"
+    },
+    "reversed": {
+      "summary": "方向迷失或失控的冲劲。",
+      "detail": "逆位战车提示缺乏方向、侵略性过强或半途而废。暂停，重新校准目标。"
+    }
+  },
+  {
+    "id": "major-08",
+    "name": "力量",
+    "nameEn": "Strength",
+    "arcana": "major",
+    "suit": "none",
+    "number": 8,
+    "image": "/cards/major-08.png",
+    "keywords": ["勇气", "耐心", "温柔", "驯服"],
+    "description": "以温柔驯服雄狮的女子，力量源于内心而非蛮力。",
+    "upright": {
+      "summary": "以慈悲与耐心驾驭本能与恐惧。",
+      "detail": "正位力量象征内在勇气、自信与情感成熟。面对挑战时，柔软比强硬更具持久力。"
+    },
+    "reversed": {
+      "summary": "自我怀疑或压抑本能。",
+      "detail": "逆位力量暗示缺乏自信、情绪爆发或过度压抑欲望。接纳完整的自己，方能真正强大。"
+    }
+  },
+  {
+    "id": "major-09",
+    "name": "隐者",
+    "nameEn": "The Hermit",
+    "arcana": "major",
+    "suit": "none",
+    "number": 9,
+    "image": "/cards/major-09.png",
+    "keywords": ["内省", "孤独", "智慧", "指引"],
+    "description": "山顶提灯的老者，光芒仅照亮下一步。",
+    "upright": {
+      "summary": "退隐是为了寻找内在的光。",
+      "detail": "正位隐者鼓励独处、冥想与深度思考。答案不在人群，而在你为自己点燃的那盏灯。"
+    },
+    "reversed": {
+      "summary": "孤立过度或拒绝内省。",
+      "detail": "逆位隐者可能表示逃避人群、孤独成癖，或抗拒必要的自我审视。平衡独处与联结。"
+    }
+  },
+  {
+    "id": "major-10",
+    "name": "命运之轮",
+    "nameEn": "Wheel of Fortune",
+    "arcana": "major",
+    "suit": "none",
+    "number": 10,
+    "image": "/cards/major-10.png",
+    "keywords": ["周期", "转机", "命运", "变化"],
+    "description": "不断旋转的巨轮，盛衰交替是宇宙节律。",
+    "upright": {
+      "summary": "命运转折将至，拥抱变化的浪潮。",
+      "detail": "正位命运之轮象征好运、周期转折与新机遇。顺势而为，你正处于上升弧线。"
+    },
+    "reversed": {
+      "summary": "阻滞感或抗拒必然的变化。",
+      "detail": "逆位命运之轮提示厄运感、重复模式或抗拒改变。接纳无常，方能重获流动。"
+    }
+  },
+  {
+    "id": "major-11",
+    "name": "正义",
+    "nameEn": "Justice",
+    "arcana": "major",
+    "suit": "none",
+    "number": 11,
+    "image": "/cards/major-11.png",
+    "keywords": ["公平", "真相", "因果", "抉择"],
+    "description": "手持天平与剑的审判者，直视因果的法则。",
+    "upright": {
+      "summary": "公正的结果与清晰的问责。",
+      "detail": "正位正义代表法律、道德与理性决策。诚实面对行为后果，真相将浮出水面。"
+    },
+    "reversed": {
+      "summary": "不公或逃避责任。",
+      "detail": "逆位正义暗示偏见、自欺或未解决的业力。审视是否对自己与他人足够诚实。"
+    }
+  },
+  {
+    "id": "major-12",
+    "name": "倒吊人",
+    "nameEn": "The Hanged Man",
+    "arcana": "major",
+    "suit": "none",
+    "number": 12,
+    "image": "/cards/major-12.png",
+    "keywords": ["暂停", "牺牲", "视角", "臣服"],
+    "description": "倒悬于树上的智者，从颠倒的世界看见真相。",
+    "upright": {
+      "summary": "暂停带来顿悟，放手方能看见新视角。",
+      "detail": "正位倒吊人鼓励主动停顿、臣服于过程。此刻不宜强行推进，等待会揭示更深层的意义。"
+    },
+    "reversed": {
+      "summary": "无意义的拖延或抗拒必要的牺牲。",
+      "detail": "逆位倒吊人可能表示停滞、殉道者情结或拒绝转换视角。区分智慧等待与逃避。"
+    }
+  },
+  {
+    "id": "major-13",
+    "name": "死神",
+    "nameEn": "Death",
+    "arcana": "major",
+    "suit": "none",
+    "number": 13,
+    "image": "/cards/major-13.png",
+    "keywords": ["终结", "转化", "重生", "放下"],
+    "description": "白马上的骷髅骑士——结束是新生的序章。",
+    "upright": {
+      "summary": "某个阶段必须结束，转化不可阻挡。",
+      "detail": "正位死神象征深刻的蜕变与旧我的消亡。拥抱告别，腾出空间给全新的你。"
+    },
+    "reversed": {
+      "summary": "抗拒改变，紧抓已逝之物。",
+      "detail": "逆位死神提示停滞、恐惧转变或缓慢腐朽。放手，即使疼痛，也是解放。"
+    }
+  },
+  {
+    "id": "major-14",
+    "name": "节制",
+    "nameEn": "Temperance",
+    "arcana": "major",
+    "suit": "none",
+    "number": 14,
+    "image": "/cards/major-14.png",
+    "keywords": ["平衡", "融合", "耐心", "调和"],
+    "description": "天使在两岸间倾倒水流，异质元素缓缓交融。",
+    "upright": {
+      "summary": "温和调和对立面，耐心创造和谐。",
+      "detail": "正位节制代表中庸、疗愈与长期整合。不急不躁，让不同部分找到共振频率。"
+    },
+    "reversed": {
+      "summary": "失衡、极端或急躁。",
+      "detail": "逆位节制暗示过度、冲突未解或缺乏耐心。找回节奏，避免走极端。"
+    }
+  },
+  {
+    "id": "major-15",
+    "name": "恶魔",
+    "nameEn": "The Devil",
+    "arcana": "major",
+    "suit": "none",
+    "number": 15,
+    "image": "/cards/major-15.png",
+    "keywords": ["束缚", "欲望", "阴影", "物质"],
+    "description": "锁链松散的囚徒——诱惑源于自愿的依附。",
+    "upright": {
+      "summary": "觉察欲望与执念如何束缚你。",
+      "detail": "正位恶魔揭示成瘾、恐惧或不健康依附。锁链并不紧——你有能力选择解脱。"
+    },
+    "reversed": {
+      "summary": "打破枷锁，面对阴影。",
+      "detail": "逆位恶魔象征觉醒、释放旧模式。直面恐惧，自由正在靠近。"
+    }
+  },
+  {
+    "id": "major-16",
+    "name": "塔",
+    "nameEn": "The Tower",
+    "arcana": "major",
+    "suit": "none",
+    "number": 16,
+    "image": "/cards/major-16.png",
+    "keywords": ["突变", "崩塌", "觉醒", "真相"],
+    "description": "闪电击中的高塔——虚假结构在真相前瓦解。",
+    "upright": {
+      "summary": "剧烈变动撕裂幻象，重建始于崩塌。",
+      "detail": "正位塔代表突发冲击、真相揭露。虽痛苦，却是清除腐朽基础的必要震荡。"
+    },
+    "reversed": {
+      "summary": "延迟的危机或内在的震荡。",
+      "detail": "逆位塔可能表示逃避不可避免的改变，或灾难被推迟。主动面对，减轻冲击。"
+    }
+  },
+  {
+    "id": "major-17",
+    "name": "星星",
+    "nameEn": "The Star",
+    "arcana": "major",
+    "suit": "none",
+    "number": 17,
+    "image": "/cards/major-17.png",
+    "keywords": ["希望", "疗愈", "灵感", "宁静"],
+    "description": "星空下倾倒生命之水，黑暗之后的光。",
+    "upright": {
+      "summary": "风暴过后，希望与疗愈如星光降临。",
+      "detail": "正位星星带来平静、信念与灵性指引。保持开放，宇宙正为你重新校准方向。"
+    },
+    "reversed": {
+      "summary": "希望渺茫或失去信心。",
+      "detail": "逆位星星暗示悲观、与更高目的失联。微小的善意与美感，足以重燃光芒。"
+    }
+  },
+  {
+    "id": "major-18",
+    "name": "月亮",
+    "nameEn": "The Moon",
+    "arcana": "major",
+    "suit": "none",
+    "number": 18,
+    "image": "/cards/major-18.png",
+    "keywords": ["幻觉", "恐惧", "梦境", "潜意识"],
+    "description": "月光下的蜿蜒小径，幻象与真相交织。",
+    "upright": {
+      "summary": "迷雾中前行，信任直觉穿越恐惧。",
+      "detail": "正位月亮代表不确定、梦境与深层情绪。并非一切如表面所见——耐心分辨幻象与直觉。"
+    },
+    "reversed": {
+      "summary": "迷雾散去，恐惧减轻。",
+      "detail": "逆位月亮象征困惑缓解、秘密浮现。压抑的情绪开始被照亮。"
+    }
+  },
+  {
+    "id": "major-19",
+    "name": "太阳",
+    "nameEn": "The Sun",
+    "arcana": "major",
+    "suit": "none",
+    "number": 19,
+    "image": "/cards/major-19.png",
+    "keywords": ["喜悦", "成功", "活力", "清晰"],
+    "description": "孩童骑白马沐浴阳光——纯粹的快乐与显化。",
+    "upright": {
+      "summary": "光明、成功与发自内心的喜悦。",
+      "detail": "正位太阳是最积极的征兆之一：活力、自信、事情明朗化。尽情表达真实的快乐。"
+    },
+    "reversed": {
+      "summary": "暂时的阴云或过度乐观。",
+      "detail": "逆位太阳可能表示延迟的成功、自我膨胀或难以感受快乐。阳光仍在，调整视角即可。"
+    }
+  },
+  {
+    "id": "major-20",
+    "name": "审判",
+    "nameEn": "Judgement",
+    "arcana": "major",
+    "suit": "none",
+    "number": 20,
+    "image": "/cards/major-20.png",
+    "keywords": ["觉醒", "召唤", "复盘", "重生"],
+    "description": "天使号角唤醒沉睡的灵魂，回应更高的召唤。",
+    "upright": {
+      "summary": "觉醒时刻到来，回应内心的召唤。",
+      "detail": "正位审判代表复盘过去、宽恕与二次出生。你正被邀请进入人生的新章节。"
+    },
+    "reversed": {
+      "summary": "自我批判或拒绝召唤。",
+      "detail": "逆位审判暗示逃避反思、害怕改变或苛责自己。温柔地听见那声号角。"
+    }
+  },
+  {
+    "id": "major-21",
+    "name": "世界",
+    "nameEn": "The World",
+    "arcana": "major",
+    "suit": "none",
+    "number": 21,
+    "image": "/cards/major-21.png",
+    "keywords": ["完成", "整合", "圆满", "旅程"],
+    "description": "花环中起舞的人形，一个周期圆满落幕。",
+    "upright": {
+      "summary": "重要周期圆满完成，你已抵达彼岸。",
+      "detail": "正位世界象征成就、整合与庆祝。长久努力开花结果，准备迎接下一圈螺旋。"
+    },
+    "reversed": {
+      "summary": "临门一脚的未完成感。",
+      "detail": "逆位世界提示接近终点却未跨越，或缺乏闭环。审视何处尚未整合。"
+    }
+  }
+]

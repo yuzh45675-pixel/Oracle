@@ -1,0 +1,866 @@
+[
+  {
+    "id": "lenormand-01",
+    "name": "骑士",
+    "nameEn": "Rider",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 1,
+    "system": "lenormand",
+    "image": "/cards/lenormand-01.png?v=goh-2",
+    "keywords": [
+      "消息",
+      "访客",
+      "迅速的变化"
+    ],
+    "description": "雷诺曼 1 号牌：骑士（Rider）— 消息、访客、迅速的变化。",
+    "upright": {
+      "summary": "骑士：消息的能量正在显现。",
+      "detail": "在雷诺曼体系中，骑士常关联「消息、访客、迅速的变化」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "骑士：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注消息、访客、迅速的变化中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-02",
+    "name": "三叶草",
+    "nameEn": "Clover",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 2,
+    "system": "lenormand",
+    "image": "/cards/lenormand-02.png?v=goh-2",
+    "keywords": [
+      "小幸运",
+      "短暂机遇",
+      "轻松"
+    ],
+    "description": "雷诺曼 2 号牌：三叶草（Clover）— 小幸运、短暂机遇、轻松。",
+    "upright": {
+      "summary": "三叶草：小幸运的能量正在显现。",
+      "detail": "在雷诺曼体系中，三叶草常关联「小幸运、短暂机遇、轻松」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "三叶草：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注小幸运、短暂机遇、轻松中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-03",
+    "name": "船",
+    "nameEn": "Ship",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 3,
+    "system": "lenormand",
+    "image": "/cards/lenormand-03.png?v=goh-2",
+    "keywords": [
+      "旅行",
+      "距离",
+      "探索"
+    ],
+    "description": "雷诺曼 3 号牌：船（Ship）— 旅行、距离、探索。",
+    "upright": {
+      "summary": "船：旅行的能量正在显现。",
+      "detail": "在雷诺曼体系中，船常关联「旅行、距离、探索」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "船：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注旅行、距离、探索中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-04",
+    "name": "房屋",
+    "nameEn": "House",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 4,
+    "system": "lenormand",
+    "image": "/cards/lenormand-04.png?v=goh-2",
+    "keywords": [
+      "家庭",
+      "安全",
+      "根基"
+    ],
+    "description": "雷诺曼 4 号牌：房屋（House）— 家庭、安全、根基。",
+    "upright": {
+      "summary": "房屋：家庭的能量正在显现。",
+      "detail": "在雷诺曼体系中，房屋常关联「家庭、安全、根基」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "房屋：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注家庭、安全、根基中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-05",
+    "name": "树",
+    "nameEn": "Tree",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 5,
+    "system": "lenormand",
+    "image": "/cards/lenormand-05.png?v=goh-2",
+    "keywords": [
+      "健康",
+      "成长",
+      "缓慢发展"
+    ],
+    "description": "雷诺曼 5 号牌：树（Tree）— 健康、成长、缓慢发展。",
+    "upright": {
+      "summary": "树：健康的能量正在显现。",
+      "detail": "在雷诺曼体系中，树常关联「健康、成长、缓慢发展」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "树：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注健康、成长、缓慢发展中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-06",
+    "name": "云",
+    "nameEn": "Clouds",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 6,
+    "system": "lenormand",
+    "image": "/cards/lenormand-06.png?v=goh-2",
+    "keywords": [
+      "困惑",
+      "不明朗",
+      "犹豫"
+    ],
+    "description": "雷诺曼 6 号牌：云（Clouds）— 困惑、不明朗、犹豫。",
+    "upright": {
+      "summary": "云：困惑的能量正在显现。",
+      "detail": "在雷诺曼体系中，云常关联「困惑、不明朗、犹豫」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "云：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注困惑、不明朗、犹豫中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-07",
+    "name": "蛇",
+    "nameEn": "Snake",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 7,
+    "system": "lenormand",
+    "image": "/cards/lenormand-07.png?v=goh-2",
+    "keywords": [
+      "复杂",
+      "诱惑",
+      "迂回"
+    ],
+    "description": "雷诺曼 7 号牌：蛇（Snake）— 复杂、诱惑、迂回。",
+    "upright": {
+      "summary": "蛇：复杂的能量正在显现。",
+      "detail": "在雷诺曼体系中，蛇常关联「复杂、诱惑、迂回」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "蛇：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注复杂、诱惑、迂回中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-08",
+    "name": "棺材",
+    "nameEn": "Coffin",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 8,
+    "system": "lenormand",
+    "image": "/cards/lenormand-08.png?v=goh-2",
+    "keywords": [
+      "结束",
+      "转化",
+      "沉寂"
+    ],
+    "description": "雷诺曼 8 号牌：棺材（Coffin）— 结束、转化、沉寂。",
+    "upright": {
+      "summary": "棺材：结束的能量正在显现。",
+      "detail": "在雷诺曼体系中，棺材常关联「结束、转化、沉寂」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "棺材：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注结束、转化、沉寂中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-09",
+    "name": "花束",
+    "nameEn": "Bouquet",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 9,
+    "system": "lenormand",
+    "image": "/cards/lenormand-09.png?v=goh-2",
+    "keywords": [
+      "礼物",
+      "美好",
+      "社交愉悦"
+    ],
+    "description": "雷诺曼 9 号牌：花束（Bouquet）— 礼物、美好、社交愉悦。",
+    "upright": {
+      "summary": "花束：礼物的能量正在显现。",
+      "detail": "在雷诺曼体系中，花束常关联「礼物、美好、社交愉悦」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "花束：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注礼物、美好、社交愉悦中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-10",
+    "name": "镰刀",
+    "nameEn": "Scythe",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 10,
+    "system": "lenormand",
+    "image": "/cards/lenormand-10.png?v=goh-2",
+    "keywords": [
+      "决断",
+      "切割",
+      "突然"
+    ],
+    "description": "雷诺曼 10 号牌：镰刀（Scythe）— 决断、切割、突然。",
+    "upright": {
+      "summary": "镰刀：决断的能量正在显现。",
+      "detail": "在雷诺曼体系中，镰刀常关联「决断、切割、突然」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "镰刀：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注决断、切割、突然中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-11",
+    "name": "鞭",
+    "nameEn": "Whip",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 11,
+    "system": "lenormand",
+    "image": "/cards/lenormand-11.png?v=goh-2",
+    "keywords": [
+      "冲突",
+      "重复",
+      "张力"
+    ],
+    "description": "雷诺曼 11 号牌：鞭（Whip）— 冲突、重复、张力。",
+    "upright": {
+      "summary": "鞭：冲突的能量正在显现。",
+      "detail": "在雷诺曼体系中，鞭常关联「冲突、重复、张力」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "鞭：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注冲突、重复、张力中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-12",
+    "name": "鸟",
+    "nameEn": "Birds",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 12,
+    "system": "lenormand",
+    "image": "/cards/lenormand-12.png?v=goh-2",
+    "keywords": [
+      "交谈",
+      "焦虑",
+      "多方声音"
+    ],
+    "description": "雷诺曼 12 号牌：鸟（Birds）— 交谈、焦虑、多方声音。",
+    "upright": {
+      "summary": "鸟：交谈的能量正在显现。",
+      "detail": "在雷诺曼体系中，鸟常关联「交谈、焦虑、多方声音」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "鸟：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注交谈、焦虑、多方声音中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-13",
+    "name": "孩子",
+    "nameEn": "Child",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 13,
+    "system": "lenormand",
+    "image": "/cards/lenormand-13.png?v=goh-2",
+    "keywords": [
+      "开端",
+      "纯真",
+      "小事"
+    ],
+    "description": "雷诺曼 13 号牌：孩子（Child）— 开端、纯真、小事。",
+    "upright": {
+      "summary": "孩子：开端的能量正在显现。",
+      "detail": "在雷诺曼体系中，孩子常关联「开端、纯真、小事」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "孩子：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注开端、纯真、小事中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-14",
+    "name": "狐狸",
+    "nameEn": "Fox",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 14,
+    "system": "lenormand",
+    "image": "/cards/lenormand-14.png?v=goh-2",
+    "keywords": [
+      "谨慎",
+      "职场",
+      "策略"
+    ],
+    "description": "雷诺曼 14 号牌：狐狸（Fox）— 谨慎、职场、策略。",
+    "upright": {
+      "summary": "狐狸：谨慎的能量正在显现。",
+      "detail": "在雷诺曼体系中，狐狸常关联「谨慎、职场、策略」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "狐狸：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注谨慎、职场、策略中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-15",
+    "name": "熊",
+    "nameEn": "Bear",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 15,
+    "system": "lenormand",
+    "image": "/cards/lenormand-15.png?v=goh-2",
+    "keywords": [
+      "力量",
+      "保护",
+      "权威人物"
+    ],
+    "description": "雷诺曼 15 号牌：熊（Bear）— 力量、保护、权威人物。",
+    "upright": {
+      "summary": "熊：力量的能量正在显现。",
+      "detail": "在雷诺曼体系中，熊常关联「力量、保护、权威人物」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "熊：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注力量、保护、权威人物中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-16",
+    "name": "星星",
+    "nameEn": "Stars",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 16,
+    "system": "lenormand",
+    "image": "/cards/lenormand-16.png?v=goh-2",
+    "keywords": [
+      "希望",
+      "灵感",
+      "指引"
+    ],
+    "description": "雷诺曼 16 号牌：星星（Stars）— 希望、灵感、指引。",
+    "upright": {
+      "summary": "星星：希望的能量正在显现。",
+      "detail": "在雷诺曼体系中，星星常关联「希望、灵感、指引」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "星星：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注希望、灵感、指引中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-17",
+    "name": "鹳",
+    "nameEn": "Stork",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 17,
+    "system": "lenormand",
+    "image": "/cards/lenormand-17.png?v=goh-2",
+    "keywords": [
+      "改变",
+      "迁移",
+      "更新"
+    ],
+    "description": "雷诺曼 17 号牌：鹳（Stork）— 改变、迁移、更新。",
+    "upright": {
+      "summary": "鹳：改变的能量正在显现。",
+      "detail": "在雷诺曼体系中，鹳常关联「改变、迁移、更新」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "鹳：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注改变、迁移、更新中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-18",
+    "name": "狗",
+    "nameEn": "Dog",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 18,
+    "system": "lenormand",
+    "image": "/cards/lenormand-18.png?v=goh-2",
+    "keywords": [
+      "忠诚",
+      "朋友",
+      "信任"
+    ],
+    "description": "雷诺曼 18 号牌：狗（Dog）— 忠诚、朋友、信任。",
+    "upright": {
+      "summary": "狗：忠诚的能量正在显现。",
+      "detail": "在雷诺曼体系中，狗常关联「忠诚、朋友、信任」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "狗：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注忠诚、朋友、信任中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-19",
+    "name": "塔",
+    "nameEn": "Tower",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 19,
+    "system": "lenormand",
+    "image": "/cards/lenormand-19.png?v=goh-2",
+    "keywords": [
+      "机构",
+      "边界",
+      "孤独"
+    ],
+    "description": "雷诺曼 19 号牌：塔（Tower）— 机构、边界、孤独。",
+    "upright": {
+      "summary": "塔：机构的能量正在显现。",
+      "detail": "在雷诺曼体系中，塔常关联「机构、边界、孤独」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "塔：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注机构、边界、孤独中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-20",
+    "name": "花园",
+    "nameEn": "Garden",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 20,
+    "system": "lenormand",
+    "image": "/cards/lenormand-20.png?v=goh-2",
+    "keywords": [
+      "公众",
+      "社交圈",
+      "展示"
+    ],
+    "description": "雷诺曼 20 号牌：花园（Garden）— 公众、社交圈、展示。",
+    "upright": {
+      "summary": "花园：公众的能量正在显现。",
+      "detail": "在雷诺曼体系中，花园常关联「公众、社交圈、展示」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "花园：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注公众、社交圈、展示中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-21",
+    "name": "山",
+    "nameEn": "Mountain",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 21,
+    "system": "lenormand",
+    "image": "/cards/lenormand-21.png?v=goh-2",
+    "keywords": [
+      "障碍",
+      "延迟",
+      "考验"
+    ],
+    "description": "雷诺曼 21 号牌：山（Mountain）— 障碍、延迟、考验。",
+    "upright": {
+      "summary": "山：障碍的能量正在显现。",
+      "detail": "在雷诺曼体系中，山常关联「障碍、延迟、考验」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "山：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注障碍、延迟、考验中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-22",
+    "name": "十字路口",
+    "nameEn": "Crossroads",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 22,
+    "system": "lenormand",
+    "image": "/cards/lenormand-22.png?v=goh-2",
+    "keywords": [
+      "选择",
+      "方向",
+      "分叉"
+    ],
+    "description": "雷诺曼 22 号牌：十字路口（Crossroads）— 选择、方向、分叉。",
+    "upright": {
+      "summary": "十字路口：选择的能量正在显现。",
+      "detail": "在雷诺曼体系中，十字路口常关联「选择、方向、分叉」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "十字路口：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注选择、方向、分叉中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-23",
+    "name": "老鼠",
+    "nameEn": "Mice",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 23,
+    "system": "lenormand",
+    "image": "/cards/lenormand-23.png?v=goh-2",
+    "keywords": [
+      "损耗",
+      "担忧",
+      "细节流失"
+    ],
+    "description": "雷诺曼 23 号牌：老鼠（Mice）— 损耗、担忧、细节流失。",
+    "upright": {
+      "summary": "老鼠：损耗的能量正在显现。",
+      "detail": "在雷诺曼体系中，老鼠常关联「损耗、担忧、细节流失」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "老鼠：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注损耗、担忧、细节流失中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-24",
+    "name": "心",
+    "nameEn": "Heart",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 24,
+    "system": "lenormand",
+    "image": "/cards/lenormand-24.png?v=goh-2",
+    "keywords": [
+      "爱",
+      "核心",
+      "情感"
+    ],
+    "description": "雷诺曼 24 号牌：心（Heart）— 爱、核心、情感。",
+    "upright": {
+      "summary": "心：爱的能量正在显现。",
+      "detail": "在雷诺曼体系中，心常关联「爱、核心、情感」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "心：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注爱、核心、情感中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-25",
+    "name": "戒指",
+    "nameEn": "Ring",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 25,
+    "system": "lenormand",
+    "image": "/cards/lenormand-25.png?v=goh-2",
+    "keywords": [
+      "承诺",
+      "合约",
+      "循环"
+    ],
+    "description": "雷诺曼 25 号牌：戒指（Ring）— 承诺、合约、循环。",
+    "upright": {
+      "summary": "戒指：承诺的能量正在显现。",
+      "detail": "在雷诺曼体系中，戒指常关联「承诺、合约、循环」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "戒指：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注承诺、合约、循环中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-26",
+    "name": "书",
+    "nameEn": "Book",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 26,
+    "system": "lenormand",
+    "image": "/cards/lenormand-26.png?v=goh-2",
+    "keywords": [
+      "秘密",
+      "学习",
+      "未揭示"
+    ],
+    "description": "雷诺曼 26 号牌：书（Book）— 秘密、学习、未揭示。",
+    "upright": {
+      "summary": "书：秘密的能量正在显现。",
+      "detail": "在雷诺曼体系中，书常关联「秘密、学习、未揭示」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "书：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注秘密、学习、未揭示中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-27",
+    "name": "信",
+    "nameEn": "Letter",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 27,
+    "system": "lenormand",
+    "image": "/cards/lenormand-27.png?v=goh-2",
+    "keywords": [
+      "文件",
+      "讯息",
+      "书面"
+    ],
+    "description": "雷诺曼 27 号牌：信（Letter）— 文件、讯息、书面。",
+    "upright": {
+      "summary": "信：文件的能量正在显现。",
+      "detail": "在雷诺曼体系中，信常关联「文件、讯息、书面」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "信：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注文件、讯息、书面中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-28",
+    "name": "男人",
+    "nameEn": "Man",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 28,
+    "system": "lenormand",
+    "image": "/cards/lenormand-28.png?v=goh-2",
+    "keywords": [
+      "男性",
+      "主动方",
+      "问卜者（男）"
+    ],
+    "description": "雷诺曼 28 号牌：男人（Man）— 男性、主动方、问卜者（男）。",
+    "upright": {
+      "summary": "男人：男性的能量正在显现。",
+      "detail": "在雷诺曼体系中，男人常关联「男性、主动方、问卜者（男）」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "男人：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注男性、主动方、问卜者（男）中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-29",
+    "name": "女人",
+    "nameEn": "Woman",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 29,
+    "system": "lenormand",
+    "image": "/cards/lenormand-29.png?v=goh-2",
+    "keywords": [
+      "女性",
+      "被动方",
+      "问卜者（女）"
+    ],
+    "description": "雷诺曼 29 号牌：女人（Woman）— 女性、被动方、问卜者（女）。",
+    "upright": {
+      "summary": "女人：女性的能量正在显现。",
+      "detail": "在雷诺曼体系中，女人常关联「女性、被动方、问卜者（女）」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "女人：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注女性、被动方、问卜者（女）中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-30",
+    "name": "百合",
+    "nameEn": "Lily",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 30,
+    "system": "lenormand",
+    "image": "/cards/lenormand-30.png?v=goh-2",
+    "keywords": [
+      "成熟",
+      "平和",
+      "长期"
+    ],
+    "description": "雷诺曼 30 号牌：百合（Lily）— 成熟、平和、长期。",
+    "upright": {
+      "summary": "百合：成熟的能量正在显现。",
+      "detail": "在雷诺曼体系中，百合常关联「成熟、平和、长期」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "百合：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注成熟、平和、长期中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-31",
+    "name": "太阳",
+    "nameEn": "Sun",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 31,
+    "system": "lenormand",
+    "image": "/cards/lenormand-31.png?v=goh-2",
+    "keywords": [
+      "成功",
+      "活力",
+      "明朗"
+    ],
+    "description": "雷诺曼 31 号牌：太阳（Sun）— 成功、活力、明朗。",
+    "upright": {
+      "summary": "太阳：成功的能量正在显现。",
+      "detail": "在雷诺曼体系中，太阳常关联「成功、活力、明朗」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "太阳：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注成功、活力、明朗中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-32",
+    "name": "月亮",
+    "nameEn": "Moon",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 32,
+    "system": "lenormand",
+    "image": "/cards/lenormand-32.png?v=goh-2",
+    "keywords": [
+      "直觉",
+      "名声",
+      "周期"
+    ],
+    "description": "雷诺曼 32 号牌：月亮（Moon）— 直觉、名声、周期。",
+    "upright": {
+      "summary": "月亮：直觉的能量正在显现。",
+      "detail": "在雷诺曼体系中，月亮常关联「直觉、名声、周期」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "月亮：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注直觉、名声、周期中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-33",
+    "name": "钥匙",
+    "nameEn": "Key",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 33,
+    "system": "lenormand",
+    "image": "/cards/lenormand-33.png?v=goh-2",
+    "keywords": [
+      "解答",
+      "重要",
+      "开启"
+    ],
+    "description": "雷诺曼 33 号牌：钥匙（Key）— 解答、重要、开启。",
+    "upright": {
+      "summary": "钥匙：解答的能量正在显现。",
+      "detail": "在雷诺曼体系中，钥匙常关联「解答、重要、开启」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "钥匙：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注解答、重要、开启中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-34",
+    "name": "鱼",
+    "nameEn": "Fish",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 34,
+    "system": "lenormand",
+    "image": "/cards/lenormand-34.png?v=goh-2",
+    "keywords": [
+      "金钱",
+      "流动",
+      "丰盛"
+    ],
+    "description": "雷诺曼 34 号牌：鱼（Fish）— 金钱、流动、丰盛。",
+    "upright": {
+      "summary": "鱼：金钱的能量正在显现。",
+      "detail": "在雷诺曼体系中，鱼常关联「金钱、流动、丰盛」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "鱼：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注金钱、流动、丰盛中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-35",
+    "name": "锚",
+    "nameEn": "Anchor",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 35,
+    "system": "lenormand",
+    "image": "/cards/lenormand-35.png?v=goh-2",
+    "keywords": [
+      "稳定",
+      "职业",
+      "执着"
+    ],
+    "description": "雷诺曼 35 号牌：锚（Anchor）— 稳定、职业、执着。",
+    "upright": {
+      "summary": "锚：稳定的能量正在显现。",
+      "detail": "在雷诺曼体系中，锚常关联「稳定、职业、执着」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "锚：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注稳定、职业、执着中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  },
+  {
+    "id": "lenormand-36",
+    "name": "十字",
+    "nameEn": "Cross",
+    "arcana": "lenormand",
+    "suit": "none",
+    "number": 36,
+    "system": "lenormand",
+    "image": "/cards/lenormand-36.png?v=goh-2",
+    "keywords": [
+      "负担",
+      "命运",
+      "考验"
+    ],
+    "description": "雷诺曼 36 号牌：十字（Cross）— 负担、命运、考验。",
+    "upright": {
+      "summary": "十字：负担的能量正在显现。",
+      "detail": "在雷诺曼体系中，十字常关联「负担、命运、考验」。请结合牌阵位置与左右邻牌，读取组合叙事，而非单牌孤立解释。"
+    },
+    "reversed": {
+      "summary": "十字：阻滞或延迟了相关主题。",
+      "detail": "此牌能量受阻或需要更多耐心。关注负担、命运、考验中被忽略的层面，并观察邻近牌如何修饰其含义。"
+    }
+  }
+]
