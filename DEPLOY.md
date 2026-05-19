@@ -21,12 +21,12 @@
 
 1. 登录 GitHub，右上角 **+** → **New repository**
 2. 填写：
-   - **Repository name**：`tarot-oracle`（可改成别的，后面命令要一致）
+   - **Repository name**：例如 `Oracle`（须与后面 `git remote` 地址一致）
    - 选 **Private** 或 **Public** 都行
 3. **不要**勾选 “Add a README file”
 4. 点 **Create repository**
 5. 记下页面上的地址，形如：  
-   `https://github.com/你的用户名/tarot-oracle.git`
+   `https://github.com/你的用户名/Oracle.git`（示例：[yuzh45675-pixel/Oracle](https://github.com/yuzh45675-pixel/Oracle.git)）
 
 ---
 
@@ -42,7 +42,7 @@
 4. 若提示 “not a Git repository”，点 **create a repository**，Path 保持该文件夹
 5. 左下角 Summary 填：`首次上传`
 6. 点 **Commit to main**
-7. 菜单 **Repository → Repository settings → Remote**，确认已关联你的 GitHub 仓库；若没有，点 **Publish repository** 选刚建的 `tarot-oracle`
+7. 菜单 **Repository → Repository settings → Remote**，确认已关联你的 GitHub 仓库；若没有，点 **Publish repository** 选刚建的 `Oracle`
 8. 点 **Push origin**（或 **Publish branch**）
 
 第一次推送可能要 **20～60 分钟**（约 700MB 牌图），不要中断。
@@ -54,7 +54,7 @@
 把下面命令**整段复制**到 PowerShell，只需改 **两处**：
 
 - `你的用户名` → 你的 GitHub 用户名  
-- 若仓库名不是 `tarot-oracle`，改掉对应名字  
+- 若仓库名不是 `Oracle`，把下面地址里的仓库名改成你的  
 
 ```powershell
 cd "C:\Users\LEGION\Documents\tarot-oracle"
@@ -64,7 +64,7 @@ git branch -M main
 git add .
 git commit -m "首次上传：Tarot Oracle 占卜网站"
 
-git remote add origin https://github.com/你的用户名/tarot-oracle.git
+git remote add origin https://github.com/你的用户名/Oracle.git
 git push -u origin main
 ```
 

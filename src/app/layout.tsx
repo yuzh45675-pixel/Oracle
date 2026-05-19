@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/layout/Navbar";
 import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
+import { AuthProvider } from "@/context/AuthContext";
+import { AuthModal } from "@/components/auth/AuthModal";
 import { ReadingProvider } from "@/context/ReadingContext";
 import "./globals.css";
 
@@ -17,11 +19,14 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" className="h-full">
       <body className="min-h-full bg-void font-sans text-frost antialiased">
-        <ReadingProvider>
-          <Navbar />
-          <main className="relative">{children}</main>
-          <NoiseOverlay />
-        </ReadingProvider>
+        <AuthProvider>
+          <ReadingProvider>
+            <Navbar />
+            <main className="relative">{children}</main>
+            <AuthModal />
+            <NoiseOverlay />
+          </ReadingProvider>
+        </AuthProvider>
       </body>
     </html>
   );

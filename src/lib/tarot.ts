@@ -30,6 +30,24 @@ export function drawRandomOrientation(deck: DeckType): boolean {
   return Math.random() < 0.5;
 }
 
+/** Random supplement cards for AI follow-up (excludes already-drawn ids) */
+export function drawSupplementCards(
+  deckType: DeckType,
+  count: number,
+  excludeIds: string[] = [],
+): DrawnCard[] {
+  if (count <= 0) return [];
+  const pool = shuffleDeck(
+    getDeck(deckType).filter((c) => !excludeIds.includes(c.id)),
+  );
+  return pool.slice(0, count).map((card, index) => ({
+    card,
+    reversed: drawRandomOrientation(deckType),
+    position: `追问补牌 ${index + 1}`,
+    isJumpCard: false,
+  }));
+}
+
 export function drawCards(
   spread: SpreadType,
   deckType: DeckType,

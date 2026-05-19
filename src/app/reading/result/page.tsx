@@ -18,6 +18,7 @@ import { buildLenormandCombinations } from "@/lib/lenormand/combinationEngine";
 import { getMeaning } from "@/lib/tarot";
 import { SPREAD_LABELS } from "@/types/tarot";
 import { LENORMAND_SPREAD_LABELS } from "@/lib/lenormand/layouts";
+import { AiOraclePanel } from "@/components/reading/AiOraclePanel";
 
 export default function ResultPage() {
   const router = useRouter();
@@ -89,6 +90,17 @@ export default function ResultPage() {
           combinations={lenormandCombos}
           jumpSummary={jumpSummary}
         />
+
+        {deck && (
+          <AiOraclePanel
+            deck={deck}
+            spreadTitle={spreadTitle}
+            question={question}
+            cards={orderedCards}
+            jumpCard={jumpCard}
+            combinations={lenormandCombos}
+          />
+        )}
 
         {lenormandSpread !== "tableau" && (
           <motion.div className="mt-10 space-y-4">
@@ -181,6 +193,16 @@ export default function ResultPage() {
           />
         ))}
       </motion.div>
+
+      {deck && (
+        <AiOraclePanel
+          deck={deck}
+          spreadTitle={spreadTitle}
+          question={question}
+          cards={orderedCards}
+          jumpCard={jumpCard}
+        />
+      )}
 
       <motion.div className="mt-12 flex flex-wrap justify-center gap-4">
         <AnimatedButton

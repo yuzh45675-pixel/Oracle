@@ -1,0 +1,107 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { ReadingLayout } from "@/components/tarot/ReadingLayout";
+import { AuthField } from "@/components/auth/AuthField";
+import { useAuth } from "@/context/AuthContext";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useAuth();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<{ username?: string; password?: string }>(
+    {},
+  );
+  const [bannerError, setBannerError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const validate = () => {
+    const next: typeof errors = {};
+    if (!username.trim()) next.username = "用户名不能为空";
+    if (password.length < 6) next.password = "密码不能少于 6 位";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBannerError(null);
+    if (!validate()) return;
+
+    setBusy(true);
+    try {
+      await login(username.trim(), password);
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      setBannerError(err instanceof Error ? err.message : "登录失败");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <ReadingLayout title="登录" subtitle="欢迎回到 Oracle" badge="Sign In">
+      <motion.div
+        className="mx-auto w-full max-w-md"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        {bannerError && (
+          <p
+            role="alert"
+            className="mb-4 rounded-xl border border-red-500/40 bg-red-950/40 px-4 py-3 text-sm text-red-200"
+          >
+            {bannerError}
+          </p>
+        )}
+
+        <form
+          onSubmit={(e) => void handleSubmit(e)}
+          className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-xl md:p-8"
+          noValidate
+        >
+          <AuthField
+            id="login-username"
+            label="用户名"
+            value={username}
+            onChange={setUsername}
+            autoComplete="username"
+            error={errors.username}
+          />
+          <div className="mt-4">
+            <AuthField
+              id="login-password"
+              label="密码"
+              type="password"
+              value={password}
+              onChange={setPassword}
+              autoComplete="current-password"
+              error={errors.password}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={busy}
+            className="mt-8 w-full rounded-xl border border-accent/40 bg-accent/20 py-3 text-sm font-medium text-frost transition hover:border-accent/60 hover:bg-accent/30 disabled:opacity-50"
+          >
+            {busy ? "登录中…" : "登录"}
+          </button>
+          <p className="mt-6 text-center text-xs text-muted">
+            还没有账号？{" "}
+            <Link
+              href="/register"
+              className="text-accent/90 underline-offset-2 hover:text-accent hover:underline"
+            >
+              去注册
+            </Link>
+          </p>
+        </form>
+      </motion.div>
+    </ReadingLayout>
+  );
+}

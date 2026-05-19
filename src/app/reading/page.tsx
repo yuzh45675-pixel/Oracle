@@ -160,9 +160,12 @@ function ReadingStartContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
       >
-        <label className="mb-2 block text-xs tracking-widest text-muted uppercase">
-          你的问题（可选）
+        <label className="mb-1 block text-xs tracking-widest text-muted uppercase">
+          你的问题
         </label>
+        <p className="mb-3 text-xs leading-relaxed text-muted/90">
+          登录后每日 3 次免费 AI 解读（DeepSeek）；内测阶段超出次数可免费继续，正式版将接入支付宝。填写问题可在结果页获得神谕解读。
+        </p>
         <textarea
           value={question}
           onChange={(e) => setQuestion(e.target.value)}

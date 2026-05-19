@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const links = [
   { href: "/", label: "首页" },
@@ -15,6 +16,7 @@ const links = [
 export function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { user, logout, loading } = useAuth();
 
   return (
     <motion.header
@@ -31,7 +33,8 @@ export function Navbar() {
           </span>
         </Link>
 
-        <ul className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-3 md:flex">
+          <ul className="flex items-center gap-1">
           {links.map((link) => {
             const active =
               link.href === "/"
@@ -58,6 +61,36 @@ export function Navbar() {
             );
           })}
         </ul>
+        {!loading && (
+          user ? (
+            <div className="flex items-center gap-2 border-l border-white/[0.08] pl-3">
+              <span className="text-xs text-muted">{user.username}</span>
+              <button
+                type="button"
+                onClick={logout}
+                className="text-xs text-accent/90 hover:text-accent"
+              >
+                退出
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 border-l border-white/[0.08] pl-3">
+              <Link
+                href="/login"
+                className="rounded-full border border-accent/30 px-3 py-1.5 text-xs text-frost hover:bg-accent/10"
+              >
+                登录
+              </Link>
+              <Link
+                href="/register"
+                className="text-xs text-muted hover:text-frost"
+              >
+                注册
+              </Link>
+            </div>
+          )
+        )}
+        </div>
 
         <button
           type="button"
