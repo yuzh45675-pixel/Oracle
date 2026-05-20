@@ -7,7 +7,8 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: npm install
+    # 只装 API 依赖（Next/Three 在 devDependencies），避免免费版 512MB 内存装包 OOM
+    buildCommand: npm install --omit=dev
     startCommand: npm run server
     healthCheckPath: /api/health
     envVars:

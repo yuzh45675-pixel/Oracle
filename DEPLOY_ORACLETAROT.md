@@ -82,6 +82,29 @@
 
 其他：打开 **Logs** 标签看红色报错；确认有 `DEEPSEEK_API_KEY`。
 
+**Start Command 必须是** `npm run server`（不是 `npm start`，那会启动 Next 前端并立刻失败）。
+
+**Settings 核对（逐项）：**
+
+| 项 | 正确值 |
+|----|--------|
+| Root Directory | 留空（仓库根目录） |
+| Build Command | `npm install --omit=dev` |
+| Start Command | `npm run server` |
+| Health Check Path | `/api/health` |
+| Environment 里的 `PORT` | **不要有**（删掉） |
+
+浏览器访问 `https://你的服务.onrender.com/api/health` 应返回 JSON；若 **90 秒无响应**，说明实例没起来，看 Logs 里是否有 `Killed`、`ENOMEM` 或 `Cannot find module`。
+
+**本地有未 push 的提交时**，Render 不会用到最新 `render.yaml`，请先：
+
+```powershell
+cd "C:\Users\LEGION\Documents\tarot-oracle"
+git push origin main
+```
+
+再在 Render 点 **Manual Deploy → Clear build cache & deploy**。
+
 ---
 
 ## 验收

@@ -13,6 +13,7 @@ const billing = require("./server/billing");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3002;
+const HOST = process.env.HOST || "0.0.0.0";
 
 const corsOrigin =
   process.env.CORS_ORIGIN ?? "http://localhost:3001,http://localhost:3000";
@@ -49,8 +50,8 @@ app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 
-app.listen(PORT, () => {
-  console.log(`[server] http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`[server] listening on ${HOST}:${PORT}`);
   console.log("[server] Auth: POST /api/register  POST /api/login  GET /api/me");
   if (!process.env.JWT_SECRET) {
     console.warn("[server] JWT_SECRET not set ? using default dev_secret_key");
