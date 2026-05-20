@@ -70,6 +70,20 @@
 
 ---
 
+## Render 显示 Failed？
+
+**与阿里云实名、买域名无关。** Render 在国外，不检查阿里云。
+
+最常见原因：**环境变量里写了 `PORT=3002`**
+
+- Render 会自动注入 `PORT`（如 10000），程序必须监听这个端口。
+- 若你手动设 `PORT=3002`，健康检查会失败，显示 **Deploy failed**。
+- **处理**：Render → **oracle-api** → **Environment** → **删除 `PORT` 这一条** → **Manual Deploy** 重新部署。
+
+其他：打开 **Logs** 标签看红色报错；确认有 `DEEPSEEK_API_KEY`。
+
+---
+
 ## 验收
 
 - [ ] https://www.oracletarot.top 能打开  
