@@ -5,14 +5,10 @@ export type ChatMessage = {
   content: string;
 };
 
+import { getApiBase as getChatApiBase } from "@/lib/api-base";
 import { authHeaders } from "@/lib/auth-client";
 
-export function getChatApiBase(): string {
-  const direct = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-  if (direct) return direct;
-  if (typeof window !== "undefined") return "/api-server";
-  return "http://127.0.0.1:3002";
-}
+export { getChatApiBase };
 
 export type ChatResponse = {
   reply: string;

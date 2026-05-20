@@ -20,12 +20,7 @@ export type RegisterResponse = {
   user?: AuthUser;
 };
 
-function getApiBase(): string {
-  const direct = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-  if (direct) return direct;
-  if (typeof window !== "undefined") return "/api-server";
-  return "http://127.0.0.1:3002";
-}
+import { getApiBase } from "@/lib/api-base";
 
 export function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -86,7 +81,7 @@ export async function registerUser(
   } catch {
     return {
       code: -1,
-      msg: "无法连接后端，请先运行 npm run server（端口 3002）",
+      msg: "无法连接后端，请检查网络或稍后再试（免费 API 冷启动约 1 分钟）",
     };
   }
 

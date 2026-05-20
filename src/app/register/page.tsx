@@ -49,7 +49,7 @@ export default function RegisterPage() {
       }
       setBannerError(res.msg || "注册失败");
     } catch {
-      setBannerError("无法连接服务器，请确认已运行 npm run server");
+      setBannerError("无法连接服务器，请检查网络或稍后再试");
     } finally {
       setBusy(false);
     }

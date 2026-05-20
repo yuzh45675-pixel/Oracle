@@ -39,11 +39,10 @@
 3. **Settings → Environment Variables**（Production + Preview 都加）：
 
    ```
-   NEXT_PUBLIC_API_URL=https://你的Render地址.onrender.com
    API_ORIGIN=https://你的Render地址.onrender.com
    ```
 
-   （不要末尾 `/`，换成 A 步的真实地址）
+   （不要末尾 `/`，换成 A 步的真实地址。浏览器走 `/api-server` 代理，**不必**再设 `NEXT_PUBLIC_API_URL`。）
 
 4. **Deployments → Redeploy** 最新一次部署
 

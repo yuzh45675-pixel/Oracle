@@ -1,11 +1,4 @@
-/** 反馈 API 基址：与 auth-client 一致，开发时走 Next 代理 /api-server */
-
-function getApiBase(): string {
-  const direct = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-  if (direct) return direct;
-  if (typeof window !== "undefined") return "/api-server";
-  return "http://127.0.0.1:3002";
-}
+import { getApiBase } from "@/lib/api-base";
 
 export type FeedbackPayload = {
   accuracy: string;

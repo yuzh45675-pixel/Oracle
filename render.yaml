@@ -22,7 +22,7 @@ services:
       - key: PAYMENT_DEV_MODE
         value: "true"
       - key: CORS_ORIGIN
-        value: https://oracletarot.top,https://www.oracletarot.top
+        value: https://oracle-tarot-xi.vercel.app,https://oracletarot.top,https://www.oracletarot.top
       - key: JWT_SECRET
         generateValue: true
       - key: DEEPSEEK_API_KEY
