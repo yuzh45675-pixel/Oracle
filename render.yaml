@@ -1,0 +1,29 @@
+# Render 一键部署后端（在 Render 选 Blueprint / 从 render.yaml 部署）
+# https://dashboard.render.com
+
+services:
+  - type: web
+    name: oracle-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm run server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3002"
+      - key: BETA_MODE
+        value: "true"
+      - key: DAILY_FREE_READINGS
+        value: "3"
+      - key: PAYMENT_DEV_MODE
+        value: "true"
+      - key: CORS_ORIGIN
+        value: https://oracletarot.top,https://www.oracletarot.top
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DEEPSEEK_API_KEY
+        sync: false

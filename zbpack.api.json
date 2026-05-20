@@ -1,4 +1,5 @@
 {
   "start_command": "npm run server",
-  "build_command": "npm install"
+  "build_command": "npm install",
+  "cache_dependencies": false
 }
