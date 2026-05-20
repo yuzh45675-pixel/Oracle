@@ -43,6 +43,7 @@ yarn-error.log*
 # 用户与订单数据
 data/users.json
 data/orders.json
+feedback.json
 
 # vercel
 .vercel

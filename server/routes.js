@@ -3,6 +3,7 @@ const auth = require("./auth");
 const billing = require("./billing");
 const alipay = require("./alipay");
 const store = require("./store");
+const feedback = require("./feedback");
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DEEPSEEK_BASE =
@@ -15,8 +16,24 @@ function registerRoutes(app) {
   app.get("/api/health", (_req, res) => {
     res.json({
       ok: true,
-      features: ["register", "login", "chat", "payment"],
+      features: ["register", "login", "chat", "payment", "feedback"],
     });
+  });
+
+  /** 内测反馈：追加写入 feedback.json */
+  app.post("/api/feedback", (req, res) => {
+    try {
+      const validated = feedback.validatePayload(req.body);
+      if (!validated.ok) {
+        res.json({ code: 2, msg: validated.msg });
+        return;
+      }
+      feedback.appendFeedback(validated);
+      res.json({ code: 0, msg: "反馈成功" });
+    } catch (e) {
+      console.error("[feedback]", e);
+      res.status(500).json({ code: -1, msg: "服务器错误，请稍后重试" });
+    }
   });
 
   app.post("/api/register", async (req, res) => {
