@@ -1,0 +1,4 @@
+{
+  "start_command": "npm run server",
+  "build_command": "npm install"
+}
