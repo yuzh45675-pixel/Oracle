@@ -3,71 +3,93 @@
 import { motion } from "framer-motion";
 import { ReadingLayout } from "@/components/tarot/ReadingLayout";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
+import { useTheme } from "@/context/ThemeContext";
 
 const sections = [
   {
-    title: "双体系牌阵",
-    body: "支持维特塔罗与雷诺曼两套经典体系。从单张指引到大桌阵，牌义与组合逻辑内置于本地牌库，抽牌、翻牌与牌位关系一目了然。",
+    title: "呼吸",
+    body: "导航里的「呼吸」是一条独立路径，不进入占卜流程。选一种节奏——4-7-8、盒式、深度、月光、能量或平衡——粒子会随吸气聚拢、随呼气散开，屏幕只提示「吸气 / 停留 / 呼气」。占卜前想先静下来，或单纯需要几分钟放空，都可以来这里；练完也可直接离开，与抽牌无关。",
   },
   {
-    title: "仪式化体验",
-    body: "洗牌、切牌、逐张揭示——流程贴近真实占卜桌。粒子与光影营造沉静氛围，让注意力自然落在当下与问题上。",
+    title: "牌阵与抽牌",
+    body: "牌阵按真实位置展开，不是简单排成网格。洗牌之后，可上下两行滑动点选，或切换为选堆切牌，再按顺序逐张翻开。",
   },
   {
-    title: "神谕解读",
-    body: "完成牌阵后，可请 DeepSeek 神谕结合你的提问与牌面做深度解读；追问时亦可选择补牌仪式，再将新牌纳入分析。解读风格专业、温和，侧重看见状态与行动方向。",
+    title: "仪式与氛围",
+    body: "粒子随指尖流动，长按可凝聚图案；四套意识色调切换整站气质。洗牌、选牌、揭示各自成一段节奏——克制的光影与不喧嚣的动效，让注意力留在问题与牌面上。",
   },
   {
-    title: "设计原则",
-    body: "克制而不堆砌玄幻符号，质感接近收藏级卡牌呈现。我们相信神秘感应来自留白、节奏与专注，而非喧嚣的视觉表演。",
+    title: "神谕 · 私密",
+    body: "牌面读完后，可登录请 AI 像真人咨询师一样解读——先感受整副牌，而非机械报牌义；支持追问与补牌。占卜记录保存在本机浏览器，头像与账号仅用于解读额度，安静、私密。",
   },
 ];
 
 export default function AboutPage() {
+  const { theme } = useTheme();
+
   return (
-    <ReadingLayout
-      title="关于 Oracle"
-      subtitle="现代设计语言下的塔罗与雷诺曼占卜空间。"
-    >
+    <ReadingLayout title="关于 Oracle" badge="About" wide>
       <motion.div
-        className="mx-auto max-w-2xl space-y-8"
+        className="mx-auto w-full max-w-md"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.25 }}
       >
-        <div className="space-y-4 text-center text-sm leading-relaxed text-muted">
-          <p>
-            Oracle 将古老牌阵仪式带入数字空间：你先完成抽牌与牌面阅读，再按需开启神谕层，把牌义、位置与你的问题编织成可理解的叙事。
-          </p>
-          <p>
-            占卜记录保存在本地浏览器，仪式与解读皆在你自己的设备上进行，安静、私密，可随时回顾。
-          </p>
-        </div>
-
-        <motion.div className="grid gap-4 md:gap-6">
-          {sections.map((s, i) => (
-            <motion.article
-              key={s.title}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-xl"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + i * 0.1 }}
+        <motion.blockquote
+          className="mb-10 border-l-2 border-accent/35 pl-5 text-left"
+          initial={{ opacity: 0, x: -8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.35 }}
+        >
+          <p className="text-sm leading-relaxed tracking-wide md:text-base">
+            <span
+              className="inline-block"
+              style={{ color: theme.colors.accentSoft }}
             >
-              <h3 className="font-display text-xl font-light text-frost">
-                {s.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{s.body}</p>
-            </motion.article>
+              我们相信神秘感应来自留白、节奏与专注，而非喧嚣的视觉表演。
+            </span>
+          </p>
+        </motion.blockquote>
+
+        <ol className="space-y-0 divide-y divide-white/[0.06] rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl">
+          {sections.map((s, i) => (
+            <motion.li
+              key={s.title}
+              className="px-5 py-6 sm:px-6 sm:py-7"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + i * 0.07 }}
+            >
+              <div className="flex items-baseline gap-3">
+                <span
+                  className="shrink-0 font-display text-xs tabular-nums tracking-widest text-accent/55"
+                  aria-hidden
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="font-display text-lg font-light tracking-tight text-frost">
+                  {s.title}
+                </h3>
+              </div>
+              <p className="mt-3 pl-7 text-[13px] leading-[1.8] text-muted sm:text-sm">
+                {s.body}
+              </p>
+            </motion.li>
           ))}
-        </motion.div>
+        </ol>
 
         <motion.div
-          className="flex justify-center pt-4"
+          className="mt-10 flex flex-col gap-3 border-t border-white/[0.06] pt-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.85 }}
+          transition={{ delay: 0.78 }}
         >
-          <AnimatedButton href="/reading">开始体验</AnimatedButton>
+          <AnimatedButton href="/breathe" className="w-full">
+            先去呼吸
+          </AnimatedButton>
+          <AnimatedButton href="/" variant="ghost" className="w-full">
+            回到入口
+          </AnimatedButton>
         </motion.div>
       </motion.div>
     </ReadingLayout>

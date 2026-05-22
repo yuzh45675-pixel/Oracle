@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ReadingLayout } from "@/components/tarot/ReadingLayout";
 import { AuthField } from "@/components/auth/AuthField";
+import type { AvatarSelection } from "@/lib/avatars";
+import { AvatarPicker } from "@/components/auth/AvatarPicker";
 import { registerUser, setStoredToken } from "@/lib/auth-client";
 import { useAuth } from "@/context/AuthContext";
 
@@ -22,6 +24,10 @@ export default function RegisterPage() {
   }>({});
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [avatar, setAvatar] = useState<AvatarSelection>({
+    avatarType: "theme",
+    avatarTheme: "astral-void",
+  });
 
   const validate = () => {
     const next: typeof errors = {};
@@ -39,7 +45,7 @@ export default function RegisterPage() {
 
     setBusy(true);
     try {
-      const res = await registerUser(username.trim(), password);
+      const res = await registerUser(username.trim(), password, avatar);
       if (res.code === 0 && res.token) {
         setStoredToken(res.token);
         await refreshUser();
@@ -115,6 +121,8 @@ export default function RegisterPage() {
               error={errors.confirm}
             />
           </div>
+
+          <AvatarPicker value={avatar} onChange={setAvatar} />
 
           <button
             type="submit"

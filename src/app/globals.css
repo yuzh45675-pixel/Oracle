@@ -1,15 +1,94 @@
 @import "tailwindcss";
 
-:root {
+:root,
+[data-theme="astral-void"] {
   --void: #050505;
+  --void-deep: #030308;
   --surface: #0f1115;
   --mystic: #1b1830;
-  --accent: #6e5bff;
+  --accent: #9b8cff;
+  --accent-soft: #d4ccff;
+  --accent-dim: #6b5fd4;
   --frost: #e8e6f0;
   --muted: #8b8798;
-  --metal: #c4c0d4;
+  --metal: #c8c4e8;
+  --particle-a: #8a82d4;
+  --particle-b: #f0eeff;
+  --glow-primary: rgba(155, 140, 255, 0.32);
+  --glow-secondary: rgba(200, 210, 255, 0.18);
+  --fog: #050505;
+  --card-back-from: #1b1830;
+  --card-back-to: #050505;
+  --glass: rgba(15, 17, 21, 0.6);
+  --border-subtle: rgba(255, 255, 255, 0.08);
   --background: var(--void);
   --foreground: var(--frost);
+}
+
+[data-theme="rose-mist"] {
+  --void: #050505;
+  --void-deep: #030308;
+  --surface: #0a0a0c;
+  --mystic: #140810;
+  --accent: #e8b4c4;
+  --accent-soft: #fff0f4;
+  --accent-dim: #c9899e;
+  --frost: #e8e6f0;
+  --muted: #8b8798;
+  --metal: #f5c6d4;
+  --particle-a: #e8b4c4;
+  --particle-b: #fff5f8;
+  --glow-primary: rgba(245, 196, 210, 0.36);
+  --glow-secondary: rgba(255, 236, 242, 0.24);
+  --fog: #050505;
+  --card-back-from: #140810;
+  --card-back-to: #050505;
+  --glass: rgba(8, 8, 10, 0.72);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="matcha-sanctuary"] {
+  --void: #050505;
+  --void-deep: #030308;
+  --surface: #0a0a0c;
+  --mystic: #081018;
+  --accent: #a8d4ff;
+  --accent-soft: #eef6ff;
+  --accent-dim: #6ba3d4;
+  --frost: #e8e6f0;
+  --muted: #8b8798;
+  --metal: #d8ecff;
+  --particle-a: #8ec5ff;
+  --particle-b: #f4faff;
+  --glow-primary: rgba(168, 212, 255, 0.38);
+  --glow-secondary: rgba(255, 255, 255, 0.18);
+  --fog: #050505;
+  --card-back-from: #081018;
+  --card-back-to: #050505;
+  --glass: rgba(8, 8, 10, 0.72);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="solar-archive"] {
+  --void: #050505;
+  --void-deep: #030308;
+  --surface: #0a0a0c;
+  --mystic: #0a0c14;
+  --accent: #c8d8f0;
+  --accent-soft: #f2f6fc;
+  --accent-dim: #8494b0;
+  --frost: #e8e6f0;
+  --muted: #8b8798;
+  --metal: #e2eaf4;
+  --particle-a: #b8cce8;
+  --particle-b: #f8faff;
+  --glow-primary: rgba(200, 220, 245, 0.34);
+  --glow-secondary: rgba(255, 255, 255, 0.14);
+  --fog: #050505;
+  --card-back-from: #0a0c14;
+  --card-back-to: #050505;
+  --glass: rgba(8, 8, 10, 0.72);
+  --border-subtle: rgba(255, 255, 255, 0.08);
 }
 
 @theme inline {
@@ -17,7 +96,7 @@
   --color-surface: var(--surface);
   --color-mystic: var(--mystic);
   --color-accent: var(--accent);
-  --color-accent-dim: #4a3db8;
+  --color-accent-dim: var(--accent-dim);
   --color-frost: var(--frost);
   --color-muted: var(--muted);
   --color-metal: var(--metal);
@@ -29,6 +108,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
@@ -41,10 +121,14 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition:
+    background-color 0.8s ease,
+    color 0.6s ease;
 }
 
 ::selection {
-  background: rgba(110, 91, 255, 0.35);
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
   color: var(--frost);
 }
 
@@ -52,14 +136,42 @@ body {
   font-family: var(--font-display), Georgia, serif;
 }
 
-/* Subtle scrollbar */
+.glass-panel {
+  background: var(--glass);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.bg-gradient-accent {
+  background-image: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    var(--accent-dim) 50%,
+    var(--accent) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  body {
+    transition: none;
+  }
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 3px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--void);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(110, 91, 255, 0.3);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
   border-radius: 3px;
 }

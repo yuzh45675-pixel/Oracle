@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import type { TarotCard as TarotCardType } from "@/types/tarot";
+import { ThemedCardBack } from "./ThemedCardBack";
 
 interface CardFaceProps {
   card?: TarotCardType;
@@ -60,15 +61,18 @@ function PlaceholderFace({
       className={`relative h-full w-full overflow-hidden rounded-xl ${className}`}
       style={{ transform: reversed ? "rotate(180deg)" : undefined }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1a1730] via-[#12101f] to-void" />
+      <div className="absolute inset-0 bg-gradient-to-br from-mystic via-surface to-void" />
       <div
-        className="absolute inset-0 opacity-50"
+        className="absolute inset-0 opacity-40"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 20%, rgba(110,91,255,0.25) 0%, transparent 55%)",
+            "radial-gradient(ellipse at 50% 20%, color-mix(in srgb, var(--accent) 18%, transparent) 0%, transparent 55%)",
         }}
       />
-      <div className="absolute inset-2 rounded-lg border border-white/[0.1]" />
+      <div
+        className="absolute inset-2 rounded-lg"
+        style={{ border: "1px solid var(--border-subtle)" }}
+      />
       <div className="relative flex h-full flex-col items-center justify-between p-4 text-center">
         <span className="text-[10px] tracking-[0.3em] text-accent/80 uppercase">
           {topLabel}
@@ -102,23 +106,10 @@ export function CardFace({
   if (back) {
     return (
       <div
-        className={`relative h-full w-full overflow-hidden rounded-xl ${className}`}
+        className={`relative h-full w-full ${className}`}
         style={{ transform: reversed ? "rotate(180deg)" : undefined }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-mystic via-surface to-void" />
-        <div
-          className="absolute inset-0 opacity-30"
-          style={{
-            backgroundImage: `radial-gradient(circle at 30% 30%, rgba(110,91,255,0.4) 0%, transparent 50%),
-              radial-gradient(circle at 70% 70%, rgba(74,108,247,0.2) 0%, transparent 50%)`,
-          }}
-        />
-        <div className="absolute inset-3 rounded-lg border border-white/[0.08]" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-16 w-16 rounded-full border border-accent/30 bg-accent/5 backdrop-blur-sm" />
-          <div className="absolute h-8 w-px bg-gradient-to-b from-transparent via-accent/60 to-transparent" />
-          <div className="absolute h-px w-8 bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
-        </div>
+        <ThemedCardBack reversed={false} />
       </div>
     );
   }

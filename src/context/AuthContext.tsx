@@ -17,6 +17,7 @@ import {
   setStoredToken,
   type AuthUser,
 } from "@/lib/auth-client";
+import type { AvatarSelection } from "@/lib/avatars";
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -25,7 +26,11 @@ type AuthContextValue = {
   openAuth: () => void;
   closeAuth: () => void;
   login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string) => Promise<void>;
+  register: (
+    username: string,
+    password: string,
+    avatar?: AvatarSelection,
+  ) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 };
@@ -66,16 +71,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthOpen(false);
   }, []);
 
-  const register = useCallback(async (username: string, password: string) => {
-    const res = await registerUser(username, password);
-    if (res.code !== 0 || !res.token) {
-      throw new Error(res.msg || "注册失败");
-    }
-    setStoredToken(res.token);
-    if (res.user) setUser(res.user);
-    else await refreshUser();
-    setAuthOpen(false);
-  }, [refreshUser]);
+  const register = useCallback(
+    async (username: string, password: string, avatar?: AvatarSelection) => {
+      const res = await registerUser(username, password, avatar);
+      if (res.code !== 0 || !res.token) {
+        throw new Error(res.msg || "注册失败");
+      }
+      setStoredToken(res.token);
+      if (res.user) setUser(res.user);
+      else await refreshUser();
+      setAuthOpen(false);
+    },
+    [refreshUser],
+  );
 
   const logout = useCallback(() => {
     setStoredToken(null);

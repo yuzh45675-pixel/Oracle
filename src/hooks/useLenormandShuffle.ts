@@ -2,8 +2,11 @@
 
 import { useCallback, useRef, useState } from "react";
 import { drawLenormandCards } from "@/lib/lenormand/draw";
-import { getLenormandCardCount } from "@/lib/lenormand/layouts";
-import { LENORMAND_DECK, shuffleDeck } from "@/lib/tarot";
+import {
+  getLenormandCardCount,
+  getLenormandLayout,
+} from "@/lib/lenormand/layouts";
+import { getCardById, LENORMAND_DECK, shuffleDeck } from "@/lib/tarot";
 import type { DrawnCard, TarotCard } from "@/types/tarot";
 import type { LenormandSpreadType } from "@/types/lenormand";
 
@@ -15,6 +18,7 @@ export function useLenormandShuffle() {
   const [jumpCard, setJumpCard] = useState<DrawnCard | null>(null);
   const [showJumpNotice, setShowJumpNotice] = useState(false);
   const shuffledPoolRef = useRef<TarotCard[]>([]);
+  const [shuffledPool, setShuffledPool] = useState<TarotCard[]>([]);
 
   const runShuffle = useCallback(
     async (spread: LenormandSpreadType): Promise<boolean> => {
@@ -24,6 +28,7 @@ export function useLenormandShuffle() {
 
       const pool = shuffleDeck(LENORMAND_DECK);
       shuffledPoolRef.current = pool;
+      setShuffledPool(pool);
 
       const willJump = Math.random() < JUMP_CHANCE;
       const jumpDelay = willJump ? 700 + Math.random() * 500 : SHUFFLE_MS;
@@ -76,18 +81,50 @@ export function useLenormandShuffle() {
     [jumpCard]
   );
 
+  const drawPickedCards = useCallback(
+    (spread: LenormandSpreadType, pickedIds: string[]): DrawnCard[] => {
+      const layout = getLenormandLayout(spread);
+      if (pickedIds.length !== layout.cardCount) {
+        throw new Error(`请选择 ${layout.cardCount} 张牌`);
+      }
+
+      const jumpId = jumpCard?.card.id;
+      if (jumpId && pickedIds.includes(jumpId)) {
+        throw new Error("掉牌已单独出现，请选其他牌");
+      }
+
+      return layout.slots.map((slot, index) => {
+        const card = getCardById(pickedIds[index]!, "lenormand");
+        if (!card) {
+          throw new Error("选牌无效，请重试");
+        }
+        return {
+          card,
+          reversed: false,
+          position: slot.label,
+          slotId: slot.id,
+          isJumpCard: false,
+        };
+      });
+    },
+    [jumpCard],
+  );
+
   const resetShuffle = useCallback(() => {
     setJumpCard(null);
     setShowJumpNotice(false);
     shuffledPoolRef.current = [];
+    setShuffledPool([]);
   }, []);
 
   return {
     isShuffling,
     jumpCard,
     showJumpNotice,
+    shuffledPool,
     runShuffle,
     drawFromPool,
+    drawPickedCards,
     resetShuffle,
   };
 }

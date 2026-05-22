@@ -2,12 +2,18 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { AvatarPicker } from "@/components/auth/AvatarPicker";
+import type { AvatarSelection } from "@/lib/avatars";
 import { useAuth } from "@/context/AuthContext";
 
 export function AuthModal() {
   const { authOpen, closeAuth, login, register } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [avatar, setAvatar] = useState<AvatarSelection>({
+    avatarType: "theme",
+    avatarTheme: "astral-void",
+  });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -27,7 +33,7 @@ export function AuthModal() {
     setError(null);
     try {
       if (action === "login") await login(username, password);
-      else await register(username, password);
+      else await register(username, password, avatar);
       resetForm();
     } catch (e) {
       setError(e instanceof Error ? e.message : "操作失败");
@@ -88,6 +94,8 @@ export function AuthModal() {
                 placeholder="至少 6 位"
               />
             </div>
+
+            <AvatarPicker value={avatar} onChange={setAvatar} />
 
             {error && (
               <p className="mt-3 text-sm text-red-300">{error}</p>

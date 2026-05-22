@@ -345,7 +345,7 @@ export function AiOraclePanel({
 
       {loading && (
         <p className="mb-4 animate-pulse text-sm text-muted">
-          神谕正在书写中…
+          正在读牌…
         </p>
       )}
 

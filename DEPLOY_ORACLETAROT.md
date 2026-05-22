@@ -1,5 +1,7 @@
 # oracletarot.top 上线清单
 
+> **内测运维总览（地址、环境变量、UptimeRobot、看日志）→ 见 [`BETA_OPS.md`](./BETA_OPS.md)**
+
 域名：**oracletarot.top**  
 架构：阿里云 DNS → **Vercel（网站）** + **Render（API 后端）**
 
@@ -25,7 +27,7 @@
    | 其余 | `render.yaml` 里已写好，检查 `CORS_ORIGIN` 是否为下面两行 |
 
    ```
-   https://oracletarot.top,https://www.oracletarot.top
+   https://oracle-tarot-xi.vercel.app,https://oracletarot.top,https://www.oracletarot.top
    ```
 
 5. 部署完成后记下 API 地址，例如：  

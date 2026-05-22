@@ -43,7 +43,8 @@ interface ReadingContextValue {
   setLenormandSpread: (spread: LenormandSpreadType) => void;
   setQuestion: (q: string) => void;
   startRitual: () => Promise<void>;
-  completeCut: (pileIndex: number) => Promise<DrawnCard[]>;
+  completeCut: (selection: number | string[]) => Promise<DrawnCard[]>;
+  shuffledPool: import("@/types/tarot").TarotCard[];
   reset: () => void;
   prepareNewReading: () => void;
   persistSession: () => void;
@@ -102,19 +103,23 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
   }, [deck, spread, lenormandSpread, tarotShuffle, lenormandShuffle]);
 
   const completeCut = useCallback(
-    async (_pileIndex: number): Promise<DrawnCard[]> => {
+    async (selection: number | string[]): Promise<DrawnCard[]> => {
       if (!deck) return [];
 
       let drawn: DrawnCard[] = [];
       let combos: LenormandCombination[] = [];
 
       if (deck === "lenormand" && lenormandSpread) {
-        drawn = lenormandShuffle.drawFromPool(lenormandSpread);
+        drawn = Array.isArray(selection)
+          ? lenormandShuffle.drawPickedCards(lenormandSpread, selection)
+          : lenormandShuffle.drawFromPool(lenormandSpread);
         drawn = drawn.slice(0, getLenormandLayout(lenormandSpread).cardCount);
         combos = buildLenormandCombinations(lenormandSpread, drawn);
         setCombinations(combos);
       } else if (deck === "waite" && spread) {
-        drawn = tarotShuffle.drawFromPool(spread, deck);
+        drawn = Array.isArray(selection)
+          ? tarotShuffle.drawPickedCards(spread, deck, selection)
+          : tarotShuffle.drawFromPool(spread, deck);
         drawn = drawn.slice(0, getSpreadLayout(spread).cardCount);
       }
 
@@ -174,6 +179,10 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
     resetShuffle();
   }, [resetShuffle]);
 
+  const shuffledPool = isLenormand
+    ? lenormandShuffle.shuffledPool
+    : tarotShuffle.shuffledPool;
+
   const value = useMemo(
     () => ({
       deck,
@@ -187,6 +196,7 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
       session,
       ritualPhase,
       isShuffling,
+      shuffledPool,
       setDeck,
       setSpread,
       setLenormandSpread,
@@ -209,6 +219,7 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
       session,
       ritualPhase,
       isShuffling,
+      shuffledPool,
       startRitual,
       completeCut,
       persistSession,

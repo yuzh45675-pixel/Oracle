@@ -41,6 +41,7 @@ function registerRoutes(app) {
       const result = await auth.register(
         req.body?.username,
         req.body?.password,
+        req.body?.avatar,
       );
       res.json(result);
     } catch (e) {
@@ -60,6 +61,15 @@ function registerRoutes(app) {
 
   app.get("/api/me", auth.authMiddleware, (req, res) => {
     res.json({ ok: true, user: billing.publicUser(req.user) });
+  });
+
+  app.patch("/api/profile/avatar", auth.authMiddleware, async (req, res) => {
+    try {
+      const user = await auth.updateAvatar(req.user, req.body?.avatar);
+      res.json({ ok: true, user });
+    } catch (e) {
+      res.status(e.status ?? 500).json({ error: e.message });
+    }
   });
 
   app.get("/api/quota", auth.authMiddleware, (req, res) => {

@@ -41,7 +41,6 @@ export function GrandTableauView({
 
   const allRevealed = revealedCount >= cards.length;
   const displayCards = cards.slice(0, 36);
-  const cardW = 42;
 
   const neighborHighlights = useMemo(() => {
     const idx = focusIndex ?? hoverIndex;
@@ -80,7 +79,7 @@ export function GrandTableauView({
         style={{ height: tableHeight, minHeight: 400 }}
         enablePan
       >
-        <div ref={setContainerRef} className="relative h-full w-full min-w-[900px]">
+        <div ref={setContainerRef} className="relative h-full w-full">
           {displayCards.map((drawn, i) => {
             const slot = scaledSlots[i];
             if (!slot || !drawn?.card?.id) return null;
@@ -92,11 +91,10 @@ export function GrandTableauView({
             return (
               <motion.div
                 key={drawn.card.id}
-                className="absolute"
+                className="absolute left-0 top-0"
                 style={{
                   left: slot.x,
                   top: slot.y,
-                  width: cardW,
                   zIndex: highlighted ? 100 : slot.zIndex,
                   transform: "translate(-50%, -50%)",
                   opacity: dimmed ? 0.35 : 1,
@@ -107,6 +105,7 @@ export function GrandTableauView({
                 whileHover={{ scale: 1.12, zIndex: 150 }}
                 transition={{ type: "spring", stiffness: 400, damping: 28 }}
               >
+                <div className="relative inline-block">
                 <LenormandCard
                   card={drawn.card}
                   flipped={isFlipped}
@@ -118,6 +117,7 @@ export function GrandTableauView({
                 <span className="pointer-events-none absolute -bottom-4 left-1/2 -translate-x-1/2 text-[7px] text-[#6a6358]">
                   {i + 1}
                 </span>
+                </div>
               </motion.div>
             );
           })}

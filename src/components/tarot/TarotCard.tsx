@@ -11,13 +11,14 @@ interface TarotCardProps {
   flipped?: boolean;
   settled?: boolean;
   onFlip?: () => void;
-  size?: "sm" | "md" | "lg" | "hero";
+  size?: "xs" | "sm" | "md" | "lg" | "hero";
   interactive?: boolean;
   className?: string;
   delay?: number;
 }
 
 const sizes = {
+  xs: "h-[108px] w-[74px]",
   sm: "h-[140px] w-[96px]",
   md: "h-[200px] w-[136px]",
   lg: "h-[280px] w-[190px]",

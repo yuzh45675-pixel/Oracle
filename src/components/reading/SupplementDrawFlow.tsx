@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShuffleDeck } from "@/components/tarot/ShuffleDeck";
-import { CutDeckAnimation } from "@/components/tarot/CutDeckAnimation";
+import { SwipeCutRitual } from "@/components/tarot/SwipeCutRitual";
 import { TarotCard } from "@/components/tarot/TarotCard";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { useSupplementShuffle } from "@/hooks/useSupplementShuffle";
@@ -192,7 +192,10 @@ export function SupplementDrawFlow({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
-            <CutDeckAnimation onCutComplete={handleCut} />
+            <SwipeCutRitual
+              spreadCardCount={cardCount}
+              onCutComplete={handleCut}
+            />
           </motion.div>
         )}
 

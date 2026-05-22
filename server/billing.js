@@ -1,4 +1,5 @@
 const store = require("./store");
+const { avatarForPublic } = require("./avatar");
 
 const READING_PRICE = Number(process.env.READING_PRICE) || 0.2;
 const DAILY_FREE_LIMIT = Number(process.env.DAILY_FREE_READINGS) || 3;
@@ -39,6 +40,7 @@ function publicUser(user) {
   return {
     id: user.id,
     username: user.username,
+    ...avatarForPublic(user),
     credits: user.credits ?? 0,
     freeAvailable: remaining > 0,
     freeRemaining: remaining,

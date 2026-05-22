@@ -62,7 +62,7 @@ export function useSpreadLayout(
       scale,
     }));
 
-    if (isCompact && scaledSlots.length > 0) {
+    if (scaledSlots.length > 0) {
       const xs = scaledSlots.map((s) => s.x);
       const ys = scaledSlots.map((s) => s.y);
       const gx = (Math.min(...xs) + Math.max(...xs)) / 2;

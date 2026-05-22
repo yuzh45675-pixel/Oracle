@@ -6,13 +6,21 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ReadingLayout } from "@/components/tarot/ReadingLayout";
 import { AuthField } from "@/components/auth/AuthField";
+import { AvatarPicker } from "@/components/auth/AvatarPicker";
+import type { AvatarSelection } from "@/lib/avatars";
+import { updateUserAvatar } from "@/lib/auth-client";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, refreshUser } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [avatar, setAvatar] = useState<AvatarSelection>({
+    avatarType: "theme",
+    avatarTheme: "astral-void",
+  });
+  const [avatarDirty, setAvatarDirty] = useState(false);
   const [errors, setErrors] = useState<{ username?: string; password?: string }>(
     {},
   );
@@ -35,6 +43,14 @@ export default function LoginPage() {
     setBusy(true);
     try {
       await login(username.trim(), password);
+      if (avatarDirty) {
+        try {
+          await updateUserAvatar(avatar);
+          await refreshUser();
+        } catch {
+          /* 头像更新失败不阻断登录 */
+        }
+      }
       router.push("/");
       router.refresh();
     } catch (err) {
@@ -84,6 +100,15 @@ export default function LoginPage() {
               error={errors.password}
             />
           </div>
+
+          <AvatarPicker
+            value={avatar}
+            onChange={(next) => {
+              setAvatar(next);
+              setAvatarDirty(true);
+            }}
+          />
+
           <button
             type="submit"
             disabled={busy}

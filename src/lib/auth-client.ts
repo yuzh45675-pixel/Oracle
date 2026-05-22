@@ -3,6 +3,9 @@ export const AUTH_TOKEN_KEY = "oracle_auth_token";
 export type AuthUser = {
   id: string;
   username: string;
+  avatarType: "theme" | "custom";
+  avatarTheme: string | null;
+  avatarData: string | null;
   credits: number;
   freeAvailable: boolean;
   freeRemaining: number;
@@ -20,6 +23,8 @@ export type RegisterResponse = {
   user?: AuthUser;
 };
 
+import type { AvatarSelection } from "@/lib/avatars";
+import { avatarSelectionToPayload } from "@/lib/avatars";
 import { getApiBase } from "@/lib/api-base";
 
 export function getStoredToken(): string | null {
@@ -70,13 +75,17 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 export async function registerUser(
   username: string,
   password: string,
+  avatar?: AvatarSelection,
 ): Promise<RegisterResponse> {
+  const body: Record<string, unknown> = { username, password };
+  if (avatar) body.avatar = avatarSelectionToPayload(avatar);
+
   let res: Response;
   try {
     res = await fetch(`${getApiBase()}/api/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify(body),
     });
   } catch {
     return {
@@ -112,6 +121,13 @@ export async function registerUser(
   }
 
   return { code: -1, msg: "服务器返回格式异常，请重启 npm run server 后重试" };
+}
+
+export async function updateUserAvatar(avatar: AvatarSelection) {
+  return apiFetch<{ ok: boolean; user: AuthUser }>("/api/profile/avatar", {
+    method: "PATCH",
+    body: JSON.stringify({ avatar: avatarSelectionToPayload(avatar) }),
+  });
 }
 
 export async function loginUser(username: string, password: string) {

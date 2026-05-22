@@ -6,7 +6,7 @@ import { LenormandReadingLayout } from "./LenormandReadingLayout";
 import { ShuffleDeck } from "@/components/tarot/ShuffleDeck";
 import { LenormandSpreadRenderer } from "./LenormandSpreadRenderer";
 import { LenormandCard } from "./LenormandCard";
-import { CutDeckAnimation } from "@/components/tarot/CutDeckAnimation";
+import { CutRitualPanel } from "@/components/tarot/CutRitualPanel";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { useReading } from "@/context/ReadingContext";
 import {
@@ -25,6 +25,7 @@ export function LenormandDrawFlow() {
     startRitual,
     completeCut,
     cards,
+    shuffledPool,
     prepareNewReading,
   } = useReading();
 
@@ -101,10 +102,10 @@ export function LenormandDrawFlow() {
           : ritualPhase === "shuffling"
             ? "纸牌在桌面上摩擦、聚拢……"
             : ritualPhase === "cutting"
-              ? "选择一堆，完成切牌"
+              ? "滑动选牌，或切换为选堆切牌"
               : revealPrompt
       }
-      wide={isTableau}
+      wide={isTableau || ritualPhase === "spread"}
     >
       <AnimatePresence mode="wait">
         {ritualPhase === "idle" && (
@@ -151,7 +152,12 @@ export function LenormandDrawFlow() {
 
         {ritualPhase === "cutting" && (
           <motion.div key="cut" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <CutDeckAnimation onCutComplete={completeCut} />
+            <CutRitualPanel
+              spreadCardCount={expectedCount || 3}
+              pool={shuffledPool}
+              excludeIds={jumpCard?.card.id ? [jumpCard.card.id] : []}
+              onComplete={completeCut}
+            />
           </motion.div>
         )}
 

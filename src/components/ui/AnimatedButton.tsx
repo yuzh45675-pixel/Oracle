@@ -50,7 +50,7 @@ export function AnimatedButton({
   if (href && !disabled) {
     return (
       <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={spring}>
-        <Link href={href} className={classes}>
+        <Link href={href} className={classes} data-particle-pass>
           {inner}
         </Link>
       </motion.div>
@@ -63,6 +63,7 @@ export function AnimatedButton({
       onClick={onClick}
       disabled={disabled}
       className={classes}
+      data-particle-pass
       whileHover={disabled ? {} : { scale: 1.02 }}
       whileTap={disabled ? {} : { scale: 0.98 }}
       transition={spring}

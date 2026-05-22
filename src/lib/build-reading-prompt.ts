@@ -1,15 +1,20 @@
-import { getMeaning } from "@/lib/tarot";
 import type { LenormandCombination } from "@/types/lenormand";
 import type { DeckType, DrawnCard } from "@/types/tarot";
 
+/** 仅提供牌位与牌名，避免附带牌义摘要诱导模型做百科式解读 */
 function formatDrawnCardLine(deck: DeckType, drawn: DrawnCard): string {
   const pos = drawn.position ? `（${drawn.position}）` : "";
   if (deck === "waite") {
-    const m = getMeaning(drawn.card, drawn.reversed);
-    return `- ${pos}${drawn.card.name}${drawn.reversed ? "·逆位" : "·正位"}：${m.summary}；关键词：${drawn.card.keywords.join("、")}`;
+    return `- ${pos}${drawn.card.name}${drawn.reversed ? "·逆位" : "·正位"}`;
   }
-  return `- ${pos}${drawn.card.name}：${drawn.card.upright.summary}；关键词：${drawn.card.keywords.join("、")}`;
+  return `- ${pos}${drawn.card.name}`;
 }
+
+const READING_INSTRUCTION =
+  "请先整体感受这组牌的情绪氛围与关系动力，再像真人塔罗师一样慢慢读出来。不要逐张百科式解释，不要编号罗列，不要模板鸡汤。全文 3～5 个自然段、约 450～750 字；勿用 # 与 *。";
+
+const FOLLOW_UP_INSTRUCTION =
+  "请保持真人咨询语气：先回应追问，再融入原牌阵整体感受。不要逐张百科，不要编号罗列。2～4 个自然段；勿用 # 与 *。";
 
 export function buildReadingContextMessage(options: {
   deck: DeckType;
@@ -27,9 +32,9 @@ export function buildReadingContextMessage(options: {
     `【牌阵】${spreadTitle}`,
     question?.trim()
       ? `【用户问题】${question.trim()}`
-      : `【用户问题】（未填写，请依牌面整体解读）`,
+      : `【用户问题】（未填写，请依牌阵整体感受与关系动力解读）`,
     "",
-    "【抽到的牌】",
+    "【抽到的牌】（牌位 + 牌名；请先整体观察，勿逐张查字典）",
   ];
 
   for (const drawn of cards) {
@@ -37,24 +42,20 @@ export function buildReadingContextMessage(options: {
   }
 
   if (jumpCard?.card) {
-    const m = getMeaning(jumpCard.card, jumpCard.reversed);
     lines.push(
       "",
-      `【跳牌】${jumpCard.card.name}：${m.summary}`,
+      `【跳牌】${jumpCard.card.name}${deck === "waite" && jumpCard.reversed ? "·逆位" : ""}`,
     );
   }
 
   if (combinations?.length) {
-    lines.push("", "【牌际组合】");
+    lines.push("", "【牌际组合】（供关系叙事参考，勿逐条机械解释）");
     for (const c of combinations) {
       lines.push(`- ${c.title}：${c.summary}`);
     }
   }
 
-  lines.push(
-    "",
-    "请严格按系统提示：八个维度全部覆盖且合并叙述；全文 3～5 个自然段、约 400～700 字；判断题先写结论（是/否/不确定）；勿用 # 与 *；勿写成八段逐条解读。",
-  );
+  lines.push("", READING_INSTRUCTION);
 
   return lines.join("\n");
 }
@@ -94,16 +95,9 @@ export function buildFollowUpMessage(options: {
     for (const d of supplementCards) {
       lines.push(formatDrawnCardLine(deck, d));
     }
-    lines.push(
-      "",
-      "请先结合补牌回答本次追问，再将补牌与原牌阵、原问题综合解读。仍遵守系统提示（判断题先给结论；2～4 段；段落长短有主次；勿用 # 与 *）。",
-    );
-  } else {
-    lines.push(
-      "",
-      "请在不抽新牌的前提下，结合原牌阵与原问题回答本次追问。仍遵守系统提示（判断题先给结论；2～4 段；段落长短有主次；勿用 # 与 *）。",
-    );
   }
+
+  lines.push("", FOLLOW_UP_INSTRUCTION);
 
   return lines.join("\n");
 }

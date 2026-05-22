@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ReadingLayout } from "@/components/tarot/ReadingLayout";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { useReading } from "@/context/ReadingContext";
+import { useTheme } from "@/context/ThemeContext";
 import { saveReadingSetup } from "@/lib/reading-session";
 import { LENORMAND_SPREADS } from "@/lib/lenormand/layouts";
 import { SPREADS } from "@/types/tarot";
@@ -30,16 +31,18 @@ function ReadingStartContent() {
     setQuestion,
     prepareNewReading,
   } = useReading();
+  const { enterWorld } = useTheme();
 
   const deckParam = searchParams.get("deck");
 
   useEffect(() => {
     if (deckParam === "lenormand" || deckParam === "waite") {
       setDeck(deckParam);
+      enterWorld(deckParam === "lenormand" ? "lenormand" : "tarot");
       return;
     }
     router.replace("/");
-  }, [deckParam, setDeck, router]);
+  }, [deckParam, setDeck, router, enterWorld]);
 
   const isLenormand = deck === "lenormand";
   const canStart = isLenormand

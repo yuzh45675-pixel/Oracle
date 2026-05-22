@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const store = require("./store");
 const billing = require("./billing");
+const { normalizeAvatar } = require("./avatar");
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_key";
 const JWT_EXPIRES = process.env.JWT_EXPIRES ?? "7d";
@@ -35,7 +36,7 @@ function authMiddleware(req, res, next) {
 /**
  * @returns {{ code: 0, msg: string, token: string, user: object } | { code: 1|2, msg: string }}
  */
-async function register(username, password) {
+async function register(username, password, avatarInput) {
   const name = String(username ?? "").trim();
   const pass = String(password ?? "");
 
@@ -47,8 +48,17 @@ async function register(username, password) {
     return { code: 1, msg: "用户名已被注册" };
   }
 
+  const parsed = normalizeAvatar(avatarInput);
+  if (!parsed.ok) {
+    return { code: 2, msg: parsed.msg };
+  }
+
   const passwordHash = await bcrypt.hash(pass, 10);
-  const user = store.createUser({ username: name, passwordHash });
+  const user = store.createUser({
+    username: name,
+    passwordHash,
+    ...parsed.avatar,
+  });
   const token = signToken(user);
 
   return {
@@ -81,10 +91,27 @@ async function login(username, password) {
   return { token, user: billing.publicUser(user) };
 }
 
+async function updateAvatar(user, avatarInput) {
+  const parsed = normalizeAvatar(avatarInput);
+  if (!parsed.ok) {
+    const err = new Error(parsed.msg);
+    err.status = 400;
+    throw err;
+  }
+
+  const next = {
+    ...user,
+    ...parsed.avatar,
+  };
+  store.updateUser(next);
+  return billing.publicUser(next);
+}
+
 module.exports = {
   authMiddleware,
   register,
   login,
+  updateAvatar,
   signToken,
   JWT_SECRET,
 };

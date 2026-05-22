@@ -5,125 +5,186 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { UserAvatar } from "@/components/auth/UserAvatar";
+import { ThemeOrbStrip } from "@/components/ui/ThemeOrbStrip";
+import { useTheme } from "@/context/ThemeContext";
 
 const links = [
-  { href: "/", label: "首页" },
-  { href: "/reading", label: "占卜" },
-  { href: "/history", label: "记录" },
+  { href: "/", label: "入口" },
+  { href: "/breathe", label: "呼吸" },
   { href: "/about", label: "关于" },
+  { href: "/history", label: "记录" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { user, logout, loading } = useAuth();
+  const inRitual = pathname.startsWith("/reading");
+  const { theme } = useTheme();
 
   return (
-    <motion.header
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed top-0 left-0 right-0 z-50 px-6 py-5 md:px-10"
-    >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-white/[0.06] bg-void/60 px-5 py-3 backdrop-blur-2xl">
-        <Link href="/" className="group flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_rgba(110,91,255,0.8)]" />
-          <span className="font-display text-lg tracking-[0.2em] text-frost uppercase">
-            Oracle
-          </span>
-        </Link>
-
-        <div className="hidden items-center gap-3 md:flex">
-          <ul className="flex items-center gap-1">
-          {links.map((link) => {
-            const active =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
-            return (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={`relative px-4 py-2 text-sm tracking-wide transition-colors ${
-                    active ? "text-frost" : "text-muted hover:text-frost"
-                  }`}
-                >
-                  {active && (
-                    <motion.span
-                      layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full bg-white/[0.06]"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative">{link.label}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-        {!loading && (
-          user ? (
-            <div className="flex items-center gap-2 border-l border-white/[0.08] pl-3">
-              <span className="text-xs text-muted">{user.username}</span>
-              <button
-                type="button"
-                onClick={logout}
-                className="text-xs text-accent/90 hover:text-accent"
-              >
-                退出
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 border-l border-white/[0.08] pl-3">
-              <Link
-                href="/login"
-                className="rounded-full border border-accent/30 px-3 py-1.5 text-xs text-frost hover:bg-accent/10"
-              >
-                登录
-              </Link>
-              <Link
-                href="/register"
-                className="text-xs text-muted hover:text-frost"
-              >
-                注册
-              </Link>
-            </div>
-          )
-        )}
-        </div>
-
-        <button
-          type="button"
-          className="flex flex-col gap-1.5 md:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label="菜单"
+    <>
+      <motion.header
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="fixed top-0 right-0 left-0 z-50 px-4 pt-[max(0.75rem,env(safe-area-inset-top))]"
+      >
+        <nav
+          className={`mx-auto flex max-w-lg items-center justify-between ${
+            inRitual
+              ? "px-1 py-2"
+              : "glass-panel rounded-full px-4 py-2.5"
+          }`}
         >
-          <span className="h-px w-6 bg-frost" />
-          <span className="h-px w-4 bg-muted" />
-        </button>
-      </nav>
+          <Link href="/" className="flex items-center gap-2 py-1">
+            <motion.span
+              className="h-1.5 w-1.5 rounded-full bg-accent"
+              animate={{ opacity: [0.5, 0.9, 0.5] }}
+              transition={{ duration: 5, repeat: Infinity }}
+            />
+            {!inRitual && (
+              <span className="font-display text-sm tracking-[0.18em] text-frost/90 uppercase">
+                Oracle
+              </span>
+            )}
+          </Link>
+
+          {!inRitual && (
+            <div className="hidden items-center gap-1 md:flex">
+              {links.map((link) => {
+                const active =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`px-3 py-1.5 text-xs tracking-wide ${
+                      active ? "text-frost" : "text-muted hover:text-frost"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+              {!loading &&
+                (user ? (
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="ml-2 rounded-full p-0.5 transition hover:ring-2 hover:ring-accent/30"
+                    aria-label="退出登录"
+                    title="退出登录"
+                  >
+                    <UserAvatar user={user} size={28} />
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="ml-2 text-[10px] text-accent/90"
+                  >
+                    登录
+                  </Link>
+                ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04]"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="意识菜单"
+          >
+            <span className="absolute h-px w-4 bg-frost/80" />
+            <span className="absolute h-px w-2.5 bg-muted translate-y-1.5" />
+          </button>
+        </nav>
+      </motion.header>
 
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mx-auto mt-2 max-w-6xl rounded-2xl border border-white/[0.06] bg-surface/95 p-4 backdrop-blur-2xl md:hidden"
+            className="fixed inset-0 z-[60] flex flex-col backdrop-blur-2xl"
+            style={{ background: theme.colors.glass }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
+            <div className="flex items-center justify-between px-5 pt-[max(1rem,env(safe-area-inset-top))]">
+              <span className="text-[10px] tracking-[0.35em] text-muted uppercase">
+                意识层
+              </span>
+              <button
+                type="button"
                 onClick={() => setOpen(false)}
-                className="block px-4 py-3 text-sm text-muted hover:text-frost"
+                className="rounded-full border border-white/10 px-3 py-1 text-xs text-muted"
               >
-                {link.label}
-              </Link>
-            ))}
+                关闭
+              </button>
+            </div>
+
+            <div className="flex flex-1 flex-col justify-center gap-2 px-8">
+              {links.map((link, i) => (
+                <motion.div
+                  key={link.href}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Link
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="font-display block py-4 text-2xl text-frost"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+              {!loading &&
+                (user ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      logout();
+                      setOpen(false);
+                    }}
+                    className="mt-4 flex items-center gap-3 text-left"
+                    aria-label="退出登录"
+                  >
+                    <UserAvatar user={user} size={36} />
+                    <span className="text-sm text-muted">退出</span>
+                  </button>
+                ) : (
+                  <div className="mt-4 flex gap-4">
+                    <Link
+                      href="/login"
+                      onClick={() => setOpen(false)}
+                      className="text-sm text-accent"
+                    >
+                      登录
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setOpen(false)}
+                      className="text-sm text-muted"
+                    >
+                      注册
+                    </Link>
+                  </div>
+                ))}
+            </div>
+
+            <div className="border-t border-white/[0.06] px-5 py-8">
+              <p className="mb-4 text-center text-[9px] tracking-[0.3em] text-muted uppercase">
+                切换意识色调
+              </p>
+              <ThemeOrbStrip compact />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
+    </>
   );
 }

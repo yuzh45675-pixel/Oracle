@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LenormandDrawFlow } from "@/components/lenormand/LenormandDrawFlow";
 import { ReadingLayout } from "@/components/tarot/ReadingLayout";
 import { ShuffleDeck } from "@/components/tarot/ShuffleDeck";
-import { CutDeckAnimation } from "@/components/tarot/CutDeckAnimation";
+import { CutRitualPanel } from "@/components/tarot/CutRitualPanel";
 import { JumpCardEffect } from "@/components/tarot/JumpCardEffect";
 import { TarotSpreadRenderer } from "@/components/tarot/TarotSpreadRenderer";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
@@ -18,9 +18,11 @@ import {
   getRevealPrompt,
 } from "@/lib/spreadReveal";
 import { FLIP_GUIDANCE } from "@/types/tarot";
+import { useParticleInteraction } from "@/context/ParticleInteractionContext";
 
 export default function DrawPage() {
   const router = useRouter();
+  const { triggerBurst } = useParticleInteraction();
   const {
     spread,
     lenormandSpread,
@@ -36,6 +38,7 @@ export default function DrawPage() {
     startRitual,
     completeCut,
     cards,
+    shuffledPool,
     prepareNewReading,
   } = useReading();
 
@@ -96,6 +99,8 @@ export default function DrawPage() {
   const handleRevealNext = () => {
     if (!spread || revealedCount >= expectedCount) return;
     const activeIndex = getActiveCardIndex(spread, revealedCount);
+    triggerBurst();
+    if (navigator.vibrate) navigator.vibrate(6);
     setFlipped((prev) => {
       const next = [...prev];
       next[activeIndex] = true;
@@ -127,7 +132,7 @@ export default function DrawPage() {
       : ritualPhase === "shuffling"
         ? "\u611f\u53d7\u724c\u5728\u6307\u95f4\u6d41\u52a8\u2026\u2026"
         : ritualPhase === "cutting"
-          ? "\u9009\u62e9\u4e00\u5806\uff0c\u5b8c\u6210\u5207\u724c"
+          ? "滑动选牌，或切换为选堆切牌"
           : allRevealed
             ? "\u724c\u9762\u5df2\u5168\u90e8\u63ed\u793a"
             : revealPrompt || `\u8f7b\u89e6\u724c\u9762\u63ed\u793a\u7b2c ${revealedCount + 1} \u5f20`;
@@ -195,7 +200,12 @@ export default function DrawPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
-            <CutDeckAnimation onCutComplete={completeCut} />
+            <CutRitualPanel
+              spreadCardCount={expectedCount || 3}
+              pool={shuffledPool}
+              excludeIds={jumpCard?.card.id ? [jumpCard.card.id] : []}
+              onComplete={completeCut}
+            />
           </motion.div>
         )}
 
@@ -207,7 +217,7 @@ export default function DrawPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.7 }}
-              className="flex flex-col items-center"
+              className="flex w-full max-w-none flex-col items-center"
             >
               {jumpCard && (
                 <motion.p

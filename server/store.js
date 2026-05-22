@@ -52,12 +52,15 @@ function findUserById(id) {
   return getUsers().find((u) => u.id === id);
 }
 
-function createUser({ username, passwordHash }) {
+function createUser({ username, passwordHash, avatarType, avatarTheme, avatarData }) {
   const users = getUsers();
   const user = {
     id: newId("usr"),
     username,
     passwordHash,
+    avatarType: avatarType ?? "theme",
+    avatarTheme: avatarTheme ?? "astral-void",
+    avatarData: avatarData ?? null,
     credits: 0,
     lastFreeDate: null,
     freeQuotaDate: null,

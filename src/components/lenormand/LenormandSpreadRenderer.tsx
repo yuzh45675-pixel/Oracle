@@ -62,11 +62,10 @@ export function LenormandSpreadRenderer({
   const activeIndex = getLenormandActiveIndex(spread, revealedCount);
   const allDone = revealedCount >= expectedCount;
   const size = cardSize(expectedCount);
-  const cardW = size === "lg" ? 95 : size === "md" ? 68 : 52;
 
   return (
     <LenormandTable
-      className="w-full"
+      className="mx-auto w-full"
       style={{ height: tableHeight, minHeight: 300 }}
     >
       <div ref={setContainerRef} className="relative h-full w-full">
@@ -81,11 +80,10 @@ export function LenormandSpreadRenderer({
           return (
             <motion.div
               key={`${drawn.slotId ?? drawn.card.id}-${i}`}
-              className="absolute"
+              className="absolute left-0 top-0"
               style={{
                 left: slot.x,
                 top: slot.y,
-                width: cardW,
                 zIndex: isActive ? 200 : isFlipped ? 50 + i : slot.zIndex + 10,
                 pointerEvents: canFlip || isFlipped ? "auto" : "none",
                 transform: `translate(-50%, -50%) rotate(${slot.rotation}deg)`,
@@ -96,7 +94,7 @@ export function LenormandSpreadRenderer({
               transition={{ delay: i * 0.03, duration: 0.35 }}
             >
               <motion.div
-                className="relative w-full"
+                className="relative inline-block"
                 initial={{ scale: 0.92, y: 8 }}
                 animate={{ scale: isActive ? 1.04 : 1, y: 0 }}
                 transition={{

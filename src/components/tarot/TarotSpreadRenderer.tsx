@@ -47,19 +47,15 @@ export function TarotSpreadRenderer({
   const allDone = revealedCount >= expectedCount;
 
   const size = cardSizeForCount(expectedCount);
-  const cardW = size === "lg" ? 95 : size === "md" ? 68 : 52;
   const enablePan = containerSize.width < 768 && expectedCount > 5;
 
   return (
     <TarotTable
-      className="w-full"
+      className="mx-auto w-full"
       style={{ height: tableHeight, minHeight: 320 }}
       enablePan={enablePan}
     >
-      <motion.div
-        ref={setContainerRef}
-        className="relative h-full w-full"
-      >
+      <motion.div ref={setContainerRef} className="relative h-full w-full">
         {displayCards.map((drawn, i) => {
           const slot = scaledSlots[i];
           if (!slot || !drawn?.card?.id) return null;
@@ -71,11 +67,10 @@ export function TarotSpreadRenderer({
           return (
             <motion.div
               key={`${drawn.slotId ?? drawn.card.id}-${i}`}
-              className="absolute"
+              className="absolute left-0 top-0"
               style={{
                 left: slot.x,
                 top: slot.y,
-                width: cardW,
                 zIndex: isActive ? 200 : isFlipped ? 50 + i : slot.zIndex + 10,
                 pointerEvents: canFlip || isFlipped ? "auto" : "none",
                 transform: `translate(-50%, -50%) rotate(${slot.rotation}deg)`,
@@ -91,7 +86,7 @@ export function TarotSpreadRenderer({
               }}
             >
               <motion.div
-                className="relative w-full"
+                className="relative inline-block"
                 initial={{ scale: 0.88 }}
                 animate={{ scale: isActive ? 1.04 : 1 }}
                 transition={{
