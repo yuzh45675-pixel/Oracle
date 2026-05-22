@@ -154,7 +154,7 @@ export function ReadingSystemSelector({
               onTouchEnd={() => setPressed(null)}
               onTouchCancel={() => setPressed(null)}
               initial={false}
-              className={`relative flex w-[7.5rem] flex-col items-center overflow-visible rounded-2xl border px-3 py-4 text-center touch-manipulation md:w-[8.5rem] ${
+              className={`relative flex w-[6.5rem] flex-col items-center overflow-visible rounded-2xl border px-2.5 py-3 text-center touch-manipulation sm:w-[7.25rem] sm:px-3 sm:py-3.5 md:w-[8.5rem] md:py-4 ${
                 selected
                   ? "border-accent/30 bg-accent/[0.08]"
                   : "border-white/[0.08] bg-white/[0.02]"
@@ -184,7 +184,7 @@ export function ReadingSystemSelector({
                 transition={{ duration: 0.55, ease }}
               />
 
-              <div className="relative z-10 mb-3 h-12 w-12">
+              <div className="relative z-10 mb-2 h-9 w-9 sm:mb-3 sm:h-10 sm:w-10 md:h-12 md:w-12">
                 <SystemEmblem system={sys.id} hovered={showEmblemHover} />
               </div>
 
@@ -192,8 +192,8 @@ export function ReadingSystemSelector({
                 {sys.en}
               </span>
               <span
-                className={`relative z-10 mt-1 font-display text-sm tracking-wide ${
-                  dimmed ? "text-muted/70" : "text-frost"
+                className={`relative z-10 mt-0.5 font-display text-xs tracking-wide sm:mt-1 sm:text-sm ${
+                  dimmed ? "text-muted/70" : "text-frost/90 md:text-frost"
                 }`}
               >
                 {sys.cn}

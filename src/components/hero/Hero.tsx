@@ -18,9 +18,11 @@ import {
   type ReadingSystemChoice,
 } from "@/components/hero/ReadingSystemSelector";
 import { RitualEnterButton } from "@/components/hero/RitualEnterButton";
+import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
 
 export function Hero() {
   const { theme } = useTheme();
+  const isTouch = useIsTouchDevice();
   const [system, setSystem] = useState<ReadingSystemChoice>("tarot");
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
@@ -43,15 +45,15 @@ export function Hero() {
         if (t) setPointer(t.clientX, t.clientY);
       }}
     >
-      <ParticleBackground intensity={1.05} />
+      <ParticleBackground intensity={isTouch ? 0.82 : 1.05} />
 
       <FloatingGlow
-        className="left-1/2 top-[32%] -translate-x-1/2"
+        className="left-1/2 top-[32%] -translate-x-1/2 scale-[0.55] opacity-80 sm:scale-75 sm:opacity-90 md:scale-100 md:opacity-100"
         size={640}
         color={theme.colors.glowPrimary}
       />
       <FloatingGlow
-        className="left-1/4 top-[68%] opacity-90"
+        className="left-1/4 top-[68%] scale-[0.6] opacity-70 sm:scale-90 sm:opacity-80 md:scale-100 md:opacity-90"
         size={350}
         color={theme.colors.glowSecondary}
       />
@@ -67,13 +69,13 @@ export function Hero() {
       />
 
       <motion.div
-        className="relative z-10 flex w-full max-w-6xl flex-col items-center px-6 pt-[max(5.5rem,calc(env(safe-area-inset-top)+4.5rem))] pb-16 text-center md:px-10"
+        className="relative z-10 flex w-full max-w-6xl flex-col items-center px-5 pt-[max(4.25rem,calc(env(safe-area-inset-top)+3.75rem))] pb-10 text-center sm:px-6 sm:pb-14 md:px-10 md:pt-[max(5.5rem,calc(env(safe-area-inset-top)+4.5rem))] md:pb-16"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
       >
         <motion.p
-          className="mb-6 text-xs tracking-[0.5em] text-accent/90 uppercase"
+          className="mb-4 text-[10px] tracking-[0.42em] text-accent/75 uppercase md:mb-6 md:text-xs md:tracking-[0.5em] md:text-accent/90"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
@@ -82,20 +84,20 @@ export function Hero() {
         </motion.p>
 
         <motion.h1
-          className="font-display max-w-3xl text-4xl leading-[1.15] font-extralight tracking-tight text-frost md:text-6xl lg:text-7xl"
+          className="font-display max-w-[16rem] text-[1.625rem] leading-[1.2] font-extralight tracking-tight text-frost/95 sm:max-w-3xl sm:text-3xl md:text-6xl md:leading-[1.15] md:text-frost lg:text-7xl"
           initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
           在静默中
           <br />
-          <span className="bg-gradient-to-r from-frost via-metal to-accent/80 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-frost/90 via-metal/85 to-accent/55 bg-clip-text text-transparent md:from-frost md:via-metal md:to-accent/80">
             遇见答案
           </span>
         </motion.h1>
 
         <motion.p
-          className="mx-auto mt-6 max-w-md text-sm leading-relaxed md:text-base"
+          className="mx-auto mt-4 max-w-[17rem] text-xs leading-relaxed sm:mt-6 sm:max-w-md sm:text-sm md:text-base"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.8 }}
@@ -115,19 +117,19 @@ export function Hero() {
         </motion.p>
 
         <motion.div
-          className="relative my-12 md:my-20"
+          className="relative my-7 sm:my-10 md:my-20"
           style={{ x: cardX, y: cardY }}
-          animate={{ y: [0, -10, 0] }}
+          animate={{ y: [0, -6, 0] }}
           transition={{
             y: { duration: 7, repeat: Infinity, ease: "easeInOut" },
           }}
         >
           <motion.div
-            className="absolute -inset-16 rounded-full opacity-60"
+            className="absolute -inset-10 rounded-full opacity-50 md:-inset-16 md:opacity-60"
             style={{
               background: `radial-gradient(circle, ${theme.colors.glowPrimary} 0%, transparent 65%)`,
             }}
-            animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.65, 0.4] }}
+            animate={{ scale: [1, 1.06, 1], opacity: [0.3, 0.5, 0.3] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           />
           <TarotCard size="hero" interactive={false} />
@@ -136,7 +138,7 @@ export function Hero() {
         <ReadingSystemSelector value={system} onChange={setSystem} />
 
         <motion.div
-          className="mt-8 flex flex-col items-center gap-4 sm:flex-row"
+          className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:flex-row sm:gap-4"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.7 }}
@@ -148,7 +150,7 @@ export function Hero() {
         </motion.div>
 
         <motion.div
-          className="mt-14 w-full max-w-md"
+          className="mt-10 w-full max-w-md md:mt-14"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.05 }}

@@ -22,7 +22,7 @@ const sizes = {
   sm: "h-[140px] w-[96px]",
   md: "h-[200px] w-[136px]",
   lg: "h-[280px] w-[190px]",
-  hero: "h-[320px] w-[220px] md:h-[380px] md:w-[260px]",
+  hero: "h-[220px] w-[152px] sm:h-[280px] sm:w-[190px] md:h-[380px] md:w-[260px]",
 };
 
 export function TarotCard({
