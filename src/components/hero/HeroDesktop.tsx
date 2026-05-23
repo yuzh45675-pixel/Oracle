@@ -30,23 +30,23 @@ export function HeroDesktop({
   return (
     <>
       <FloatingGlow
-        className="left-[54%] top-[30%] -translate-x-1/2 opacity-90 xl:left-[56%]"
-        size={720}
+        className="left-1/2 top-[32%] -translate-x-1/2 opacity-90"
+        size={640}
         color={theme.colors.glowPrimary}
       />
       <FloatingGlow
-        className="left-[6%] bottom-[18%] opacity-75"
-        size={420}
+        className="left-[38%] bottom-[20%] -translate-x-1/2 opacity-70"
+        size={380}
         color={theme.colors.glowSecondary}
       />
 
       <motion.div
-        className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1.12fr)_minmax(280px,0.78fr)] items-center gap-10 px-10 pt-[max(5rem,calc(env(safe-area-inset-top)+4rem))] pb-16 xl:max-w-[82rem] xl:grid-cols-[1.15fr_0.72fr] xl:gap-14 xl:px-14"
+        className="relative z-10 mx-auto grid w-full max-w-[880px] grid-cols-2 items-center gap-6 px-8 pt-[max(4.5rem,calc(env(safe-area-inset-top)+3.5rem))] pb-12 xl:max-w-[920px] xl:gap-8 xl:px-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="flex flex-col items-start text-left">
+        <div className="flex flex-col items-start pl-4 text-left xl:pl-6">
           <motion.p
             className="mb-5 text-xs tracking-[0.5em] text-accent/90 uppercase"
             initial={{ opacity: 0, y: 10 }}
@@ -57,7 +57,7 @@ export function HeroDesktop({
           </motion.p>
 
           <motion.h1
-            className="font-display max-w-xl text-5xl leading-[1.12] font-extralight tracking-tight text-frost xl:text-6xl xl:leading-[1.1]"
+            className="font-display max-w-[15rem] text-[2.35rem] leading-[1.12] font-extralight tracking-tight text-frost xl:max-w-xs xl:text-[2.65rem] xl:leading-[1.1]"
             initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
@@ -70,7 +70,7 @@ export function HeroDesktop({
           </motion.h1>
 
           <motion.p
-            className="mt-6 max-w-md text-base leading-relaxed xl:max-w-lg xl:text-lg"
+            className="mt-5 max-w-[14rem] text-[0.9375rem] leading-relaxed xl:max-w-[15rem] xl:text-base"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
@@ -84,7 +84,7 @@ export function HeroDesktop({
           </motion.p>
 
           <motion.div
-            className="mt-10 w-full max-w-xl xl:max-w-2xl"
+            className="mt-8 origin-top-left scale-[0.88] xl:scale-[0.92]"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.75, duration: 0.7 }}
@@ -98,7 +98,7 @@ export function HeroDesktop({
           </motion.div>
 
           <motion.div
-            className="mt-8 flex flex-row items-center gap-4"
+            className="mt-6 flex flex-row flex-wrap items-center gap-3"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.7 }}
@@ -110,7 +110,7 @@ export function HeroDesktop({
           </motion.div>
 
           <motion.div
-            className="mt-12 w-full max-w-md"
+            className="mt-8 w-full max-w-[15rem]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.05 }}
@@ -123,13 +123,13 @@ export function HeroDesktop({
         </div>
 
         <motion.div
-          className="relative flex items-center justify-start py-8 pl-2 xl:pl-4"
+          className="relative flex items-center justify-center py-4 pr-4 xl:pr-6"
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
           <motion.div
-            className="relative"
+            className="relative -translate-x-2 xl:-translate-x-3"
             style={{ x: cardX, y: cardY }}
             animate={{ y: [0, -12, 0] }}
             transition={{
@@ -144,7 +144,7 @@ export function HeroDesktop({
               animate={{ scale: [1, 1.08, 1], opacity: [0.45, 0.7, 0.45] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             />
-            <div className="origin-center scale-110 xl:scale-[1.18]">
+            <div className="origin-center scale-100 xl:scale-105">
               <TarotCard size="hero" interactive={false} />
             </div>
           </motion.div>
