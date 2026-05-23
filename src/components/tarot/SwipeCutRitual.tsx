@@ -68,15 +68,15 @@ export function SwipeCutRitual({
   };
 
   return (
-    <div className="relative mx-auto w-full max-w-lg touch-pan-y select-none">
-      <p className="mb-6 text-center text-xs leading-relaxed text-muted">
+    <div className="relative mx-auto w-full max-w-lg touch-pan-y select-none lg:max-w-2xl">
+      <p className="mb-6 text-center text-xs leading-relaxed text-muted lg:mb-8 lg:text-sm">
         银河牌流在指间流动
         <br />
         <span className="text-frost/80">横向拨动 · 或向下划开命运</span>
       </p>
 
       <motion.div
-        className="relative h-[280px] overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-white/[0.02] backdrop-blur-md"
+        className="relative h-[280px] overflow-hidden rounded-[1.5rem] border border-white/[0.06] bg-white/[0.02] backdrop-blur-md md:h-[340px] lg:h-[380px]"
         style={{
           boxShadow: `inset 0 1px 0 ${theme.colors.border}`,
         }}

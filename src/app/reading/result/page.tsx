@@ -85,7 +85,7 @@ export default function ResultPage() {
             ? `${spreadTitle} · 关于「${question}」`
             : `${spreadTitle} · 以牌际关系阅读事件`
         }
-        wide={lenormandSpread === "tableau"}
+        wide
       >
         <CombinationPanel
           combinations={lenormandCombos}
@@ -170,6 +170,7 @@ export default function ResultPage() {
           ? `${spreadTitle} · 关于「${question}」`
           : `${spreadTitle} · 牌面已为你展开`
       }
+      wide
     >
       {jumpCard?.card?.id && (
         <motion.article
@@ -187,7 +188,7 @@ export default function ResultPage() {
         </motion.article>
       )}
 
-      <motion.div className="space-y-6">
+      <motion.div className="space-y-6 lg:space-y-8">
         {orderedCards.map((drawn, i) => (
           <ResultPanel
             key={`${drawn.slotId ?? drawn.card.id}-${i}`}

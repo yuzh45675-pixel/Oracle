@@ -36,6 +36,7 @@ export default function HistoryPage() {
     <ReadingLayout
       title="占卜记录"
       subtitle="你的过往解读保存在本地，不会上传至服务器。"
+      wide
     >
       {history.length === 0 ? (
         <motion.div

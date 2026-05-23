@@ -97,7 +97,7 @@ export function TarotSpreadRenderer({
                 }}
               >
               <span
-                className={`pointer-events-none absolute bottom-full left-1/2 mb-2 w-max max-w-[120px] -translate-x-1/2 whitespace-nowrap text-center text-[9px] tracking-[0.25em] uppercase md:text-[10px] ${
+                className={`pointer-events-none absolute bottom-full left-1/2 mb-2 w-max max-w-[120px] -translate-x-1/2 whitespace-nowrap text-center text-[9px] tracking-[0.25em] uppercase md:text-[10px] lg:max-w-none lg:text-xs ${
                   isActive ? "text-accent" : "text-muted/90"
                 }`}
               >

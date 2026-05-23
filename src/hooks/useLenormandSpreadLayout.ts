@@ -13,8 +13,14 @@ export interface ScaledSlot extends SpreadCardSlot {
 
 function computeTableHeight(spreadHeight: number, isTableau: boolean): number {
   if (typeof window === "undefined") return isTableau ? 560 : 480;
+  const w = window.innerWidth;
   const h = window.innerHeight;
-  if (isTableau) return Math.min(h * 0.72, 720);
+  const isLarge = w >= 1024;
+  if (isTableau) {
+    if (isLarge) return Math.min(h * 0.78, 820);
+    return Math.min(h * 0.72, 720);
+  }
+  if (isLarge) return Math.min(h * 0.64, spreadHeight > 900 ? 720 : 600);
   return Math.min(h * 0.58, spreadHeight > 900 ? 640 : 520);
 }
 

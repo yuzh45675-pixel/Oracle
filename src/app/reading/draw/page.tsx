@@ -146,6 +146,7 @@ export default function DrawPage() {
       title={title}
       subtitle={subtitle}
       dissolve={ritualPhase === "spread" ? 1 : 0.75}
+      wide={ritualPhase === "cutting" || ritualPhase === "spread"}
     >
       <AnimatePresence mode="wait">
         {ritualPhase === "idle" && (
@@ -173,7 +174,7 @@ export default function DrawPage() {
             exit={{ opacity: 0, filter: "blur(6px)" }}
             className="relative flex flex-col items-center"
           >
-            <div className="relative w-full max-w-md">
+            <div className="relative w-full max-w-md lg:max-w-xl">
               <ShuffleDeck isShuffling={isShuffling} />
               <JumpCardEffect
                 jumpCard={jumpCard}
@@ -232,12 +233,12 @@ export default function DrawPage() {
               {!allRevealed && (
                 <motion.div
                   key={`${revealedCount}-${revealPrompt}`}
-                  className="mx-auto mb-6 max-w-lg space-y-2 text-center"
+                  className="mx-auto mb-6 max-w-lg space-y-2 text-center lg:max-w-2xl lg:mb-8"
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <p className="text-sm font-medium text-frost">{revealPrompt}</p>
-                  <p className="text-xs leading-relaxed text-muted">
+                  <p className="text-sm font-medium text-frost lg:text-base">{revealPrompt}</p>
+                  <p className="text-xs leading-relaxed text-muted lg:text-sm">
                     {breathGuidance}
                   </p>
                 </motion.div>

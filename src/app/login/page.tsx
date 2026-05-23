@@ -63,7 +63,7 @@ export default function LoginPage() {
   return (
     <ReadingLayout title="登录" subtitle="欢迎回到 Oracle" badge="Sign In">
       <motion.div
-        className="mx-auto w-full max-w-md"
+        className="mx-auto w-full max-w-md lg:max-w-lg"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
       >

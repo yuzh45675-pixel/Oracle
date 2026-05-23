@@ -249,7 +249,7 @@ export function AiOraclePanel({
 
   return (
     <motion.section
-      className="mt-10 rounded-2xl border border-accent/20 bg-gradient-to-b from-accent/10 to-transparent p-6 backdrop-blur-xl md:p-8"
+      className="mt-10 rounded-2xl border border-accent/20 bg-gradient-to-b from-accent/10 to-transparent p-6 backdrop-blur-xl md:p-8 lg:p-10"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
@@ -366,7 +366,7 @@ export function AiOraclePanel({
                 }
               >
                 {msg.role === "assistant" ? (
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-frost/95">
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-frost/95 lg:text-base lg:leading-7">
                     {msg.content}
                   </p>
                 ) : (

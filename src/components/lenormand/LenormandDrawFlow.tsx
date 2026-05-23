@@ -105,7 +105,7 @@ export function LenormandDrawFlow() {
               ? "滑动选牌，或切换为选堆切牌"
               : revealPrompt
       }
-      wide={isTableau || ritualPhase === "spread"}
+      wide={isTableau || ritualPhase === "spread" || ritualPhase === "cutting"}
     >
       <AnimatePresence mode="wait">
         {ritualPhase === "idle" && (
@@ -164,7 +164,7 @@ export function LenormandDrawFlow() {
         {ritualPhase === "spread" && spread && spreadCards.length === expectedCount && (
           <motion.div
             key="spread"
-            className="flex w-full max-w-4xl flex-col items-center"
+            className="flex w-full max-w-4xl flex-col items-center lg:max-w-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >

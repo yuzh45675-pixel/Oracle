@@ -68,7 +68,7 @@ export default function RegisterPage() {
       badge="Sign Up"
     >
       <motion.div
-        className="mx-auto w-full max-w-md"
+        className="mx-auto w-full max-w-md lg:max-w-lg"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
       >

@@ -97,7 +97,7 @@ export function Hero() {
         </motion.h1>
 
         <motion.p
-          className="mx-auto mt-4 max-w-[17rem] text-xs leading-relaxed sm:mt-6 sm:max-w-md sm:text-sm md:text-base"
+          className="mx-auto mt-4 max-w-[17rem] text-xs leading-relaxed sm:mt-6 sm:max-w-md sm:text-sm md:text-base lg:max-w-xl"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.8 }}
@@ -150,7 +150,7 @@ export function Hero() {
         </motion.div>
 
         <motion.div
-          className="mt-10 w-full max-w-md md:mt-14"
+          className="mt-10 w-full max-w-md md:mt-14 lg:max-w-xl"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.05 }}

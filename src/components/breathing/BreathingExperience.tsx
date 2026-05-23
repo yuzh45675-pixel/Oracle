@@ -75,17 +75,17 @@ export function BreathingExperience() {
         showGlow
       />
 
-      <div className="relative z-10 flex min-h-[100dvh] flex-col px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(5rem,calc(env(safe-area-inset-top)+4rem))]">
+      <div className="relative z-10 flex min-h-[100dvh] flex-col px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(5rem,calc(env(safe-area-inset-top)+4rem))] lg:px-10">
         <header className="text-center">
           <p className="text-[10px] tracking-[0.45em] text-accent/75 uppercase">
             Centering
           </p>
-          <h1 className="font-display mt-4 text-[1.75rem] font-extralight tracking-tight text-frost sm:text-4xl">
+          <h1 className="font-display mt-4 text-[1.75rem] font-extralight tracking-tight text-frost sm:text-4xl lg:text-5xl">
             {step === "pick" && "呼吸"}
             {step === "breathe" && "跟随"}
             {step === "done" && "很好"}
           </h1>
-          <p className="mx-auto mt-3 max-w-xs text-[13px] leading-relaxed text-muted/90">
+          <p className="mx-auto mt-3 max-w-xs text-[13px] leading-relaxed text-muted/90 lg:max-w-md lg:text-sm">
             {step === "pick" &&
               "缓慢呼吸，放松身心，以更好的状态感知牌意。"}
             {step === "breathe" && mode.subtitle}
@@ -104,7 +104,7 @@ export function BreathingExperience() {
                 exit={{ opacity: 0, y: -12, filter: "blur(10px)" }}
                 transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               >
-                <p className="font-display text-5xl font-extralight tracking-[0.4em] text-frost/95 sm:text-6xl">
+                <p className="font-display text-5xl font-extralight tracking-[0.4em] text-frost/95 sm:text-6xl lg:text-7xl">
                   {BREATH_PHASE_LABEL[breathing.phase]}
                 </p>
                 <p className="mt-5 text-[10px] tracking-[0.3em] text-muted/60">
@@ -115,7 +115,7 @@ export function BreathingExperience() {
           </AnimatePresence>
         </div>
 
-        <footer className="mx-auto w-full max-w-lg pb-2">
+        <footer className="mx-auto w-full max-w-lg pb-2 lg:max-w-2xl">
           {step === "pick" && (
             <motion.div
               className="flex flex-col items-center gap-8"

@@ -16,10 +16,15 @@ function computeTableHeight(spreadHeight: number): number {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const isMobile = w < 768;
+  const isLarge = w >= 1024;
   const tall = spreadHeight > 900;
-  return isMobile
-    ? Math.min(h * (tall ? 0.65 : 0.55), tall ? 640 : 520)
-    : Math.min(tall ? 900 : 680, h * 0.62);
+  if (isMobile) {
+    return Math.min(h * (tall ? 0.65 : 0.55), tall ? 640 : 520);
+  }
+  if (isLarge) {
+    return Math.min(tall ? 960 : 760, h * 0.68);
+  }
+  return Math.min(tall ? 900 : 680, h * 0.62);
 }
 
 export function useSpreadLayout(

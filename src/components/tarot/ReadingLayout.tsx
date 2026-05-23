@@ -30,7 +30,7 @@ export function ReadingLayout({
 
   return (
     <motion.section
-      className="relative min-h-[100dvh] overflow-x-hidden bg-void pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(4.5rem,calc(env(safe-area-inset-top)+3.5rem))]"
+      className="relative min-h-[100dvh] overflow-x-hidden bg-void pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(4.5rem,calc(env(safe-area-inset-top)+3.5rem))] lg:pb-12 lg:pt-[max(5rem,calc(env(safe-area-inset-top)+4rem))]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, filter: "blur(12px)" }}
@@ -38,7 +38,7 @@ export function ReadingLayout({
     >
       <ParticleBackground dissolve={dissolve} intensity={1} />
       <FloatingGlow
-        className="left-1/2 top-[22%] -translate-x-1/2"
+        className="left-1/2 top-[22%] -translate-x-1/2 lg:scale-110"
         size={480}
         color={theme.colors.glowPrimary}
       />
@@ -49,7 +49,11 @@ export function ReadingLayout({
       />
 
       <motion.div
-        className={`relative z-10 mx-auto px-4 sm:px-6 ${wide ? "max-w-lg sm:max-w-2xl" : "max-w-lg sm:max-w-xl"}`}
+        className={`relative z-10 mx-auto px-4 sm:px-6 lg:px-8 ${
+          wide
+            ? "max-w-lg sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl"
+            : "max-w-lg sm:max-w-xl lg:max-w-3xl xl:max-w-4xl"
+        }`}
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -58,7 +62,7 @@ export function ReadingLayout({
           {!minimal && (
             <motion.header
               key="header"
-              className="mb-8 text-center sm:mb-10"
+              className="mb-8 text-center sm:mb-10 lg:mb-12"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -68,11 +72,11 @@ export function ReadingLayout({
               >
                 {badge}
               </motion.p>
-              <h1 className="font-display text-2xl font-light tracking-tight text-frost sm:text-3xl">
+              <h1 className="font-display text-2xl font-light tracking-tight text-frost sm:text-3xl lg:text-4xl">
                 {title}
               </h1>
               {subtitle && (
-                <p className="mx-auto mt-3 max-w-sm text-xs leading-relaxed text-muted sm:text-sm">
+                <p className="mx-auto mt-3 max-w-sm text-xs leading-relaxed text-muted sm:max-w-md sm:text-sm lg:max-w-xl lg:text-base">
                   {subtitle}
                 </p>
               )}

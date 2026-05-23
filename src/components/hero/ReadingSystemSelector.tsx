@@ -154,7 +154,7 @@ export function ReadingSystemSelector({
               onTouchEnd={() => setPressed(null)}
               onTouchCancel={() => setPressed(null)}
               initial={false}
-              className={`relative flex w-[6.5rem] flex-col items-center overflow-visible rounded-2xl border px-2.5 py-3 text-center touch-manipulation sm:w-[7.25rem] sm:px-3 sm:py-3.5 md:w-[8.5rem] md:py-4 ${
+              className={`relative flex w-[6.5rem] flex-col items-center overflow-visible rounded-2xl border px-2.5 py-3 text-center touch-manipulation sm:w-[7.25rem] sm:px-3 sm:py-3.5 md:w-[8.5rem] md:py-4 lg:w-[9.5rem] lg:px-4 lg:py-5 ${
                 selected
                   ? "border-accent/30 bg-accent/[0.08]"
                   : "border-white/[0.08] bg-white/[0.02]"
@@ -212,7 +212,7 @@ export function ReadingSystemSelector({
       <AnimatePresence mode="wait">
         <motion.p
           key={value}
-          className="max-w-sm text-xs leading-relaxed text-muted/90"
+          className="max-w-sm text-xs leading-relaxed text-muted/90 lg:max-w-md lg:text-sm"
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}

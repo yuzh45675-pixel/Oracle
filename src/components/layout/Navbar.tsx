@@ -31,10 +31,10 @@ export function Navbar() {
         className="fixed top-0 right-0 left-0 z-50 px-4 pt-[max(0.75rem,env(safe-area-inset-top))]"
       >
         <nav
-          className={`mx-auto flex max-w-lg items-center justify-between ${
+          className={`mx-auto flex max-w-lg items-center justify-between sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl ${
             inRitual
               ? "px-1 py-2"
-              : "glass-panel rounded-full px-4 py-2.5"
+              : "glass-panel rounded-full px-4 py-2.5 lg:px-5 lg:py-3"
           }`}
         >
           <Link href="/" className="flex items-center gap-2 py-1">
@@ -44,7 +44,7 @@ export function Navbar() {
               transition={{ duration: 5, repeat: Infinity }}
             />
             {!inRitual && (
-              <span className="font-display text-sm tracking-[0.18em] text-frost/90 uppercase">
+              <span className="font-display text-sm tracking-[0.18em] text-frost/90 uppercase lg:text-base">
                 Oracle
               </span>
             )}
@@ -61,7 +61,7 @@ export function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`px-3 py-1.5 text-xs tracking-wide ${
+                    className={`px-3 py-1.5 text-xs tracking-wide lg:px-4 lg:py-2 lg:text-sm ${
                       active ? "text-frost" : "text-muted hover:text-frost"
                     }`}
                   >
@@ -93,7 +93,7 @@ export function Navbar() {
 
           <button
             type="button"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04]"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] md:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label="意识菜单"
           >

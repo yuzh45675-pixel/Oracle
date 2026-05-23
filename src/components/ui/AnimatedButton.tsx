@@ -26,7 +26,7 @@ export function AnimatedButton({
   type = "button",
 }: AnimatedButtonProps) {
   const base =
-    "relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-8 py-3.5 text-sm font-medium tracking-wide transition-colors duration-500";
+    "relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full px-8 py-3.5 text-sm font-medium tracking-wide transition-colors duration-500 lg:px-10 lg:py-4 lg:text-base";
   const variants = {
     primary:
       "bg-white/[0.08] text-frost backdrop-blur-xl border border-white/[0.12] hover:bg-white/[0.14] hover:border-accent/30 shadow-glow",

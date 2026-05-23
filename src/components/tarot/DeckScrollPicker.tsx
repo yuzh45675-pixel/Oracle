@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { TarotCard } from "./TarotCard";
 import { useParticleInteraction } from "@/context/ParticleInteractionContext";
+import { useIsDesktopLayout } from "@/hooks/useMediaQuery";
 import type { TarotCard as TarotCardType } from "@/types/tarot";
 
 interface DeckScrollPickerProps {
@@ -23,15 +24,17 @@ function ScrollRow({
   selectedOrder,
   pickCount,
   onToggle,
+  cardSize,
 }: {
   cards: TarotCardType[];
   selectedOrder: Map<string, number>;
   pickCount: number;
   onToggle: (id: string) => void;
+  cardSize: "xs" | "sm";
 }) {
   return (
     <div className="overflow-x-auto overscroll-x-contain touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="flex w-max gap-2.5 px-1 py-1">
+      <div className="flex w-max gap-2.5 px-1 py-1 lg:gap-3.5">
         {cards.map((card) => {
           const order = selectedOrder.get(card.id);
           const selected = order !== undefined;
@@ -51,9 +54,9 @@ function ScrollRow({
               aria-pressed={selected}
               aria-label={card.name}
             >
-              <TarotCard size="xs" interactive={false} />
+              <TarotCard size={cardSize} interactive={false} />
               {selected && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-medium text-void shadow-[0_0_12px_rgba(155,140,255,0.45)]">
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-medium text-void shadow-[0_0_12px_rgba(155,140,255,0.45)] lg:h-6 lg:w-6 lg:text-[11px]">
                   {order}
                 </span>
               )}
@@ -72,6 +75,8 @@ export function DeckScrollPicker({
   onConfirm,
 }: DeckScrollPickerProps) {
   const { triggerBurst } = useParticleInteraction();
+  const isDesktop = useIsDesktopLayout();
+  const cardSize = isDesktop ? "sm" : "xs";
   const [pickedIds, setPickedIds] = useState<string[]>([]);
 
   const available = useMemo(
@@ -109,8 +114,8 @@ export function DeckScrollPicker({
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
-      <p className="mb-4 text-center text-xs leading-relaxed text-muted">
+    <div className="mx-auto w-full max-w-3xl lg:max-w-5xl xl:max-w-6xl">
+      <p className="mb-4 text-center text-xs leading-relaxed text-muted lg:text-sm">
         全牌分为上下两行，左右滑动浏览
         <br />
         <span className="text-frost/80">
@@ -118,7 +123,7 @@ export function DeckScrollPicker({
         </span>
       </p>
 
-      <div className="space-y-3 rounded-[1.25rem] border border-white/[0.06] bg-white/[0.02] p-3 backdrop-blur-md sm:p-4">
+      <div className="space-y-3 rounded-[1.25rem] border border-white/[0.06] bg-white/[0.02] p-3 backdrop-blur-md sm:p-4 lg:p-5">
         <div>
           <p className="mb-2 px-1 text-[9px] tracking-[0.22em] text-muted/80 uppercase">
             上行 · {topRow.length} 张
@@ -128,6 +133,7 @@ export function DeckScrollPicker({
             selectedOrder={selectedOrder}
             pickCount={pickCount}
             onToggle={toggleCard}
+            cardSize={cardSize}
           />
         </div>
 
@@ -142,6 +148,7 @@ export function DeckScrollPicker({
             selectedOrder={selectedOrder}
             pickCount={pickCount}
             onToggle={toggleCard}
+            cardSize={cardSize}
           />
         </div>
       </div>
@@ -154,7 +161,7 @@ export function DeckScrollPicker({
           type="button"
           disabled={pickedIds.length !== pickCount}
           onClick={handleConfirm}
-          className="rounded-full border border-accent/40 bg-accent/15 px-8 py-2.5 text-sm text-frost transition hover:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-full border border-accent/40 bg-accent/15 px-8 py-2.5 text-sm text-frost transition hover:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-40 lg:px-10 lg:py-3 lg:text-base"
           whileTap={{ scale: 0.98 }}
         >
           确认选牌

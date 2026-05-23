@@ -22,7 +22,7 @@ export function ResultPanel({ drawn, index }: ResultPanelProps) {
         duration: 0.7,
         ease: [0.16, 1, 0.3, 1],
       }}
-      className="group rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-xl md:p-8"
+      className="group rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-xl md:p-8 lg:p-10"
     >
       <div className="mb-4 flex flex-wrap items-center gap-3">
         {position && (
@@ -43,12 +43,12 @@ export function ResultPanel({ drawn, index }: ResultPanelProps) {
         )}
       </div>
 
-      <h3 className="font-display text-2xl font-light tracking-tight text-frost md:text-3xl">
+      <h3 className="font-display text-2xl font-light tracking-tight text-frost md:text-3xl lg:text-[2rem]">
         {card.name}
         <span className="ml-2 text-base text-muted font-sans">{card.nameEn}</span>
       </h3>
 
-      <p className="mt-2 text-sm leading-relaxed text-muted">{card.description}</p>
+      <p className="mt-2 text-sm leading-relaxed text-muted lg:text-base">{card.description}</p>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {card.keywords.map((kw) => (
@@ -65,10 +65,10 @@ export function ResultPanel({ drawn, index }: ResultPanelProps) {
         className="mt-6 space-y-3 border-t border-white/[0.06] pt-6"
         initial={false}
       >
-        <p className="text-lg font-light leading-relaxed text-frost">
+        <p className="text-lg font-light leading-relaxed text-frost lg:text-xl">
           {meaning.summary}
         </p>
-        <p className="text-sm leading-relaxed text-muted">{meaning.detail}</p>
+        <p className="text-sm leading-relaxed text-muted lg:text-base">{meaning.detail}</p>
       </motion.div>
     </motion.article>
   );

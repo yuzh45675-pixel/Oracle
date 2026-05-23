@@ -30,7 +30,7 @@ export default function AboutPage() {
   return (
     <ReadingLayout title="关于 Oracle" badge="About" wide>
       <motion.div
-        className="mx-auto w-full max-w-md"
+        className="mx-auto w-full max-w-md lg:max-w-2xl"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.25 }}
@@ -71,7 +71,7 @@ export default function AboutPage() {
                   {s.title}
                 </h3>
               </div>
-              <p className="mt-3 pl-7 text-[13px] leading-[1.8] text-muted sm:text-sm">
+              <p className="mt-3 pl-7 text-[13px] leading-[1.8] text-muted sm:text-sm lg:pl-8 lg:text-base lg:leading-relaxed">
                 {s.body}
               </p>
             </motion.li>

@@ -85,6 +85,7 @@ function ReadingStartContent() {
           : `${systemLabel} · 静心片刻，你可默念问题，或保持空白。`
       }
       badge={isLenormand ? "Lenormand Reading" : "Oracle Reading"}
+      wide
     >
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -104,7 +105,7 @@ function ReadingStartContent() {
                     setLenormandSpread(s.type as LenormandSpreadType);
                     prepareNewReading();
                   }}
-                  className={`rounded-2xl border p-4 text-left transition-all duration-300 ${
+                  className={`rounded-2xl border p-4 text-left transition-all duration-300 lg:p-5 ${
                     lenormandSpread === s.type
                       ? "border-accent/40 bg-accent/10 shadow-glow"
                       : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
@@ -117,7 +118,7 @@ function ReadingStartContent() {
                   <span className="text-[10px] tracking-[0.25em] text-accent uppercase">
                     {s.cardCount} 张
                   </span>
-                  <h3 className="mt-1 font-display text-lg font-light text-frost">
+                  <h3 className="mt-1 font-display text-lg font-light text-frost lg:text-xl">
                     {s.title}
                   </h3>
                   <p className="mt-1 text-xs leading-relaxed text-muted">
@@ -133,7 +134,7 @@ function ReadingStartContent() {
                     setSpread(s.type);
                     prepareNewReading();
                   }}
-                  className={`rounded-2xl border p-4 text-left transition-all duration-300 ${
+                  className={`rounded-2xl border p-4 text-left transition-all duration-300 lg:p-5 ${
                     spread === s.type
                       ? "border-accent/40 bg-accent/10 shadow-glow"
                       : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
@@ -146,7 +147,7 @@ function ReadingStartContent() {
                   <span className="text-[10px] tracking-[0.25em] text-accent uppercase">
                     {s.cardCount} 张
                   </span>
-                  <h3 className="mt-1 font-display text-lg font-light text-frost">
+                  <h3 className="mt-1 font-display text-lg font-light text-frost lg:text-xl">
                     {s.title}
                   </h3>
                   <p className="mt-1 text-xs leading-relaxed text-muted">
@@ -174,7 +175,7 @@ function ReadingStartContent() {
           onChange={(e) => setQuestion(e.target.value)}
           placeholder="例如：接下来两周工作上会发生什么？"
           rows={3}
-          className="w-full resize-none rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-frost placeholder:text-muted/50 backdrop-blur-xl outline-none transition-colors focus:border-accent/30"
+          className="w-full resize-none rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-sm text-frost placeholder:text-muted/50 backdrop-blur-xl outline-none transition-colors focus:border-accent/30 lg:px-5 lg:py-4 lg:text-base"
         />
       </motion.div>
 
