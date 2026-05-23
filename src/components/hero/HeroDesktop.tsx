@@ -30,7 +30,7 @@ export function HeroDesktop({
   return (
     <>
       <FloatingGlow
-        className="right-[8%] top-[28%] opacity-90 xl:right-[12%]"
+        className="left-[54%] top-[30%] -translate-x-1/2 opacity-90 xl:left-[56%]"
         size={720}
         color={theme.colors.glowPrimary}
       />
@@ -41,7 +41,7 @@ export function HeroDesktop({
       />
 
       <motion.div
-        className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)] items-center gap-12 px-10 pt-[max(5rem,calc(env(safe-area-inset-top)+4rem))] pb-16 xl:max-w-[82rem] xl:grid-cols-[1.1fr_0.9fr] xl:gap-20 xl:px-14"
+        className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1.12fr)_minmax(280px,0.78fr)] items-center gap-10 px-10 pt-[max(5rem,calc(env(safe-area-inset-top)+4rem))] pb-16 xl:max-w-[82rem] xl:grid-cols-[1.15fr_0.72fr] xl:gap-14 xl:px-14"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
@@ -123,7 +123,7 @@ export function HeroDesktop({
         </div>
 
         <motion.div
-          className="relative flex items-center justify-center py-8"
+          className="relative flex items-center justify-start py-8 pl-2 xl:pl-4"
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
