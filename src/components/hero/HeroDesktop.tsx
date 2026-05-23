@@ -30,25 +30,26 @@ export function HeroDesktop({
   return (
     <>
       <FloatingGlow
-        className="left-1/2 top-[32%] -translate-x-1/2 opacity-90"
-        size={640}
+        className="left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 opacity-85"
+        size={520}
         color={theme.colors.glowPrimary}
       />
       <FloatingGlow
-        className="left-[38%] bottom-[20%] -translate-x-1/2 opacity-70"
-        size={380}
+        className="left-1/2 top-[58%] -translate-x-1/2 opacity-55"
+        size={320}
         color={theme.colors.glowSecondary}
       />
 
+      {/* 整块入口居中收紧，便于从页面正中裁 4:3 截图 */}
       <motion.div
-        className="relative z-10 mx-auto grid w-full max-w-[880px] grid-cols-2 items-center gap-6 px-8 pt-[max(4.5rem,calc(env(safe-area-inset-top)+3.5rem))] pb-12 xl:max-w-[920px] xl:gap-8 xl:px-10"
+        className="relative z-10 mx-auto flex w-fit max-w-full items-center gap-2 px-4 xl:gap-3"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="flex flex-col items-start pl-4 text-left xl:pl-6">
+        <div className="flex w-[15.75rem] shrink-0 flex-col items-start text-left xl:w-[16.75rem]">
           <motion.p
-            className="mb-5 text-xs tracking-[0.5em] text-accent/90 uppercase"
+            className="mb-3 text-[10px] tracking-[0.45em] text-accent/90 uppercase xl:mb-4 xl:text-xs"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -57,7 +58,7 @@ export function HeroDesktop({
           </motion.p>
 
           <motion.h1
-            className="font-display max-w-[15rem] text-[2.35rem] leading-[1.12] font-extralight tracking-tight text-frost xl:max-w-xs xl:text-[2.65rem] xl:leading-[1.1]"
+            className="font-display text-[2.1rem] leading-[1.14] font-extralight tracking-tight text-frost xl:text-[2.35rem]"
             initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
@@ -70,7 +71,7 @@ export function HeroDesktop({
           </motion.h1>
 
           <motion.p
-            className="mt-5 max-w-[14rem] text-[0.9375rem] leading-relaxed xl:max-w-[15rem] xl:text-base"
+            className="mt-4 max-w-[14.5rem] text-[0.9rem] leading-relaxed xl:mt-5 xl:max-w-[15rem] xl:text-[0.9375rem]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
@@ -84,7 +85,7 @@ export function HeroDesktop({
           </motion.p>
 
           <motion.div
-            className="mt-8 origin-top-left scale-[0.88] xl:scale-[0.92]"
+            className="mt-5 origin-top-left scale-[0.86] xl:mt-6 xl:scale-[0.9]"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.75, duration: 0.7 }}
@@ -93,12 +94,12 @@ export function HeroDesktop({
               value={system}
               onChange={onSystemChange}
               align="start"
-              variant="desktop"
+              variant="default"
             />
           </motion.div>
 
           <motion.div
-            className="mt-6 flex flex-row flex-wrap items-center gap-3"
+            className="mt-4 flex flex-row flex-wrap items-center gap-2.5 xl:mt-5"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.7 }}
@@ -110,41 +111,41 @@ export function HeroDesktop({
           </motion.div>
 
           <motion.div
-            className="mt-8 w-full max-w-[15rem]"
+            className="mt-5 xl:mt-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.05 }}
           >
-            <p className="mb-4 text-[10px] tracking-[0.32em] text-muted/70 uppercase">
+            <p className="mb-3 text-[9px] tracking-[0.28em] text-muted/70 uppercase">
               意识色调 · 移动鼠标凝聚粒子
             </p>
-            <ThemeOrbStrip className="justify-start" />
+            <ThemeOrbStrip className="!justify-start" />
           </motion.div>
         </div>
 
         <motion.div
-          className="relative flex items-center justify-center py-4 pr-4 xl:pr-6"
+          className="flex shrink-0 items-center justify-center"
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
           <motion.div
-            className="relative -translate-x-2 xl:-translate-x-3"
+            className="relative"
             style={{ x: cardX, y: cardY }}
-            animate={{ y: [0, -12, 0] }}
+            animate={{ y: [0, -10, 0] }}
             transition={{
               y: { duration: 7, repeat: Infinity, ease: "easeInOut" },
             }}
           >
             <motion.div
-              className="absolute -inset-20 rounded-full"
+              className="absolute -inset-16 rounded-full xl:-inset-[4.5rem]"
               style={{
                 background: `radial-gradient(circle, ${theme.colors.glowPrimary} 0%, transparent 62%)`,
               }}
-              animate={{ scale: [1, 1.08, 1], opacity: [0.45, 0.7, 0.45] }}
+              animate={{ scale: [1, 1.06, 1], opacity: [0.4, 0.65, 0.4] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             />
-            <div className="origin-center scale-100 xl:scale-105">
+            <div className="origin-center scale-[0.92] xl:scale-95">
               <TarotCard size="hero" interactive={false} />
             </div>
           </motion.div>
