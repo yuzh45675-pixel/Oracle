@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { TarotCard } from "./TarotCard";
 import { useParticleInteraction } from "@/context/ParticleInteractionContext";
@@ -32,8 +32,39 @@ function ScrollRow({
   onToggle: (id: string) => void;
   cardSize: "xs" | "sm";
 }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (el.scrollWidth <= el.clientWidth) return;
+
+      const delta =
+        Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (delta === 0) return;
+
+      const atStart = el.scrollLeft <= 0;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+      const scrollingLeft = delta < 0;
+      const scrollingRight = delta > 0;
+
+      if ((atStart && scrollingLeft) || (atEnd && scrollingRight)) return;
+
+      e.preventDefault();
+      el.scrollLeft += delta;
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [cards.length]);
+
   return (
-    <div className="overflow-x-auto overscroll-x-contain touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div
+      ref={scrollerRef}
+      className="overflow-x-auto overscroll-x-contain touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
       <div className="flex w-max gap-2.5 px-1 py-1 lg:gap-3.5">
         {cards.map((card) => {
           const order = selectedOrder.get(card.id);
@@ -116,10 +147,11 @@ export function DeckScrollPicker({
   return (
     <div className="mx-auto w-full max-w-3xl lg:max-w-5xl xl:max-w-6xl">
       <p className="mb-4 text-center text-xs leading-relaxed text-muted lg:text-sm">
-        全牌分为上下两行，左右滑动浏览
+        全牌分为上下两行，{isDesktop ? "滚轮" : "左右滑动"}浏览
         <br />
         <span className="text-frost/80">
-          轻触选牌 · 按选择顺序对应牌阵位置 · 选满 {pickCount} 张后确认
+          {isDesktop ? "点击选牌" : "轻触选牌"} · 按选择顺序对应牌阵位置 · 选满 {pickCount}{" "}
+          张后确认
         </span>
       </p>
 
