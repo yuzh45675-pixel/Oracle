@@ -51,12 +51,16 @@ interface ReadingSystemSelectorProps {
   value: ReadingSystemChoice;
   onChange: (value: ReadingSystemChoice) => void;
   disabled?: boolean;
+  align?: "center" | "start";
+  variant?: "default" | "desktop";
 }
 
 export function ReadingSystemSelector({
   value,
   onChange,
   disabled = false,
+  align = "center",
+  variant = "default",
 }: ReadingSystemSelectorProps) {
   const isTouch = useIsTouchDevice();
   const { setFocusFromElement } = useParticleInteraction();
@@ -108,12 +112,20 @@ export function ReadingSystemSelector({
   );
 
   return (
-    <div className="flex w-full flex-col items-center gap-3">
-      <p className="text-[10px] tracking-[0.35em] text-muted/80 uppercase">
+    <div
+      className={`flex w-full flex-col gap-3 ${
+        align === "start" ? "items-start" : "items-center"
+      }`}
+    >
+      <p className="text-[10px] tracking-[0.35em] text-muted/80 uppercase lg:text-[11px]">
         解读体系
       </p>
 
-      <div className="flex items-stretch justify-center gap-3">
+      <div
+        className={`flex items-stretch gap-3 ${
+          align === "start" ? "justify-start" : "justify-center"
+        } ${variant === "desktop" ? "gap-4 xl:gap-5" : ""}`}
+      >
         {SYSTEMS.map((sys) => {
           const selected = value === sys.id;
           const isActive =
@@ -154,7 +166,11 @@ export function ReadingSystemSelector({
               onTouchEnd={() => setPressed(null)}
               onTouchCancel={() => setPressed(null)}
               initial={false}
-              className={`relative flex w-[6.5rem] flex-col items-center overflow-visible rounded-2xl border px-2.5 py-3 text-center touch-manipulation sm:w-[7.25rem] sm:px-3 sm:py-3.5 md:w-[8.5rem] md:py-4 lg:w-[9.5rem] lg:px-4 lg:py-5 ${
+              className={`relative flex flex-col items-center overflow-visible rounded-2xl border text-center touch-manipulation ${
+                variant === "desktop"
+                  ? "w-[9.5rem] px-4 py-5 xl:w-[11rem] xl:px-5 xl:py-6"
+                  : "w-[6.5rem] px-2.5 py-3 sm:w-[7.25rem] sm:px-3 sm:py-3.5 md:w-[8.5rem] md:py-4 lg:w-[9.5rem] lg:px-4 lg:py-5"
+              } ${
                 selected
                   ? "border-accent/30 bg-accent/[0.08]"
                   : "border-white/[0.08] bg-white/[0.02]"
@@ -184,7 +200,13 @@ export function ReadingSystemSelector({
                 transition={{ duration: 0.55, ease }}
               />
 
-              <div className="relative z-10 mb-2 h-9 w-9 sm:mb-3 sm:h-10 sm:w-10 md:h-12 md:w-12">
+              <div
+                className={`relative z-10 mb-2 ${
+                  variant === "desktop"
+                    ? "h-14 w-14 xl:h-16 xl:w-16"
+                    : "h-9 w-9 sm:mb-3 sm:h-10 sm:w-10 md:h-12 md:w-12"
+                }`}
+              >
                 <SystemEmblem system={sys.id} hovered={showEmblemHover} />
               </div>
 
@@ -192,9 +214,11 @@ export function ReadingSystemSelector({
                 {sys.en}
               </span>
               <span
-                className={`relative z-10 mt-0.5 font-display text-xs tracking-wide sm:mt-1 sm:text-sm ${
-                  dimmed ? "text-muted/70" : "text-frost/90 md:text-frost"
-                }`}
+                className={`relative z-10 mt-0.5 font-display tracking-wide ${
+                  variant === "desktop"
+                    ? "mt-1 text-base xl:text-lg"
+                    : "text-xs sm:mt-1 sm:text-sm"
+                } ${dimmed ? "text-muted/70" : "text-frost/90 md:text-frost"}`}
               >
                 {sys.cn}
               </span>
@@ -212,7 +236,13 @@ export function ReadingSystemSelector({
       <AnimatePresence mode="wait">
         <motion.p
           key={value}
-          className="max-w-sm text-xs leading-relaxed text-muted/90 lg:max-w-md lg:text-sm"
+          className={`text-xs leading-relaxed text-muted/90 ${
+            align === "start" ? "text-left" : "text-center"
+          } ${
+            variant === "desktop"
+              ? "max-w-md text-sm xl:max-w-lg xl:text-base"
+              : "max-w-sm lg:max-w-md lg:text-sm"
+          }`}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
