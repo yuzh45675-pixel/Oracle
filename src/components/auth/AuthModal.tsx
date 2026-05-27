@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AvatarPicker } from "@/components/auth/AvatarPicker";
 import type { AvatarSelection } from "@/lib/avatars";
+import { API_COLD_START_HINT } from "@/lib/api-fetch";
 import { useAuth } from "@/context/AuthContext";
 
 export function AuthModal() {
@@ -16,6 +17,16 @@ export function AuthModal() {
   });
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [slowHint, setSlowHint] = useState(false);
+
+  useEffect(() => {
+    if (!busy) {
+      setSlowHint(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setSlowHint(true), 4000);
+    return () => window.clearTimeout(timer);
+  }, [busy]);
 
   const resetForm = () => {
     setError(null);
@@ -101,6 +112,12 @@ export function AuthModal() {
               <p className="mt-3 text-sm text-red-300">{error}</p>
             )}
 
+            {busy && slowHint && !error && (
+              <p className="mt-3 animate-pulse text-xs leading-relaxed text-muted">
+                {API_COLD_START_HINT}
+              </p>
+            )}
+
             <div className="mt-6 flex flex-col gap-2 sm:flex-row">
               <button
                 type="button"
@@ -108,7 +125,7 @@ export function AuthModal() {
                 onClick={() => void run("login")}
                 className="flex-1 rounded-xl border border-accent/40 bg-accent/20 py-2.5 text-sm text-frost disabled:opacity-50"
               >
-                登录
+                {busy ? "连接中…" : "登录"}
               </button>
               <button
                 type="button"
@@ -116,7 +133,7 @@ export function AuthModal() {
                 onClick={() => void run("register")}
                 className="flex-1 rounded-xl border border-white/[0.12] py-2.5 text-sm text-muted hover:text-frost disabled:opacity-50"
               >
-                注册
+                {busy ? "连接中…" : "注册"}
               </button>
             </div>
           </motion.div>

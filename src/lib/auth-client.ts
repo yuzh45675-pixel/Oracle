@@ -26,6 +26,11 @@ export type RegisterResponse = {
 import type { AvatarSelection } from "@/lib/avatars";
 import { avatarSelectionToPayload } from "@/lib/avatars";
 import { getApiBase } from "@/lib/api-base";
+import {
+  API_COLD_START_HINT,
+  ApiNetworkError,
+  fetchApiWithRetry,
+} from "@/lib/api-fetch";
 
 export function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -47,14 +52,30 @@ export function authHeaders(): HeadersInit {
   return headers;
 }
 
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${getApiBase()}${path}`, {
-    ...init,
-    headers: {
-      ...authHeaders(),
-      ...(init?.headers as Record<string, string>),
-    },
-  });
+async function apiFetch<T>(
+  path: string,
+  init?: RequestInit,
+  options?: { timeoutMs?: number; retry?: boolean },
+): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetchApiWithRetry(
+      path,
+      {
+        ...init,
+        headers: {
+          ...authHeaders(),
+          ...(init?.headers as Record<string, string>),
+        },
+      },
+      options,
+    );
+  } catch (error) {
+    if (error instanceof ApiNetworkError) throw error;
+    throw new ApiNetworkError(
+      "无法连接后端，请检查网络或稍后再试（免费 API 冷启动约 1 分钟）",
+    );
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     const msg =
@@ -82,16 +103,17 @@ export async function registerUser(
 
   let res: Response;
   try {
-    res = await fetch(`${getApiBase()}/api/register`, {
+    res = await fetchApiWithRetry("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-  } catch {
-    return {
-      code: -1,
-      msg: "无法连接后端，请检查网络或稍后再试（免费 API 冷启动约 1 分钟）",
-    };
+  } catch (error) {
+    const msg =
+      error instanceof ApiNetworkError
+        ? error.message
+        : "无法连接后端，请检查网络或稍后再试（免费 API 冷启动约 1 分钟）";
+    return { code: -1, msg };
   }
 
   const data = (await res.json().catch(() => null)) as
@@ -131,14 +153,25 @@ export async function updateUserAvatar(avatar: AvatarSelection) {
 }
 
 export async function loginUser(username: string, password: string) {
-  return apiFetch<{ ok: boolean; token: string; user: AuthUser }>("/api/login", {
-    method: "POST",
-    body: JSON.stringify({ username, password }),
-  });
+  try {
+    return await apiFetch<{ ok: boolean; token: string; user: AuthUser }>(
+      "/api/login",
+      {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+      },
+    );
+  } catch (error) {
+    if (error instanceof ApiNetworkError) throw error;
+    throw new Error(API_COLD_START_HINT);
+  }
 }
 
 export async function fetchMe() {
-  return apiFetch<{ ok: boolean; user: AuthUser }>("/api/me");
+  return apiFetch<{ ok: boolean; user: AuthUser }>("/api/me", undefined, {
+    timeoutMs: 15_000,
+    retry: false,
+  });
 }
 
 export async function fetchQuota() {

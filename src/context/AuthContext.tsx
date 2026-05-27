@@ -17,6 +17,7 @@ import {
   setStoredToken,
   type AuthUser,
 } from "@/lib/auth-client";
+import { pingApiHealth } from "@/lib/api-fetch";
 import type { AvatarSelection } from "@/lib/avatars";
 
 type AuthContextValue = {
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    pingApiHealth();
     void (async () => {
       await refreshUser();
       setLoading(false);
@@ -95,7 +97,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       loading,
       authOpen,
-      openAuth: () => setAuthOpen(true),
+      openAuth: () => {
+        pingApiHealth();
+        setAuthOpen(true);
+      },
       closeAuth: () => setAuthOpen(false),
       login,
       register,

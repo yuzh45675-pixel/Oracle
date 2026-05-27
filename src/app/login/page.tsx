@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -9,6 +9,7 @@ import { AuthField } from "@/components/auth/AuthField";
 import { AvatarPicker } from "@/components/auth/AvatarPicker";
 import type { AvatarSelection } from "@/lib/avatars";
 import { updateUserAvatar } from "@/lib/auth-client";
+import { API_COLD_START_HINT, pingApiHealth } from "@/lib/api-fetch";
 import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
@@ -26,6 +27,20 @@ export default function LoginPage() {
   );
   const [bannerError, setBannerError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [slowHint, setSlowHint] = useState(false);
+
+  useEffect(() => {
+    pingApiHealth();
+  }, []);
+
+  useEffect(() => {
+    if (!busy) {
+      setSlowHint(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setSlowHint(true), 4000);
+    return () => window.clearTimeout(timer);
+  }, [busy]);
 
   const validate = () => {
     const next: typeof errors = {};
@@ -114,8 +129,13 @@ export default function LoginPage() {
             disabled={busy}
             className="mt-8 w-full rounded-xl border border-accent/40 bg-accent/20 py-3 text-sm font-medium text-frost transition hover:border-accent/60 hover:bg-accent/30 disabled:opacity-50"
           >
-            {busy ? "登录中…" : "登录"}
+            {busy ? "连接中…" : "登录"}
           </button>
+          {busy && slowHint && !bannerError && (
+            <p className="mt-3 animate-pulse text-center text-xs leading-relaxed text-muted">
+              {API_COLD_START_HINT}
+            </p>
+          )}
           <p className="mt-6 text-center text-xs text-muted">
             还没有账号？{" "}
             <Link

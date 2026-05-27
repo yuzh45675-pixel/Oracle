@@ -5,10 +5,8 @@ export type ChatMessage = {
   content: string;
 };
 
-import { getApiBase as getChatApiBase } from "@/lib/api-base";
 import { authHeaders } from "@/lib/auth-client";
-
-export { getChatApiBase };
+import { fetchApiWithRetry } from "@/lib/api-fetch";
 
 export type ChatResponse = {
   reply: string;
@@ -17,7 +15,7 @@ export type ChatResponse = {
 };
 
 export async function fetchChatHealth(): Promise<{ ok: boolean; hasApiKey: boolean }> {
-  const res = await fetch(`${getChatApiBase()}/api/health`);
+  const res = await fetchApiWithRetry("/api/health", { method: "GET" });
   if (!res.ok) throw new Error("AI 服务未启动");
   return res.json();
 }
@@ -26,7 +24,7 @@ export async function sendChatRequest(options: {
   message?: string;
   messages?: ChatMessage[];
 }): Promise<ChatResponse> {
-  const res = await fetch(`${getChatApiBase()}/api/chat`, {
+  const res = await fetchApiWithRetry("/api/chat", {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(options),
