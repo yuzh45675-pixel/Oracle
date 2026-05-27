@@ -10,7 +10,8 @@
     "lint": "eslint",
     "download-cards": "node scripts/download-commons-decks.mjs",
     "download-cards:lenormand": "node scripts/split-lenormand-game-of-hope.mjs",
-    "lenormand-audit": "node scripts/generate-lenormand-audit.mjs"
+    "lenormand-audit": "node scripts/generate-lenormand-audit.mjs",
+    "qrcode": "node scripts/generate-qrcode.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -26,11 +27,6 @@
   "devDependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
-    "framer-motion": "^12.39.0",
-    "next": "16.2.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "three": "^0.184.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -38,9 +34,15 @@
     "@types/three": "^0.184.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "framer-motion": "^12.39.0",
+    "next": "16.2.6",
+    "qrcode": "^1.5.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "tesseract.js": "^7.0.0",
+    "three": "^0.184.0",
     "typescript": "^5"
   }
 }
