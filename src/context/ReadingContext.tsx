@@ -13,7 +13,7 @@ import { useLenormandShuffle } from "@/hooks/useLenormandShuffle";
 import { getSpreadLayout } from "@/lib/spreadLayouts";
 import { getLenormandLayout } from "@/lib/lenormand/layouts";
 import { buildLenormandCombinations } from "@/lib/lenormand/combinationEngine";
-import { saveReading } from "@/lib/storage";
+import { upsertReading } from "@/lib/storage";
 import type {
   DeckType,
   DrawnCard,
@@ -47,7 +47,10 @@ interface ReadingContextValue {
   shuffledPool: import("@/types/tarot").TarotCard[];
   reset: () => void;
   prepareNewReading: () => void;
-  persistSession: () => void;
+  persistSession: (patch?: Partial<ReadingSession>) => void;
+  updateSession: (
+    updater: (prev: ReadingSession) => ReadingSession,
+  ) => void;
 }
 
 const ReadingContext = createContext<ReadingContextValue | null>(null);
@@ -150,9 +153,29 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
     ]
   );
 
-  const persistSession = useCallback(() => {
-    if (session) saveReading(session);
-  }, [session]);
+  const persistSession = useCallback(
+    (patch?: Partial<ReadingSession>) => {
+      setSession((prev) => {
+        if (!prev) return prev;
+        const merged = { ...prev, ...patch };
+        upsertReading(merged);
+        return merged;
+      });
+    },
+    [],
+  );
+
+  const updateSession = useCallback(
+    (updater: (prev: ReadingSession) => ReadingSession) => {
+      setSession((prev) => {
+        if (!prev) return prev;
+        const merged = updater(prev);
+        upsertReading(merged);
+        return merged;
+      });
+    },
+    [],
+  );
 
   const resetShuffle = useCallback(() => {
     tarotShuffle.resetShuffle();
@@ -206,6 +229,7 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
       reset,
       prepareNewReading,
       persistSession,
+      updateSession,
     }),
     [
       deck,
@@ -223,6 +247,7 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
       startRitual,
       completeCut,
       persistSession,
+      updateSession,
       reset,
       prepareNewReading,
     ]

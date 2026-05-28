@@ -20,7 +20,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { SupplementDrawFlow } from "@/components/reading/SupplementDrawFlow";
 import type { LenormandCombination } from "@/types/lenormand";
-import type { DeckType, DrawnCard } from "@/types/tarot";
+import type { DeckType, DrawnCard, ReadingSession } from "@/types/tarot";
 
 type FollowUpPath = "choose" | "plain" | "drawing" | "ready";
 
@@ -40,6 +40,7 @@ type AiOraclePanelProps = {
   cards: DrawnCard[];
   jumpCard?: DrawnCard | null;
   combinations?: LenormandCombination[];
+  onSessionUpdate?: (updater: (prev: ReadingSession) => ReadingSession) => void;
 };
 
 export function AiOraclePanel({
@@ -49,6 +50,7 @@ export function AiOraclePanel({
   cards,
   jumpCard,
   combinations,
+  onSessionUpdate,
 }: AiOraclePanelProps) {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [displayMessages, setDisplayMessages] = useState<DisplayMessage[]>([]);
@@ -112,6 +114,24 @@ export function AiOraclePanel({
           ...nextDisplay,
           { role: "assistant", content: result.reply },
         ]);
+        const isFirstReply = nextMessages.length === 1;
+        if (isFirstReply) {
+          onSessionUpdate?.((prev) => ({
+            ...prev,
+            aiInterpretation: result.reply,
+          }));
+        } else {
+          const lastUser = [...nextDisplay].reverse().find((m) => m.role === "user");
+          if (lastUser?.role === "user" && lastUser.kind === "followup") {
+            onSessionUpdate?.((prev) => ({
+              ...prev,
+              aiFollowUps: [
+                ...(prev.aiFollowUps ?? []),
+                { question: lastUser.content, answer: result.reply },
+              ],
+            }));
+          }
+        }
         setStarted(true);
         await refreshUser();
       } catch (e) {
@@ -133,7 +153,7 @@ export function AiOraclePanel({
         setLoading(false);
       }
     },
-    [user, openAuth, refreshUser],
+    [user, openAuth, refreshUser, onSessionUpdate],
   );
 
   const retryPendingChat = useCallback(async () => {

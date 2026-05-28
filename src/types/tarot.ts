@@ -49,6 +49,24 @@ export interface DrawnCard {
   isJumpCard?: boolean;
 }
 
+/** 单牌解读快照（写入历史） */
+export interface CardReadingSnapshot {
+  cardId: string;
+  cardName: string;
+  cardNameEn?: string;
+  image: string;
+  position?: string;
+  reversed?: boolean;
+  summary: string;
+  detail: string;
+}
+
+/** AI 追问快照 */
+export interface FollowUpSnapshot {
+  question: string;
+  answer: string;
+}
+
 export interface ReadingSession {
   id: string;
   deck?: DeckType;
@@ -61,6 +79,12 @@ export interface ReadingSession {
   combinations?: import("@/types/lenormand").LenormandCombination[];
   createdAt: string;
   question?: string;
+  /** 牌义详解（结果页生成） */
+  cardReadings?: CardReadingSnapshot[];
+  /** AI 主解读 */
+  aiInterpretation?: string;
+  /** AI 追问记录 */
+  aiFollowUps?: FollowUpSnapshot[];
 }
 
 export const SPREADS: SpreadInfo[] = SPREAD_LIST.map((l) => ({

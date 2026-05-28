@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ReadingLayout } from "@/components/tarot/ReadingLayout";
@@ -18,7 +18,9 @@ import { buildLenormandCombinations } from "@/lib/lenormand/combinationEngine";
 import { getMeaning } from "@/lib/tarot";
 import { SPREAD_LABELS } from "@/types/tarot";
 import { LENORMAND_SPREAD_LABELS } from "@/lib/lenormand/layouts";
+import { buildCardReadingSnapshots } from "@/lib/build-reading-snapshot";
 import { AiOraclePanel } from "@/components/reading/AiOraclePanel";
+import { ReadingExportButton } from "@/components/reading/ReadingExportButton";
 import { BetaFeedbackSurvey } from "@/components/reading/BetaFeedbackSurvey";
 
 export default function ResultPage() {
@@ -31,11 +33,14 @@ export default function ResultPage() {
     jumpCard,
     combinations,
     question,
+    session,
     persistSession,
+    updateSession,
     reset,
   } = useReading();
 
   const isLenormand = deck === "lenormand";
+  const persistedRef = useRef<string | null>(null);
 
   const orderedCards = useMemo(() => {
     const valid = validateDrawnCards(cards);
@@ -61,8 +66,22 @@ export default function ResultPage() {
       router.replace("/reading/draw");
       return;
     }
-    persistSession();
-  }, [cards.length, orderedCards.length, router, persistSession]);
+    const key = session?.id ?? "pending";
+    if (persistedRef.current === key) return;
+    persistedRef.current = key;
+    persistSession({
+      cardReadings: buildCardReadingSnapshots(orderedCards),
+      combinations: isLenormand ? lenormandCombos : undefined,
+    });
+  }, [
+    cards.length,
+    orderedCards,
+    lenormandCombos,
+    isLenormand,
+    router,
+    persistSession,
+    session?.id,
+  ]);
 
   const spreadTitle = isLenormand
     ? lenormandSpread
@@ -100,7 +119,14 @@ export default function ResultPage() {
             cards={orderedCards}
             jumpCard={jumpCard}
             combinations={lenormandCombos}
+            onSessionUpdate={updateSession}
           />
+        )}
+
+        {session && (
+          <motion.div className="mt-8 flex justify-center">
+            <ReadingExportButton session={session} />
+          </motion.div>
         )}
 
         <BetaFeedbackSurvey />
@@ -205,7 +231,14 @@ export default function ResultPage() {
           question={question}
           cards={orderedCards}
           jumpCard={jumpCard}
+          onSessionUpdate={updateSession}
         />
+      )}
+
+      {session && (
+        <motion.div className="mt-8 flex justify-center">
+          <ReadingExportButton session={session} />
+        </motion.div>
       )}
 
       <BetaFeedbackSurvey />
