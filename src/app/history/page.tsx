@@ -188,7 +188,9 @@ function HistoryEntry({ session, index }: { session: ReadingSession; index: numb
               )}
 
               <div className="flex flex-wrap justify-center gap-3 pt-2">
-                <ReadingExportButton session={session} />
+                {session.aiInterpretation && (
+                  <ReadingExportButton session={session} />
+                )}
               </div>
             </div>
           </motion.div>

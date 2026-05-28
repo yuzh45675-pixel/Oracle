@@ -123,7 +123,7 @@ export default function ResultPage() {
           />
         )}
 
-        {session && (
+        {session?.aiInterpretation && (
           <motion.div className="mt-8 flex justify-center">
             <ReadingExportButton session={session} />
           </motion.div>
@@ -235,7 +235,7 @@ export default function ResultPage() {
         />
       )}
 
-      {session && (
+      {session?.aiInterpretation && (
         <motion.div className="mt-8 flex justify-center">
           <ReadingExportButton session={session} />
         </motion.div>
