@@ -53,7 +53,7 @@ export function TarotTable({
       <motion.div
         className="relative h-full w-full"
         drag={enablePan ? "x" : false}
-        dragConstraints={{ left: -120, right: 120 }}
+        dragConstraints={{ left: -180, right: 180 }}
         dragElastic={0.08}
       >
         {children}
