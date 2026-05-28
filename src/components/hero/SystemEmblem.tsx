@@ -100,7 +100,7 @@ function LenormandVector({ hovered }: { hovered: boolean }) {
 
 export function SystemEmblem({ system, hovered }: SystemEmblemProps) {
   return (
-    <div className="relative mx-auto h-12 w-12">
+    <div className="relative flex h-full w-full items-center justify-center">
       {system === "tarot" ? (
         <TarotVector hovered={hovered} />
       ) : (

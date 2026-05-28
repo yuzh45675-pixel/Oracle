@@ -41,32 +41,6 @@ export function centerSlotsInViewport(
   }));
 }
 
-function arcSlots(
-  count: number,
-  radius: number,
-  startDeg: number,
-  endDeg: number,
-  labels: string[],
-  center = { x: CX, y: CY + 80 }
-): SpreadCardSlot[] {
-  const start = (startDeg * Math.PI) / 180;
-  const end = (endDeg * Math.PI) / 180;
-  return labels.map((label, i) => {
-    const t = count === 1 ? 0.5 : i / (count - 1);
-    const angle = start + (end - start) * t;
-    return {
-      id: `slot-${i}`,
-      label,
-      position: {
-        x: center.x + Math.cos(angle) * radius,
-        y: center.y + Math.sin(angle) * radius,
-      },
-      rotation: (angle * 180) / Math.PI + 90,
-      zIndex: i + 1,
-    };
-  });
-}
-
 function circleSlots(
   count: number,
   radius: number,
@@ -98,6 +72,247 @@ function starPoints(radius: number): { x: number; y: number }[] {
     });
   }
   return pts;
+}
+
+/** 十字牌阵：中心 + 上/下/左/右四向（等距） */
+function crossArmsSlots(
+  labels: [string, string, string, string, string],
+  arm = 165,
+): SpreadCardSlot[] {
+  return [
+    {
+      id: "slot-0",
+      label: labels[0],
+      position: { x: CX, y: CY },
+      rotation: 0,
+      zIndex: 3,
+    },
+    {
+      id: "slot-1",
+      label: labels[1],
+      position: { x: CX, y: CY - arm },
+      rotation: 0,
+      zIndex: 2,
+    },
+    {
+      id: "slot-2",
+      label: labels[2],
+      position: { x: CX, y: CY + arm },
+      rotation: 0,
+      zIndex: 1,
+    },
+    {
+      id: "slot-3",
+      label: labels[3],
+      position: { x: CX - arm, y: CY },
+      rotation: -4,
+      zIndex: 2,
+    },
+    {
+      id: "slot-4",
+      label: labels[4],
+      position: { x: CX + arm, y: CY },
+      rotation: 4,
+      zIndex: 2,
+    },
+  ];
+}
+
+/**
+ * 凯尔特十字（线下标准）：
+ * 十字区 1–6：现况→交叉→下(基础)→左(近过去)→上(意识目标)→右(近未来)
+ * 权杖区 7–10（自下而上）：自我→环境→希望/恐惧→结果
+ */
+function celticCrossSlots(): SpreadCardSlot[] {
+  const crossX = 395;
+  const crossY = CY;
+  const arm = 168;
+  const staffX = 735;
+  const staffGap = 122;
+
+  return [
+    {
+      id: "slot-0",
+      label: "现况",
+      position: { x: crossX, y: crossY },
+      rotation: 0,
+      zIndex: 3,
+    },
+    {
+      id: "slot-1",
+      label: "挑战",
+      position: { x: crossX, y: crossY },
+      rotation: 90,
+      zIndex: 5,
+    },
+    {
+      id: "slot-2",
+      label: "根基",
+      position: { x: crossX, y: crossY + arm },
+      rotation: 0,
+      zIndex: 1,
+    },
+    {
+      id: "slot-3",
+      label: "近过去",
+      position: { x: crossX - arm, y: crossY },
+      rotation: -3,
+      zIndex: 2,
+    },
+    {
+      id: "slot-4",
+      label: "意识目标",
+      position: { x: crossX, y: crossY - arm },
+      rotation: 0,
+      zIndex: 2,
+    },
+    {
+      id: "slot-5",
+      label: "近未来",
+      position: { x: crossX + arm, y: crossY },
+      rotation: 3,
+      zIndex: 2,
+    },
+    {
+      id: "slot-6",
+      label: "自我",
+      position: { x: staffX, y: crossY + staffGap * 1.4 },
+      rotation: 0,
+      zIndex: 1,
+    },
+    {
+      id: "slot-7",
+      label: "环境",
+      position: { x: staffX, y: crossY + staffGap * 0.45 },
+      rotation: 0,
+      zIndex: 2,
+    },
+    {
+      id: "slot-8",
+      label: "希望/恐惧",
+      position: { x: staffX, y: crossY - staffGap * 0.45 },
+      rotation: 0,
+      zIndex: 2,
+    },
+    {
+      id: "slot-9",
+      label: "结果",
+      position: { x: staffX, y: crossY - staffGap * 1.4 },
+      rotation: 0,
+      zIndex: 3,
+    },
+  ];
+}
+
+/** 马蹄铁阵：左下→弧顶→右下，第4张在弧顶 */
+function horseshoeSlots(labels: string[]): SpreadCardSlot[] {
+  const cx = CX;
+  const cy = CY + 30;
+  const halfW = 295;
+  const depth = 205;
+  const coords = [
+    { x: cx - halfW, y: cy + depth * 0.52 },
+    { x: cx - halfW * 0.66, y: cy + depth * 0.18 },
+    { x: cx - halfW * 0.33, y: cy - depth * 0.12 },
+    { x: cx, y: cy - depth * 0.42 },
+    { x: cx + halfW * 0.33, y: cy - depth * 0.12 },
+    { x: cx + halfW * 0.66, y: cy + depth * 0.18 },
+    { x: cx + halfW, y: cy + depth * 0.52 },
+  ];
+
+  return labels.map((label, i) => ({
+    id: `slot-${i}`,
+    label,
+    position: coords[i]!,
+    rotation: (i - 3) * 2.5,
+    zIndex: i + 1,
+  }));
+}
+
+/** 决策牌阵：上(隐藏) · 中左右(A/B) · 中(建议) · 下(结果) */
+function decisionSlots(): SpreadCardSlot[] {
+  const armX = 210;
+  const armY = 155;
+  return [
+    {
+      id: "slot-0",
+      label: "隐藏因素",
+      position: { x: CX, y: CY - armY },
+      rotation: 0,
+      zIndex: 1,
+    },
+    {
+      id: "slot-1",
+      label: "选项 A",
+      position: { x: CX - armX, y: CY - 20 },
+      rotation: -8,
+      zIndex: 2,
+    },
+    {
+      id: "slot-2",
+      label: "选项 B",
+      position: { x: CX + armX, y: CY - 20 },
+      rotation: 8,
+      zIndex: 2,
+    },
+    {
+      id: "slot-3",
+      label: "建议",
+      position: { x: CX, y: CY + 35 },
+      rotation: 0,
+      zIndex: 4,
+    },
+    {
+      id: "slot-4",
+      label: "可能结果",
+      position: { x: CX, y: CY + armY + 25 },
+      rotation: 0,
+      zIndex: 3,
+    },
+  ];
+}
+
+/** 关系牌阵：上(阻碍) · 中(你-核心-对方) · 下(走向) */
+function relationshipSlots(): SpreadCardSlot[] {
+  const arm = 165;
+  const side = 230;
+  return [
+    {
+      id: "slot-0",
+      label: "你",
+      position: { x: CX - side, y: CY },
+      rotation: -6,
+      zIndex: 2,
+    },
+    {
+      id: "slot-1",
+      label: "对方",
+      position: { x: CX + side, y: CY },
+      rotation: 6,
+      zIndex: 2,
+    },
+    {
+      id: "slot-2",
+      label: "关系核心",
+      position: { x: CX, y: CY },
+      rotation: 0,
+      zIndex: 4,
+    },
+    {
+      id: "slot-3",
+      label: "阻碍",
+      position: { x: CX, y: CY - arm },
+      rotation: 0,
+      zIndex: 1,
+    },
+    {
+      id: "slot-4",
+      label: "走向",
+      position: { x: CX, y: CY + arm },
+      rotation: 0,
+      zIndex: 1,
+    },
+  ];
 }
 
 export const SPREAD_LAYOUTS = {
@@ -166,29 +381,29 @@ export const SPREAD_LAYOUTS = {
       {
         id: "slot-1",
         label: "挑战",
-        position: { x: CX, y: CY - 28 },
+        position: { x: CX, y: CY },
         rotation: 90,
         zIndex: 4,
       },
       {
         id: "slot-2",
         label: "潜意识",
-        position: { x: CX, y: CY + 150 },
+        position: { x: CX, y: CY + 165 },
         rotation: 0,
         zIndex: 1,
       },
       {
         id: "slot-3",
         label: "建议",
-        position: { x: CX - 200, y: CY },
-        rotation: -6,
+        position: { x: CX - 165, y: CY },
+        rotation: -5,
         zIndex: 2,
       },
       {
         id: "slot-4",
         label: "结果",
-        position: { x: CX + 200, y: CY },
-        rotation: 6,
+        position: { x: CX + 165, y: CY },
+        rotation: 5,
         zIndex: 2,
       },
     ],
@@ -200,43 +415,7 @@ export const SPREAD_LAYOUTS = {
     description: "你、对方、关系核心、阻碍与走向，照见联结。",
     cardCount: 5,
     viewport: { width: VW, height: VH },
-    slots: [
-      {
-        id: "slot-0",
-        label: "你",
-        position: { x: CX - 260, y: CY + 30 },
-        rotation: -8,
-        zIndex: 2,
-      },
-      {
-        id: "slot-1",
-        label: "对方",
-        position: { x: CX + 260, y: CY + 30 },
-        rotation: 8,
-        zIndex: 2,
-      },
-      {
-        id: "slot-2",
-        label: "关系核心",
-        position: { x: CX, y: CY },
-        rotation: 0,
-        zIndex: 4,
-      },
-      {
-        id: "slot-3",
-        label: "阻碍",
-        position: { x: CX, y: CY - 170 },
-        rotation: 0,
-        zIndex: 1,
-      },
-      {
-        id: "slot-4",
-        label: "走向",
-        position: { x: CX, y: CY + 190 },
-        rotation: 0,
-        zIndex: 1,
-      },
-    ],
+    slots: relationshipSlots(),
   },
 
   horseshoe: {
@@ -245,14 +424,15 @@ export const SPREAD_LAYOUTS = {
     description: "七张牌呈马蹄弧形，从隐因到建议与结果。",
     cardCount: 7,
     viewport: { width: VW, height: VH },
-    slots: arcSlots(
-      7,
-      300,
-      200,
-      340,
-      ["过去", "现在", "隐藏因素", "障碍", "环境", "建议", "结果"],
-      { x: CX, y: CY + 120 }
-    ),
+    slots: horseshoeSlots([
+      "过去",
+      "现在",
+      "隐藏因素",
+      "障碍",
+      "环境",
+      "建议",
+      "结果",
+    ]),
   },
 
   celtic: {
@@ -261,78 +441,7 @@ export const SPREAD_LAYOUTS = {
     description: "经典十牌阵：中央十字与右侧纵列，深度剖析处境。",
     cardCount: 10,
     viewport: { width: VW, height: VH },
-    slots: [
-      {
-        id: "slot-0",
-        label: "现状",
-        position: { x: CX - 60, y: CY },
-        rotation: 0,
-        zIndex: 3,
-      },
-      {
-        id: "slot-1",
-        label: "挑战",
-        position: { x: CX - 60, y: CY },
-        rotation: 90,
-        zIndex: 5,
-      },
-      {
-        id: "slot-2",
-        label: "根基",
-        position: { x: CX - 60, y: CY + 130 },
-        rotation: 0,
-        zIndex: 1,
-      },
-      {
-        id: "slot-3",
-        label: "近来",
-        position: { x: CX - 200, y: CY },
-        rotation: -3,
-        zIndex: 2,
-      },
-      {
-        id: "slot-4",
-        label: "目标",
-        position: { x: CX - 60, y: CY - 130 },
-        rotation: 0,
-        zIndex: 2,
-      },
-      {
-        id: "slot-5",
-        label: "将来",
-        position: { x: CX + 80, y: CY },
-        rotation: 3,
-        zIndex: 2,
-      },
-      {
-        id: "slot-6",
-        label: "自我",
-        position: { x: CX + 220, y: CY + 150 },
-        rotation: 0,
-        zIndex: 1,
-      },
-      {
-        id: "slot-7",
-        label: "环境",
-        position: { x: CX + 220, y: CY + 30 },
-        rotation: 0,
-        zIndex: 2,
-      },
-      {
-        id: "slot-8",
-        label: "希望/恐惧",
-        position: { x: CX + 220, y: CY - 90 },
-        rotation: 0,
-        zIndex: 2,
-      },
-      {
-        id: "slot-9",
-        label: "结果",
-        position: { x: CX + 220, y: CY - 210 },
-        rotation: 0,
-        zIndex: 3,
-      },
-    ],
+    slots: celticCrossSlots(),
   },
 
   cross: {
@@ -341,43 +450,7 @@ export const SPREAD_LAYOUTS = {
     description: "中心为核心，四向展开，看清局势的四个面向。",
     cardCount: 5,
     viewport: { width: VW, height: VH },
-    slots: [
-      {
-        id: "slot-0",
-        label: "核心",
-        position: { x: CX, y: CY },
-        rotation: 0,
-        zIndex: 3,
-      },
-      {
-        id: "slot-1",
-        label: "上方",
-        position: { x: CX, y: CY - 160 },
-        rotation: 0,
-        zIndex: 2,
-      },
-      {
-        id: "slot-2",
-        label: "下方",
-        position: { x: CX, y: CY + 160 },
-        rotation: 0,
-        zIndex: 1,
-      },
-      {
-        id: "slot-3",
-        label: "左方",
-        position: { x: CX - 200, y: CY },
-        rotation: -5,
-        zIndex: 2,
-      },
-      {
-        id: "slot-4",
-        label: "右方",
-        position: { x: CX + 200, y: CY },
-        rotation: 5,
-        zIndex: 2,
-      },
-    ],
+    slots: crossArmsSlots(["核心", "上方", "下方", "左方", "右方"]),
   },
 
   star: {
@@ -413,43 +486,7 @@ export const SPREAD_LAYOUTS = {
     description: "两条路径与结果对照，辅助抉择。",
     cardCount: 5,
     viewport: { width: VW, height: VH },
-    slots: [
-      {
-        id: "slot-0",
-        label: "选项 A",
-        position: { x: CX - 220, y: CY - 40 },
-        rotation: -10,
-        zIndex: 2,
-      },
-      {
-        id: "slot-1",
-        label: "选项 B",
-        position: { x: CX + 220, y: CY - 40 },
-        rotation: 10,
-        zIndex: 2,
-      },
-      {
-        id: "slot-2",
-        label: "隐藏因素",
-        position: { x: CX, y: CY - 150 },
-        rotation: 0,
-        zIndex: 1,
-      },
-      {
-        id: "slot-3",
-        label: "建议",
-        position: { x: CX, y: CY + 30 },
-        rotation: 0,
-        zIndex: 4,
-      },
-      {
-        id: "slot-4",
-        label: "可能结果",
-        position: { x: CX, y: CY + 170 },
-        rotation: 0,
-        zIndex: 3,
-      },
-    ],
+    slots: decisionSlots(),
   },
 
   moon_cycle: {
@@ -458,22 +495,11 @@ export const SPREAD_LAYOUTS = {
     description: "八个月相位置，照见周期与节律。",
     cardCount: 8,
     viewport: { width: VW, height: VH },
-    slots: arcSlots(
+    slots: circleSlots(
       8,
-      280,
-      190,
-      350,
-      [
-        "新月",
-        "峨眉月",
-        "上弦",
-        "盈凸",
-        "满月",
-        "亏凸",
-        "下弦",
-        "残月",
-      ],
-      { x: CX, y: CY + 60 }
+      265,
+      ["新月", "峨眉月", "上弦", "盈凸", "满月", "亏凸", "下弦", "残月"],
+      -Math.PI / 2,
     ),
   },
 

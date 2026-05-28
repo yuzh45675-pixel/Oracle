@@ -8,7 +8,7 @@ interface RitualStepGuideProps {
   className?: string;
 }
 
-/** 手机端仪式步骤引导（桌面隐藏，避免重复） */
+/** 手机端仪式步骤引导（桌面隐藏，需用户主动开启） */
 export function RitualStepGuide({
   step,
   total,
@@ -18,14 +18,16 @@ export function RitualStepGuide({
 }: RitualStepGuideProps) {
   return (
     <div
-      className={`mb-5 rounded-2xl border border-accent/25 bg-accent/[0.07] px-4 py-3 text-center md:hidden ${className}`}
+      className={`mb-3 rounded-xl border border-accent/20 bg-accent/[0.05] px-3 py-2 text-center md:hidden ${className}`}
     >
-      <p className="text-[10px] tracking-[0.28em] text-accent uppercase">
-        步骤 {step} / {total}
+      <p className="text-[9px] tracking-[0.22em] text-accent/90 uppercase">
+        步骤 {step}/{total}
       </p>
-      <p className="mt-1.5 text-sm font-medium leading-snug text-frost">{title}</p>
+      <p className="mt-1 text-xs font-medium leading-snug text-frost/95">
+        {title}
+      </p>
       {hint && (
-        <p className="mt-1.5 text-xs leading-relaxed text-muted">{hint}</p>
+        <p className="mt-1 text-[10px] leading-relaxed text-muted/90">{hint}</p>
       )}
     </div>
   );

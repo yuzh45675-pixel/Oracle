@@ -10,8 +10,10 @@ import { CutRitualPanel } from "@/components/tarot/CutRitualPanel";
 import { JumpCardEffect } from "@/components/tarot/JumpCardEffect";
 import { TarotSpreadRenderer } from "@/components/tarot/TarotSpreadRenderer";
 import { RitualStepGuide } from "@/components/tarot/RitualStepGuide";
+import { RitualStepGuideToggle } from "@/components/tarot/RitualStepGuideToggle";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { useReading } from "@/context/ReadingContext";
+import { useRitualStepGuide } from "@/hooks/useRitualStepGuide";
 import { loadReadingSetup } from "@/lib/reading-session";
 import {
   getActiveCardIndex,
@@ -46,6 +48,8 @@ export default function DrawPage() {
   const [revealedCount, setRevealedCount] = useState(0);
   const [flipped, setFlipped] = useState<boolean[]>([]);
   const [ready, setReady] = useState(false);
+  const { enabled: stepGuideEnabled, setEnabled: setStepGuideEnabled } =
+    useRitualStepGuide();
 
   const expectedCount = spread ? getExpectedCardCount(spread) : 0;
   const spreadCards = useMemo(
@@ -149,7 +153,12 @@ export default function DrawPage() {
       dissolve={ritualPhase === "spread" ? 1 : 0.75}
       wide={ritualPhase === "cutting" || ritualPhase === "spread"}
     >
-      {ritualPhase === "idle" && (
+      <RitualStepGuideToggle
+        enabled={stepGuideEnabled}
+        onChange={setStepGuideEnabled}
+      />
+
+      {stepGuideEnabled && ritualPhase === "idle" && (
         <RitualStepGuide
           step={1}
           total={4}
@@ -157,7 +166,7 @@ export default function DrawPage() {
           hint="静心默念你的问题，再开始仪式"
         />
       )}
-      {ritualPhase === "shuffling" && (
+      {stepGuideEnabled && ritualPhase === "shuffling" && (
         <RitualStepGuide
           step={2}
           total={4}
@@ -165,15 +174,15 @@ export default function DrawPage() {
           hint="若出现跳牌，会纳入本次解读"
         />
       )}
-      {ritualPhase === "cutting" && (
+      {stepGuideEnabled && ritualPhase === "cutting" && (
         <RitualStepGuide
           step={3}
           total={4}
           title="从牌堆中选出本次牌阵所需的牌"
-          hint="轻触牌背选中 · 右上角数字为选择顺序 · 选满后点「确认选牌」"
+          hint="轻触牌背选中 · 选满后点「确认选牌」"
         />
       )}
-      {ritualPhase === "spread" && !allRevealed && (
+      {stepGuideEnabled && ritualPhase === "spread" && !allRevealed && (
         <RitualStepGuide
           step={4}
           total={4}

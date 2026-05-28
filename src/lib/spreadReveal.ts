@@ -8,10 +8,10 @@ export const SPREAD_FLIP_ORDERS: Record<SpreadType, number[]> = {
   five: [0, 1, 2, 3, 4],
   relationship: [2, 0, 1, 3, 4],
   horseshoe: [0, 1, 2, 3, 4, 5, 6],
-  celtic: [0, 1, 4, 2, 3, 5, 6, 7, 8, 9],
+  celtic: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
   cross: [0, 1, 2, 3, 4],
   star: [0, 1, 2, 3, 4, 5],
-  decision: [2, 0, 1, 3, 4],
+  decision: [0, 1, 2, 3, 4],
   moon_cycle: [0, 1, 2, 3, 4, 5, 6, 7],
   twelve_house: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
   soul_journey: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -55,6 +55,10 @@ export function getRevealPrompt(
   const card = cards[activeIndex];
   const label = card?.position ?? layout.slots[activeIndex]?.label ?? "此位置";
   const step = revealedCount + 1;
+
+  if (spread === "celtic" && revealedCount === 1) {
+    return `凯尔特十字：请翻开横向交叉的「${label}」（${step}/${total}）`;
+  }
 
   if (spread === "celtic" && revealedCount === 0) {
     return `凯尔特十字：请先翻开中央的「${label}」（${step}/${total}）`;

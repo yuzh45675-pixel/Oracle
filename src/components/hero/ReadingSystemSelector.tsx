@@ -122,9 +122,15 @@ export function ReadingSystemSelector({
       </p>
 
       <div
-        className={`flex items-stretch gap-3 ${
-          align === "start" ? "justify-start" : "justify-center"
-        } ${variant === "desktop" ? "gap-4 xl:gap-5" : ""}`}
+        className={
+          variant === "desktop"
+            ? `flex items-stretch gap-4 xl:gap-5 ${
+                align === "start" ? "justify-start" : "justify-center"
+              }`
+            : `grid w-full max-w-[17rem] grid-cols-2 gap-3 sm:max-w-none ${
+                align === "start" ? "justify-items-start" : "justify-items-center"
+              }`
+        }
       >
         {SYSTEMS.map((sys) => {
           const selected = value === sys.id;
@@ -169,7 +175,7 @@ export function ReadingSystemSelector({
               className={`relative flex flex-col items-center overflow-visible rounded-2xl border text-center touch-manipulation ${
                 variant === "desktop"
                   ? "w-[9.5rem] px-4 py-5 xl:w-[11rem] xl:px-5 xl:py-6"
-                  : "w-[6.5rem] px-2.5 py-3 sm:w-[7.25rem] sm:px-3 sm:py-3.5 md:w-[8.5rem] md:py-4 lg:w-[9.5rem] lg:px-4 lg:py-5"
+                  : "w-full px-2.5 py-3 sm:px-3 sm:py-3.5 md:py-4"
               } ${
                 selected
                   ? "border-accent/30 bg-accent/[0.08]"
@@ -201,10 +207,10 @@ export function ReadingSystemSelector({
               />
 
               <div
-                className={`relative z-10 mb-2 ${
+                className={`relative z-10 mb-2 flex shrink-0 items-center justify-center ${
                   variant === "desktop"
                     ? "h-14 w-14 xl:h-16 xl:w-16"
-                    : "h-9 w-9 sm:mb-3 sm:h-10 sm:w-10 md:h-12 md:w-12"
+                    : "h-10 w-10 sm:mb-3 sm:h-11 sm:w-11 md:h-12 md:w-12"
                 }`}
               >
                 <SystemEmblem system={sys.id} hovered={showEmblemHover} />
