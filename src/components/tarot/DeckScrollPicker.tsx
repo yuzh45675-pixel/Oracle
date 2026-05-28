@@ -145,17 +145,29 @@ export function DeckScrollPicker({
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl lg:max-w-5xl xl:max-w-6xl">
-      <p className="mb-4 text-center text-xs leading-relaxed text-muted lg:text-sm">
-        全牌分为上下两行，{isDesktop ? "滚轮" : "左右滑动"}浏览
-        <br />
-        <span className="text-frost/80">
-          {isDesktop ? "点击选牌" : "轻触选牌"} · 按选择顺序对应牌阵位置 · 选满 {pickCount}{" "}
-          张后确认
-        </span>
+    <div className="mx-auto w-full max-w-[min(100%,20rem)] sm:max-w-3xl lg:max-w-5xl xl:max-w-6xl">
+      <p className="mb-3 text-center text-xs leading-relaxed text-muted md:mb-4 lg:text-sm">
+        {isDesktop ? (
+          <>
+            全牌分为上下两行，滚轮浏览
+            <br />
+            <span className="text-frost/80">
+              点击选牌 · 按选择顺序对应牌阵位置 · 选满 {pickCount} 张后确认
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="text-accent">① 左右滑动</span> 浏览上下两行牌背
+            <br />
+            <span className="text-frost/80">
+              <span className="text-accent">② 轻触牌背</span> 选中（角标为顺序）· 选满{" "}
+              {pickCount} 张后点下方确认
+            </span>
+          </>
+        )}
       </p>
 
-      <div className="space-y-3 rounded-[1.25rem] border border-white/[0.06] bg-white/[0.02] p-3 backdrop-blur-md sm:p-4 lg:p-5">
+      <div className="space-y-3 rounded-[1.25rem] border border-white/[0.06] bg-white/[0.02] p-2.5 backdrop-blur-md sm:p-4 lg:p-5">
         <div>
           <p className="mb-2 px-1 text-[9px] tracking-[0.22em] text-muted/80 uppercase">
             上行 · {topRow.length} 张

@@ -24,7 +24,7 @@ export function CutRitualPanel({
 
   return (
     <div className="w-full">
-      <div className="mx-auto mb-6 flex max-w-md justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] p-1 lg:max-w-lg lg:gap-3 lg:p-1.5">
+      <div className="mx-auto mb-5 flex max-w-[min(100%,20rem)] justify-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] p-1 sm:max-w-md lg:max-w-lg lg:gap-3 lg:p-1.5">
         <button
           type="button"
           onClick={() => setMode("scroll")}

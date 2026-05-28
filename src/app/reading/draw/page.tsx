@@ -9,6 +9,7 @@ import { ShuffleDeck } from "@/components/tarot/ShuffleDeck";
 import { CutRitualPanel } from "@/components/tarot/CutRitualPanel";
 import { JumpCardEffect } from "@/components/tarot/JumpCardEffect";
 import { TarotSpreadRenderer } from "@/components/tarot/TarotSpreadRenderer";
+import { RitualStepGuide } from "@/components/tarot/RitualStepGuide";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { useReading } from "@/context/ReadingContext";
 import { loadReadingSetup } from "@/lib/reading-session";
@@ -132,7 +133,7 @@ export default function DrawPage() {
       : ritualPhase === "shuffling"
         ? "\u611f\u53d7\u724c\u5728\u6307\u95f4\u6d41\u52a8\u2026\u2026"
         : ritualPhase === "cutting"
-          ? "滑动选牌，或切换为选堆切牌"
+          ? "左右滑动浏览 · 轻触牌背选中 · 选满后点确认"
           : allRevealed
             ? "\u724c\u9762\u5df2\u5168\u90e8\u63ed\u793a"
             : revealPrompt || `\u8f7b\u89e6\u724c\u9762\u63ed\u793a\u7b2c ${revealedCount + 1} \u5f20`;
@@ -148,6 +149,39 @@ export default function DrawPage() {
       dissolve={ritualPhase === "spread" ? 1 : 0.75}
       wide={ritualPhase === "cutting" || ritualPhase === "spread"}
     >
+      {ritualPhase === "idle" && (
+        <RitualStepGuide
+          step={1}
+          total={4}
+          title="点击下方「开始洗牌」"
+          hint="静心默念你的问题，再开始仪式"
+        />
+      )}
+      {ritualPhase === "shuffling" && (
+        <RitualStepGuide
+          step={2}
+          total={4}
+          title="牌在自动洗牌，请稍候"
+          hint="若出现跳牌，会纳入本次解读"
+        />
+      )}
+      {ritualPhase === "cutting" && (
+        <RitualStepGuide
+          step={3}
+          total={4}
+          title="从牌堆中选出本次牌阵所需的牌"
+          hint="轻触牌背选中 · 右上角数字为选择顺序 · 选满后点「确认选牌」"
+        />
+      )}
+      {ritualPhase === "spread" && !allRevealed && (
+        <RitualStepGuide
+          step={4}
+          total={4}
+          title="按顺序逐张翻开牌面"
+          hint="每次只翻一张 · 轻触下方高亮牌背"
+        />
+      )}
+
       <AnimatePresence mode="wait">
         {ritualPhase === "idle" && (
           <motion.div
@@ -158,7 +192,7 @@ export default function DrawPage() {
             className="flex flex-col items-center"
           >
             <ShuffleDeck isShuffling={false} />
-            <motion.div className="mt-12">
+            <motion.div className="mt-10 md:mt-12">
               <AnimatedButton onClick={startRitual}>
                 {"\u5f00\u59cb\u6d17\u724c"}
               </AnimatedButton>
@@ -233,7 +267,7 @@ export default function DrawPage() {
               {!allRevealed && (
                 <motion.div
                   key={`${revealedCount}-${revealPrompt}`}
-                  className="mx-auto mb-6 max-w-lg space-y-2 text-center lg:max-w-2xl lg:mb-8"
+                  className="mx-auto mb-6 hidden max-w-lg space-y-2 text-center md:block lg:max-w-2xl lg:mb-8"
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
@@ -252,9 +286,9 @@ export default function DrawPage() {
                 onReveal={handleRevealNext}
               />
 
-              <motion.div className="mt-10 flex flex-col items-center gap-4">
+              <motion.div className="mt-8 flex flex-col items-center gap-4 md:mt-10">
                 {!allRevealed && (
-                  <p className="text-xs text-muted">
+                  <p className="hidden text-xs text-muted md:block">
                     {
                       "\u5e26\u6709\u5149\u6655\u7684\u724c\u4e3a\u5f53\u524d\u5e94\u7ffb\u5f00\u7684\u4f4d\u7f6e\uff1b\u6309\u63d0\u793a\u987a\u5e8f\u7ffb\u724c"
                     }

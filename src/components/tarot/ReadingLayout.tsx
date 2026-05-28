@@ -49,10 +49,10 @@ export function ReadingLayout({
       />
 
       <motion.div
-        className={`relative z-10 mx-auto px-4 sm:px-6 lg:px-8 ${
+        className={`relative z-10 mx-auto px-3 sm:px-6 lg:px-8 ${
           wide
-            ? "max-w-lg sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl"
-            : "max-w-lg sm:max-w-xl lg:max-w-3xl xl:max-w-4xl"
+            ? "max-w-[min(100%,22rem)] sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl"
+            : "max-w-[min(100%,20rem)] sm:max-w-xl lg:max-w-3xl xl:max-w-4xl"
         }`}
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}

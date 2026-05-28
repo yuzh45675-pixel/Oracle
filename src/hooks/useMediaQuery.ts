@@ -20,3 +20,8 @@ export function useMediaQuery(query: string): boolean {
 export function useIsDesktopLayout(): boolean {
   return useMediaQuery("(min-width: 1024px)");
 }
+
+/** Mobile reading UX — single-card focus, step guides, tighter shell. */
+export function useIsMobileLayout(): boolean {
+  return useMediaQuery("(max-width: 767px)");
+}
