@@ -12,7 +12,7 @@ const STACK = 9;
 export function ShuffleDeck({ isShuffling }: ShuffleDeckProps) {
   return (
     <motion.div
-      className="relative mx-auto h-[300px] w-[220px] md:h-[340px] md:w-[250px]"
+      className="relative mx-auto mt-2 h-[220px] w-[164px] origin-top scale-[0.84] md:mt-0 md:h-[340px] md:w-[250px] md:origin-center md:scale-100"
       aria-label={isShuffling ? "正在洗牌" : "牌组"}
     >
       {Array.from({ length: STACK }).map((_, i) => {

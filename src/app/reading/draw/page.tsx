@@ -201,7 +201,7 @@ export default function DrawPage() {
             className="flex flex-col items-center"
           >
             <ShuffleDeck isShuffling={false} />
-            <motion.div className="mt-10 md:mt-12">
+            <motion.div className="mt-6 md:mt-12">
               <AnimatedButton onClick={startRitual}>
                 {"\u5f00\u59cb\u6d17\u724c"}
               </AnimatedButton>
@@ -217,7 +217,7 @@ export default function DrawPage() {
             exit={{ opacity: 0, filter: "blur(6px)" }}
             className="relative flex flex-col items-center"
           >
-            <div className="relative w-full max-w-md lg:max-w-xl">
+            <div className="relative w-full max-w-[17rem] sm:max-w-md lg:max-w-xl">
               <ShuffleDeck isShuffling={isShuffling} />
               <JumpCardEffect
                 jumpCard={jumpCard}
