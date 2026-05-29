@@ -10,6 +10,8 @@ interface CardFaceProps {
   reversed?: boolean;
   back?: boolean;
   className?: string;
+  /** 入口 hero：卡背星环缓慢自转 */
+  orbitSpin?: boolean;
 }
 
 const MAJOR_ROMAN = [
@@ -100,6 +102,7 @@ export function CardFace({
   reversed = false,
   back = false,
   className = "",
+  orbitSpin = false,
 }: CardFaceProps) {
   const [imgError, setImgError] = useState(false);
 
@@ -109,7 +112,7 @@ export function CardFace({
         className={`relative h-full w-full ${className}`}
         style={{ transform: reversed ? "rotate(180deg)" : undefined }}
       >
-        <ThemedCardBack reversed={false} />
+        <ThemedCardBack reversed={false} orbitSpin={orbitSpin} />
       </div>
     );
   }

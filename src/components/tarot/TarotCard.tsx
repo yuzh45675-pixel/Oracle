@@ -104,7 +104,7 @@ export function TarotCard({
           className="absolute inset-0 shadow-card transition-shadow duration-500"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <CardFace back />
+          <CardFace back orbitSpin={size === "hero"} />
         </motion.div>
         <motion.div
           className="absolute inset-0 shadow-card"
