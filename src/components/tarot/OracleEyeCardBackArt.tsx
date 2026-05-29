@@ -261,8 +261,9 @@ export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCard
   const uid = useId().replace(/:/g, "");
   const reducedMotion = useReducedMotion();
   const isTouch = useIsTouchDevice();
-  // 手机/触摸设备关闭重型 SVG 公转动画，提升流畅度
-  const spin = orbitSpin && !reducedMotion && !isTouch;
+  const spin = orbitSpin && !reducedMotion;
+  // 手机/触摸设备保留旋转但减速到 50%（时长 ×2）
+  const spinDurationScale = isTouch ? 2 : 1;
   const c = theme.colors;
   const line = c.metal;
   const lineDim = c.accentDim;
@@ -587,7 +588,7 @@ export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCard
             rx={orbit.rx}
             ry={orbit.ry}
             tilt={orbit.tilt}
-            durationSec={orbit.durationSec}
+            durationSec={orbit.durationSec * spinDurationScale}
             trailOp={orbit.trailOp}
             stars={orbit.stars}
             line={line}
@@ -630,7 +631,7 @@ export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCard
         mask={`url(#${uid}-ring-glow-mask)`}
       />
 
-      <GalaxyOrbitSpin enabled={spin} direction="cw">
+      <GalaxyOrbitSpin enabled={spin} direction="cw" durationSec={108 * spinDurationScale}>
         {/* 大椭圆四向亮星 — 随外侧右转公转 */}
         {orbitSpin &&
           ELLIPSE_CORNER_STAR_POSITIONS.map(([x, y], i) => (
@@ -710,7 +711,7 @@ export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCard
         })}
       </GalaxyOrbitSpin>
 
-      <GalaxyOrbitSpin enabled={spin} direction="ccw">
+      <GalaxyOrbitSpin enabled={spin} direction="ccw" durationSec={108 * spinDurationScale}>
         {/* 竖列四芒星外端所在正圆 r=64 及内侧 — 向左转 */}
         <circle
           cx={CX}

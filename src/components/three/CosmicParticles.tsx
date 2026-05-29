@@ -20,8 +20,8 @@ function useAdaptiveParticleCount() {
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    if (reduced) return 360;
-    if (mobile) return 700;
+    if (reduced) return 500;
+    if (mobile) return 1400;
     return 2400;
   });
   return count;

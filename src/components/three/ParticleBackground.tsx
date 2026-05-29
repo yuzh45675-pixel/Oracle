@@ -115,7 +115,7 @@ export function ParticleBackground({
             breathAmount={breathAmount}
             breathMode={breathMode}
             tremble={tremble}
-            interactive={interactive}
+            interactive={interactive && !isMobile}
           />
         </Canvas>
       </Suspense>
