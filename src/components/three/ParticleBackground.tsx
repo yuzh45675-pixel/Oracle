@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import { FloatingGlow } from "@/components/ui/FloatingGlow";
@@ -15,6 +15,15 @@ const CosmicParticles = dynamic(
   () => import("./CosmicParticles").then((m) => m.CosmicParticles),
   { ssr: false },
 );
+
+/** 同步检测移动/触摸设备（Canvas 仅客户端渲染，无 SSR 水合问题） */
+function detectMobileSync() {
+  if (typeof window === "undefined") return false;
+  return (
+    window.matchMedia("(max-width: 768px)").matches ||
+    window.matchMedia("(pointer: coarse)").matches
+  );
+}
 
 interface ParticleBackgroundProps {
   className?: string;
@@ -72,6 +81,7 @@ export function ParticleBackground({
 }: ParticleBackgroundProps) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const [isMobile] = useState(detectMobileSync);
 
   return (
     <motion.div
@@ -83,8 +93,12 @@ export function ParticleBackground({
       <Suspense fallback={null}>
         <Canvas
           camera={{ position: [0, 0, 3], fov: 60 }}
-          dpr={[1, 2]}
-          gl={{ antialias: true, alpha: true }}
+          dpr={isMobile ? 1 : [1, 2]}
+          gl={{
+            antialias: !isMobile,
+            alpha: true,
+            powerPreference: "low-power",
+          }}
           style={{
             position: "absolute",
             inset: 0,

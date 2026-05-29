@@ -3,6 +3,7 @@
 import { useReducedMotion } from "framer-motion";
 import { useId, type ReactNode } from "react";
 import type { OracleTheme } from "@/lib/themes";
+import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
 
 interface OracleEyeCardBackArtProps {
   theme: OracleTheme;
@@ -259,7 +260,9 @@ function GalaxyOrbitSpin({
 export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCardBackArtProps) {
   const uid = useId().replace(/:/g, "");
   const reducedMotion = useReducedMotion();
-  const spin = orbitSpin && !reducedMotion;
+  const isTouch = useIsTouchDevice();
+  // 手机/触摸设备关闭重型 SVG 公转动画，提升流畅度
+  const spin = orbitSpin && !reducedMotion && !isTouch;
   const c = theme.colors;
   const line = c.metal;
   const lineDim = c.accentDim;
