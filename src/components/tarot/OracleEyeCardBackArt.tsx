@@ -3,7 +3,6 @@
 import { useReducedMotion } from "framer-motion";
 import { useId, type ReactNode } from "react";
 import type { OracleTheme } from "@/lib/themes";
-import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
 
 interface OracleEyeCardBackArtProps {
   theme: OracleTheme;
@@ -260,10 +259,7 @@ function GalaxyOrbitSpin({
 export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCardBackArtProps) {
   const uid = useId().replace(/:/g, "");
   const reducedMotion = useReducedMotion();
-  const isTouch = useIsTouchDevice();
   const spin = orbitSpin && !reducedMotion;
-  // 手机/触摸设备保留旋转但减速到 50%（时长 ×2）
-  const spinDurationScale = isTouch ? 2 : 1;
   const c = theme.colors;
   const line = c.metal;
   const lineDim = c.accentDim;
@@ -588,7 +584,7 @@ export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCard
             rx={orbit.rx}
             ry={orbit.ry}
             tilt={orbit.tilt}
-            durationSec={orbit.durationSec * spinDurationScale}
+            durationSec={orbit.durationSec}
             trailOp={orbit.trailOp}
             stars={orbit.stars}
             line={line}
@@ -631,7 +627,7 @@ export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCard
         mask={`url(#${uid}-ring-glow-mask)`}
       />
 
-      <GalaxyOrbitSpin enabled={spin} direction="cw" durationSec={108 * spinDurationScale}>
+      <GalaxyOrbitSpin enabled={spin} direction="cw">
         {/* 大椭圆四向亮星 — 随外侧右转公转 */}
         {orbitSpin &&
           ELLIPSE_CORNER_STAR_POSITIONS.map(([x, y], i) => (
@@ -711,7 +707,7 @@ export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCard
         })}
       </GalaxyOrbitSpin>
 
-      <GalaxyOrbitSpin enabled={spin} direction="ccw" durationSec={108 * spinDurationScale}>
+      <GalaxyOrbitSpin enabled={spin} direction="ccw">
         {/* 竖列四芒星外端所在正圆 r=64 及内侧 — 向左转 */}
         <circle
           cx={CX}
