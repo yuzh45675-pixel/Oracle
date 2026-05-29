@@ -50,6 +50,7 @@ const vertexShader = /* glsl */ `
   uniform float uBurst;
   uniform float uRitualExpand;
   uniform float uAttract;
+  uniform float uSizeScale;
   attribute float aSize;
   attribute float aPhase;
   attribute float aBreathGather;
@@ -126,7 +127,7 @@ const vertexShader = /* glsl */ `
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     float sizeBoost = 1.0 + uFocusStrength * 0.18 + uRitualExpand * 0.65;
-    gl_PointSize = aSize * (105.0 / -mvPosition.z) * sizeBoost * (1.0 + uBurst * 0.35);
+    gl_PointSize = aSize * (105.0 / -mvPosition.z) * sizeBoost * (1.0 + uBurst * 0.35) * uSizeScale;
     if (uBreathMode > 0.5) {
       gl_PointSize *= mix(1.0, mix(0.86, 0.92, 1.0 - aBreathGather), breathPull);
     }
@@ -147,6 +148,7 @@ const fragmentShader = /* glsl */ `
   uniform vec3 uColorA;
   uniform vec3 uColorB;
   uniform float uTrail;
+  uniform float uHaloScale;
   varying float vAlpha;
   varying float vSparkle;
 
@@ -155,7 +157,7 @@ const fragmentShader = /* glsl */ `
     float d = length(c);
     if (d > 0.5) discard;
     float core = smoothstep(0.28, 0.0, d);
-    float halo = smoothstep(0.5, 0.08, d) * (0.4 + uTrail * 0.25);
+    float halo = smoothstep(0.5, 0.08, d) * (0.4 + uTrail * 0.25) * uHaloScale;
     float alpha = (core * 0.88 + halo) * vAlpha * (0.9 + vSparkle * 0.1);
     vec3 color = mix(uColorA, uColorB, core + vSparkle * 0.08);
     gl_FragColor = vec4(color, alpha);
@@ -181,6 +183,15 @@ export function CosmicParticles({
 }: CosmicParticlesProps) {
   const { theme } = useTheme();
   const count = useAdaptiveParticleCount();
+  const [isMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return (
+      window.matchMedia("(pointer: coarse)").matches ||
+      window.matchMedia("(max-width: 768px)").matches ||
+      "ontouchstart" in window ||
+      (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0)
+    );
+  });
   const meshRef = useRef<THREE.Points>(null);
   const targetPointer = useRef(new THREE.Vector2(0, 0));
   const targetFocus = useRef(new THREE.Vector2(0, 0));
@@ -273,8 +284,10 @@ export function CosmicParticles({
   }, [formation, count]);
 
   useEffect(() => {
+    // 手机端关闭爆发反馈
+    if (isMobile) return;
     burstStrength.current = Math.max(burstStrength.current, burstSignal);
-  }, [burstSignal]);
+  }, [burstSignal, isMobile]);
 
   useEffect(() => {
     formationStrength.current = formationSignal;
@@ -304,8 +317,11 @@ export function CosmicParticles({
       uColorB: { value: colorB.clone() },
       uTrail: { value: theme.particles.trail },
       uAttract: { value: theme.particles.attract },
+      // 手机端：更小的粒子尺寸与更收敛的光晕
+      uSizeScale: { value: isMobile ? 0.62 : 1 },
+      uHaloScale: { value: isMobile ? 0.6 : 1 },
     }),
-    [dissolve, colorA, colorB, theme.particles.trail, theme.particles.attract, breathMode],
+    [dissolve, colorA, colorB, theme.particles.trail, theme.particles.attract, breathMode, isMobile],
   );
 
   useEffect(() => {

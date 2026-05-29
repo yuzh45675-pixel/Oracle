@@ -3,6 +3,7 @@
 import { useReducedMotion } from "framer-motion";
 import { useId, type ReactNode } from "react";
 import type { OracleTheme } from "@/lib/themes";
+import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
 
 interface OracleEyeCardBackArtProps {
   theme: OracleTheme;
@@ -259,7 +260,10 @@ function GalaxyOrbitSpin({
 export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCardBackArtProps) {
   const uid = useId().replace(/:/g, "");
   const reducedMotion = useReducedMotion();
+  const isTouch = useIsTouchDevice();
   const spin = orbitSpin && !reducedMotion;
+  // 手机端精简辐射线数量（保持花纹，减轻每帧绘制）
+  const rayCount = isTouch ? 64 : 96;
   const c = theme.colors;
   const line = c.metal;
   const lineDim = c.accentDim;
@@ -267,8 +271,8 @@ export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCard
   const glow = c.accent;
 
   // 中央辐射光线（疏密交替，每 8 根加长形成主轴）
-  const rays = Array.from({ length: 96 }, (_, i) => {
-    const a = (i / 96) * Math.PI * 2 - Math.PI / 2;
+  const rays = Array.from({ length: rayCount }, (_, i) => {
+    const a = (i / rayCount) * Math.PI * 2 - Math.PI / 2;
     const inner = EYE_RING_R;
     const outer = i % 8 === 0 ? 96 : i % 2 === 0 ? 84 : 56;
     const w = i % 8 === 0 ? 0.6 : i % 2 === 0 ? 0.42 : 0.3;

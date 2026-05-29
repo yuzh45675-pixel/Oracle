@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { TarotCard } from "./TarotCard";
+import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
 
 interface ShuffleDeckProps {
   isShuffling: boolean;
@@ -10,9 +11,12 @@ interface ShuffleDeckProps {
 const STACK = 9;
 
 export function ShuffleDeck({ isShuffling }: ShuffleDeckProps) {
+  const isTouch = useIsTouchDevice();
+  // 手机端收敛洗牌动画幅度，避免牌往上窜进步骤引导区造成重合
+  const amp = isTouch ? 0.5 : 1;
   return (
     <motion.div
-      className="relative mx-auto mt-2 h-[220px] w-[164px] origin-top scale-[0.84] md:mt-0 md:h-[340px] md:w-[250px] md:origin-center md:scale-100"
+      className="relative mx-auto mt-10 h-[220px] w-[164px] origin-top scale-[0.84] md:mt-0 md:h-[340px] md:w-[250px] md:origin-center md:scale-100"
       aria-label={isShuffling ? "正在洗牌" : "牌组"}
     >
       {Array.from({ length: STACK }).map((_, i) => {
@@ -31,15 +35,15 @@ export function ShuffleDeck({ isShuffling }: ShuffleDeckProps) {
                 ? {
                     x: [
                       0,
-                      side * (30 + i * 6),
-                      side * -(20 + i * 4),
+                      side * (30 + i * 6) * amp,
+                      side * -(20 + i * 4) * amp,
                       0,
                     ],
-                    y: [0, -35 - i * 3, 12, 0],
+                    y: [0, (-35 - i * 3) * amp, 12 * amp, 0],
                     rotate: [
                       (i - 4) * 2,
-                      side * (14 + i * 2),
-                      side * -(10 + i),
+                      side * (14 + i * 2) * amp,
+                      side * -(10 + i) * amp,
                       (i - 4) * 2,
                     ],
                     rotateZ: [0, side * 3, 0],

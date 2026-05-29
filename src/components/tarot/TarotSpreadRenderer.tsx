@@ -257,9 +257,12 @@ export function TarotSpreadRenderer({
   const layoutWidth =
     containerSize.width > 0
       ? containerSize.width
-      : typeof window !== "undefined"
-        ? Math.min(window.innerWidth - 48, 420)
-        : 360;
+      : isMobile
+        ? // 手机端：测量完成前不定位，避免按错误宽度渲染导致牌偏一侧
+          0
+        : typeof window !== "undefined"
+          ? Math.min(window.innerWidth - 48, 420)
+          : 360;
   const layoutHeight =
     containerSize.height > 0
       ? containerSize.height
