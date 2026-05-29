@@ -19,10 +19,12 @@ const CosmicParticles = dynamic(
 /** 同步检测移动/触摸设备（Canvas 仅客户端渲染，无 SSR 水合问题） */
 function detectMobileSync() {
   if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia("(max-width: 768px)").matches ||
-    window.matchMedia("(pointer: coarse)").matches
-  );
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
+  const narrow = window.matchMedia("(max-width: 768px)").matches;
+  const touch =
+    "ontouchstart" in window ||
+    (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0);
+  return coarse || narrow || touch;
 }
 
 interface ParticleBackgroundProps {
