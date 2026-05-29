@@ -83,13 +83,17 @@ export default function ResultPage() {
     session?.id,
   ]);
 
-  const spreadTitle = isLenormand
-    ? lenormandSpread
-      ? LENORMAND_SPREAD_LABELS[lenormandSpread]
-      : "雷诺曼"
-    : spread
-      ? SPREAD_LABELS[spread]
-      : "牌阵";
+  const freeCount = session?.freeCount ?? (!spread && !lenormandSpread ? cards.length : 0);
+  const isFree = freeCount > 0 && !spread && !lenormandSpread;
+  const spreadTitle = isFree
+    ? `直接解读 · ${freeCount} 张`
+    : isLenormand
+      ? lenormandSpread
+        ? LENORMAND_SPREAD_LABELS[lenormandSpread]
+        : "雷诺曼"
+      : spread
+        ? SPREAD_LABELS[spread]
+        : "牌阵";
 
   const jumpSummary = jumpCard?.card
     ? `提前显现的「${jumpCard.card.name}」：${jumpCard.card.upright.summary} 此牌已纳入本次组合叙事。`
@@ -106,10 +110,12 @@ export default function ResultPage() {
         }
         wide
       >
-        <CombinationPanel
-          combinations={lenormandCombos}
-          jumpSummary={jumpSummary}
-        />
+        {(lenormandCombos.length > 0 || jumpSummary) && (
+          <CombinationPanel
+            combinations={lenormandCombos}
+            jumpSummary={jumpSummary}
+          />
+        )}
 
         {deck && (
           <AiOraclePanel

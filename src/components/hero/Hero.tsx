@@ -13,6 +13,7 @@ import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
 import type { ReadingSystemChoice } from "@/components/hero/ReadingSystemSelector";
 import { HeroMobile } from "@/components/hero/HeroMobile";
 import { HeroDesktop } from "@/components/hero/HeroDesktop";
+import { FloatingBreatheButton } from "@/components/hero/FloatingBreatheButton";
 
 export function Hero() {
   const { theme } = useTheme();
@@ -65,6 +66,8 @@ export function Hero() {
       <div className="hidden lg:block">
         <HeroDesktop {...layoutProps} />
       </div>
+
+      <FloatingBreatheButton />
     </section>
   );
 }

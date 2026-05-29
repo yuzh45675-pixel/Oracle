@@ -44,6 +44,8 @@ interface ReadingContextValue {
   setQuestion: (q: string) => void;
   startRitual: () => Promise<void>;
   completeCut: (selection: number | string[]) => Promise<DrawnCard[]>;
+  /** 自由抽牌（不选牌阵）：直接写入已抽好的牌并生成会话 */
+  completeFreeReading: (freeCards: DrawnCard[]) => ReadingSession | null;
   shuffledPool: import("@/types/tarot").TarotCard[];
   reset: () => void;
   prepareNewReading: () => void;
@@ -153,6 +155,30 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
     ]
   );
 
+  const completeFreeReading = useCallback(
+    (freeCards: DrawnCard[]): ReadingSession | null => {
+      if (!deck || freeCards.length === 0) return null;
+      setSpread(null);
+      setLenormandSpread(null);
+      setCombinations([]);
+      setCards(freeCards);
+      const newSession: ReadingSession = {
+        id: crypto.randomUUID(),
+        deck,
+        spread: undefined,
+        lenormandSpread: undefined,
+        cards: freeCards,
+        freeCount: freeCards.length,
+        createdAt: new Date().toISOString(),
+        question: question.trim() || undefined,
+      };
+      setSession(newSession);
+      setRitualPhase("spread");
+      return newSession;
+    },
+    [deck, question],
+  );
+
   const persistSession = useCallback(
     (patch?: Partial<ReadingSession>) => {
       setSession((prev) => {
@@ -226,6 +252,7 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
       setQuestion,
       startRitual,
       completeCut,
+      completeFreeReading,
       reset,
       prepareNewReading,
       persistSession,
@@ -246,6 +273,7 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
       shuffledPool,
       startRitual,
       completeCut,
+      completeFreeReading,
       persistSession,
       updateSession,
       reset,

@@ -79,6 +79,8 @@ export interface ReadingSession {
   combinations?: import("@/types/lenormand").LenormandCombination[];
   createdAt: string;
   question?: string;
+  /** 自由抽牌（不选牌阵）模式的张数 */
+  freeCount?: number;
   /** 牌义详解（结果页生成） */
   cardReadings?: CardReadingSnapshot[];
   /** AI 主解读 */

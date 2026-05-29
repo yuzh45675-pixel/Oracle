@@ -2,7 +2,6 @@
 
 import { motion, type MotionValue } from "framer-motion";
 import { TarotCard } from "@/components/tarot/TarotCard";
-import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { FloatingGlow } from "@/components/ui/FloatingGlow";
 import { ThemeOrbStrip } from "@/components/ui/ThemeOrbStrip";
 import {
@@ -109,9 +108,6 @@ export function HeroDesktop({
               transition={{ delay: 0.9, duration: 0.7 }}
             >
               <RitualEnterButton system={system} />
-              <AnimatedButton href="/breathe" variant="ghost">
-                呼吸
-              </AnimatedButton>
             </motion.div>
 
             <motion.div

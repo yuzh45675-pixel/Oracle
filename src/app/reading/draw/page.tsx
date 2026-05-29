@@ -59,7 +59,7 @@ export default function DrawPage() {
 
   useEffect(() => {
     const saved = loadReadingSetup();
-    if (saved) {
+    if (saved && "spread" in saved) {
       setDeck(saved.deck);
       if (saved.deck === "lenormand") {
         setLenormandSpread(saved.spread);

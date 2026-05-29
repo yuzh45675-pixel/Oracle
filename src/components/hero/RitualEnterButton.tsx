@@ -15,15 +15,22 @@ export function RitualEnterButton({
 }: RitualEnterButtonProps) {
   const router = useRouter();
 
-  const href =
-    system === "lenormand" ? "/reading?deck=lenormand" : "/reading?deck=waite";
+  const deckParam = system === "lenormand" ? "lenormand" : "waite";
+  const startHref = `/reading?deck=${deckParam}`;
+  const readingHref = `/reading?deck=${deckParam}&mode=free`;
 
   return (
-    <AnimatedButton
-      onClick={() => router.push(href)}
-      disabled={disabled}
-    >
-      开始占卜
-    </AnimatedButton>
+    <>
+      <AnimatedButton onClick={() => router.push(startHref)} disabled={disabled}>
+        开始占卜
+      </AnimatedButton>
+      <AnimatedButton
+        onClick={() => router.push(readingHref)}
+        disabled={disabled}
+        variant="ghost"
+      >
+        牌面解读
+      </AnimatedButton>
+    </>
   );
 }

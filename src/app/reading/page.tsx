@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { ReadingLayout } from "@/components/tarot/ReadingLayout";
@@ -11,6 +11,7 @@ import { saveReadingSetup } from "@/lib/reading-session";
 import { LENORMAND_SPREADS } from "@/lib/lenormand/layouts";
 import { SPREADS } from "@/types/tarot";
 import type { LenormandSpreadType } from "@/types/lenormand";
+import { ManualCardPicker } from "@/components/reading/ManualCardPicker";
 
 const DECK_LABEL = {
   waite: "维特塔罗",
@@ -30,10 +31,14 @@ function ReadingStartContent() {
     question,
     setQuestion,
     prepareNewReading,
+    completeFreeReading,
   } = useReading();
   const { enterWorld } = useTheme();
 
+  const [pickerOpen, setPickerOpen] = useState(false);
+
   const deckParam = searchParams.get("deck");
+  const modeParam = searchParams.get("mode");
 
   useEffect(() => {
     if (deckParam === "lenormand" || deckParam === "waite") {
@@ -44,10 +49,23 @@ function ReadingStartContent() {
     router.replace("/");
   }, [deckParam, setDeck, router, enterWorld]);
 
+  useEffect(() => {
+    if (modeParam === "free" && (deck === "waite" || deck === "lenormand")) {
+      setPickerOpen(true);
+    }
+  }, [modeParam, deck]);
+
   const isLenormand = deck === "lenormand";
   const canStart = isLenormand
     ? Boolean(lenormandSpread)
     : Boolean(spread && deck === "waite");
+
+  const handleManualConfirm = (cards: import("@/types/tarot").DrawnCard[]) => {
+    prepareNewReading();
+    const created = completeFreeReading(cards);
+    setPickerOpen(false);
+    if (created) router.push("/reading/result");
+  };
 
   const handleStart = () => {
     if (!deck) return;
@@ -87,13 +105,44 @@ function ReadingStartContent() {
       badge={isLenormand ? "Lenormand Reading" : "Oracle Reading"}
       wide
     >
+      {/* 先：不选牌阵 · 直接解读 */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
       >
         <p className="mb-3 text-xs tracking-widest text-muted uppercase">
-          牌阵
+          不选牌阵 · 直接解读
+        </p>
+        <button
+          type="button"
+          onClick={() => setPickerOpen(true)}
+          className="w-full rounded-2xl border border-accent/30 bg-accent/[0.06] p-4 text-left transition-all duration-300 hover:border-accent/50 hover:bg-accent/10 lg:p-5"
+        >
+          <span className="text-[10px] tracking-[0.25em] text-accent uppercase">
+            直接解读
+          </span>
+          <h3 className="mt-1 font-display text-lg font-light text-frost lg:text-xl">
+            选择你线下抽到的牌
+          </h3>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            {isLenormand
+              ? "展开全部 36 张牌面，按你线下真实抽到的顺序勾选，直接交给 AI 解读。"
+              : "展开全部 78 张牌面，按你线下真实抽到的顺序勾选并标注正/逆位，直接交给 AI 解读。"}
+            （正式版按张数计费，内测阶段免费）
+          </p>
+        </button>
+      </motion.div>
+
+      {/* 或：选择牌阵走完整抽牌仪式 */}
+      <motion.div
+        className="mt-8"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+      >
+        <p className="mb-3 text-xs tracking-widest text-muted uppercase">
+          或 · 选择牌阵
         </p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {isLenormand
@@ -113,7 +162,7 @@ function ReadingStartContent() {
                   whileTap={{ scale: 0.99 }}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + i * 0.04 }}
+                  transition={{ delay: 0.3 + i * 0.04 }}
                 >
                   <span className="text-[10px] tracking-[0.25em] text-accent uppercase">
                     {s.cardCount} 张
@@ -142,7 +191,7 @@ function ReadingStartContent() {
                   whileTap={{ scale: 0.99 }}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + i * 0.04 }}
+                  transition={{ delay: 0.3 + i * 0.04 }}
                 >
                   <span className="text-[10px] tracking-[0.25em] text-accent uppercase">
                     {s.cardCount} 张
@@ -189,7 +238,9 @@ function ReadingStartContent() {
           进入抽牌
         </AnimatedButton>
         {!canStart && (
-          <p className="mt-3 text-center text-xs text-muted">请先选择牌阵</p>
+          <p className="mt-3 text-center text-xs text-muted">
+            选择牌阵后进入抽牌仪式，或用上方「直接解读」勾选你线下抽到的牌
+          </p>
         )}
         <button
           type="button"
@@ -199,6 +250,14 @@ function ReadingStartContent() {
           返回首页切换解读体系
         </button>
       </motion.div>
+
+      {pickerOpen && deck && (
+        <ManualCardPicker
+          deck={deck}
+          onConfirm={handleManualConfirm}
+          onClose={() => setPickerOpen(false)}
+        />
+      )}
     </ReadingLayout>
   );
 }
