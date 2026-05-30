@@ -11,9 +11,12 @@ const EYE_RING_R = 12;
 export function CardBackMatteSurface({
   theme,
   lite = false,
+  staticMode = false,
 }: {
   theme: OracleTheme;
   lite?: boolean;
+  /** 完整卡背、关闭动画，略降噪点/镭射强度以减轻 GPU 负载 */
+  staticMode?: boolean;
 }) {
   const c = theme.colors;
 
@@ -40,9 +43,12 @@ export function CardBackMatteSurface({
       />
       {!lite && (
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.1] mix-blend-soft-light"
+          className="pointer-events-none absolute inset-0 mix-blend-soft-light"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E")`,
+            opacity: staticMode ? 0.07 : 0.1,
+            backgroundImage: staticMode
+              ? `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")`
+              : `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E")`,
           }}
         />
       )}
@@ -71,16 +77,16 @@ export function CardBackMatteSurface({
       {!lite && (
         <>
           <div
-            className="card-back-holo pointer-events-none absolute inset-0 mix-blend-soft-light"
+            className={`pointer-events-none absolute inset-0 mix-blend-soft-light ${staticMode ? "" : "card-back-holo"}`}
             style={{
               background: `linear-gradient(
                 118deg,
                 transparent 0%,
                 rgba(210, 228, 255, 0) 32%,
-                rgba(245, 250, 255, 0.42) 44%,
-                rgba(230, 205, 255, 0.32) 50%,
-                rgba(255, 248, 225, 0.28) 56%,
-                rgba(195, 238, 255, 0.3) 62%,
+                rgba(245, 250, 255, ${staticMode ? 0.34 : 0.42}) 44%,
+                rgba(230, 205, 255, ${staticMode ? 0.26 : 0.32}) 50%,
+                rgba(255, 248, 225, ${staticMode ? 0.22 : 0.28}) 56%,
+                rgba(195, 238, 255, ${staticMode ? 0.24 : 0.3}) 62%,
                 transparent 74%
               )`,
             }}

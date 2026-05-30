@@ -13,7 +13,7 @@ interface CardFaceProps {
   className?: string;
   /** 入口 hero：卡背星环缓慢自转 */
   orbitSpin?: boolean;
-  /** lite：滑动选牌等场景，轻量静态卡背 */
+  /** static：完整卡背线稿，关闭动画并略降 GPU 负载 */
   backDetail?: CardBackDetail;
 }
 

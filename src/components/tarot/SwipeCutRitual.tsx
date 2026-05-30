@@ -126,7 +126,7 @@ export function SwipeCutRitual({
                 size={cardSize}
                 interactive={false}
                 instant
-                backDetail="lite"
+                backDetail="static"
               />
             </motion.div>
           ))}

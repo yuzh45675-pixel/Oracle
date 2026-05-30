@@ -166,7 +166,7 @@ function SpreadTableView({
                       onFlip={canFlip ? onReveal : undefined}
                       size={size}
                       interactive={canFlip}
-                      backDetail={showBack ? "lite" : "full"}
+                      backDetail={showBack ? "static" : "full"}
                       instant={showBack}
                     />
                   </div>

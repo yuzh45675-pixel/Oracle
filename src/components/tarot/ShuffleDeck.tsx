@@ -38,7 +38,7 @@ function MobileShuffleStack({ isShuffling }: { isShuffling: boolean }) {
         >
           <CardFace
             back
-            backDetail="lite"
+            backDetail="static"
             className="h-full w-full rounded-xl shadow-card"
           />
         </div>
@@ -104,7 +104,11 @@ function DesktopShuffleStack({ isShuffling }: { isShuffling: boolean }) {
             }
           >
             <div className="h-[280px] w-[190px]">
-              <CardFace back className="h-full w-full rounded-xl shadow-card" />
+              <CardFace
+                back
+                backDetail="static"
+                className="h-full w-full rounded-xl shadow-card"
+              />
             </div>
           </motion.div>
         );

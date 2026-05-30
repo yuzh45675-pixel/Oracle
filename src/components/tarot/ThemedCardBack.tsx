@@ -18,17 +18,22 @@ export function ThemedCardBack({
 }) {
   const { theme } = useTheme();
   const lite = detail === "lite";
+  const staticMode = detail === "static";
 
   return (
     <div
       className="relative h-full w-full overflow-hidden rounded-xl"
       style={{ transform: reversed ? "rotate(180deg)" : undefined }}
     >
-      <CardBackMatteSurface theme={theme} lite={lite} />
+      <CardBackMatteSurface theme={theme} lite={lite} staticMode={staticMode} />
       {lite ? (
         <LiteCardBackArt theme={theme} />
       ) : (
-        <OracleEyeCardBackArt theme={theme} orbitSpin={orbitSpin} />
+        <OracleEyeCardBackArt
+          theme={theme}
+          orbitSpin={orbitSpin && !staticMode}
+          highDetail={staticMode}
+        />
       )}
     </div>
   );

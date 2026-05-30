@@ -2,7 +2,7 @@
 
 import type { RitualPhase } from "@/types/tarot";
 
-export type CardBackDetail = "full" | "lite";
+export type CardBackDetail = "full" | "static" | "lite";
 
 export const SCROLL_CARD_STRIDE = {
   xs: 74 + 10,

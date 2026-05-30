@@ -56,7 +56,7 @@ const PickerCardButton = memo(function PickerCardButton({
         size={cardSize}
         interactive={false}
         instant
-        backDetail="lite"
+        backDetail="static"
       />
       {selected && order !== undefined && (
         <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-medium text-void shadow-[0_0_12px_rgba(155,140,255,0.45)] lg:h-6 lg:w-6 lg:text-[11px]">

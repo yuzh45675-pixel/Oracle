@@ -9,6 +9,8 @@ interface OracleEyeCardBackArtProps {
   theme: OracleTheme;
   /** 入口 hero：同心圆环绕眼睛缓慢自转 */
   orbitSpin?: boolean;
+  /** 仪式/选牌：完整线稿，射线不精简 */
+  highDetail?: boolean;
 }
 
 const W = 300;
@@ -257,13 +259,12 @@ function GalaxyOrbitSpin({
  * 黑底 + 单色辐射星图 + 中央全知之眼。线描色相由当前主题 metal/accent 驱动，
  * 银主题接近原稿，黑粉主题则呈玫瑰金线描。
  */
-export function OracleEyeCardBackArt({ theme, orbitSpin = false }: OracleEyeCardBackArtProps) {
+export function OracleEyeCardBackArt({ theme, orbitSpin = false, highDetail = false }: OracleEyeCardBackArtProps) {
   const uid = useId().replace(/:/g, "");
   const reducedMotion = useReducedMotion();
   const isTouch = useIsTouchDevice();
   const spin = orbitSpin && !reducedMotion;
-  // 手机端精简辐射线数量（保持花纹，减轻每帧绘制）
-  const rayCount = isTouch ? 64 : 96;
+  const rayCount = highDetail || !isTouch ? 96 : 64;
   const c = theme.colors;
   const line = c.metal;
   const lineDim = c.accentDim;
