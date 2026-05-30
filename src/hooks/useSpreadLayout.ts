@@ -21,7 +21,7 @@ function computeTableHeight(spreadHeight: number): number {
   if (isMobile) {
     const tall = spreadHeight > 900;
     const wide = spreadHeight >= 720;
-    return Math.min(h * (tall ? 0.62 : wide ? 0.56 : 0.5), tall ? 620 : wide ? 520 : 460);
+    return Math.min(h * (tall ? 0.68 : wide ? 0.62 : 0.58), tall ? 680 : wide ? 580 : 520);
   }
   if (isLarge) {
     return Math.min(tall ? 960 : 760, h * 0.68);
@@ -46,7 +46,7 @@ export function useSpreadLayout(
       };
     }
 
-    const pad = containerWidth < 768 ? 56 : 48;
+    const pad = containerWidth < 768 ? 28 : 48;
     const availW = containerWidth - pad * 2;
     const availH = containerHeight - pad * 2;
 
@@ -56,7 +56,7 @@ export function useSpreadLayout(
       layout.cardCount <= 5 &&
       ["single", "three", "five"].includes(layout.id);
     const mobile = containerWidth < 768;
-    const maxScale = mobile ? (isCompact ? 0.95 : 0.82) : isCompact ? 1 : 1.15;
+    const maxScale = mobile ? (isCompact ? 1.08 : 0.9) : isCompact ? 1 : 1.15;
     const scale = Math.min(scaleX, scaleY, maxScale);
 
     const contentW = layout.viewport.width * scale;

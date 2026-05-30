@@ -68,14 +68,15 @@ function SpreadTableView({
   const size = cardSizeForCount(displayCards.length, isMobile, isMobile);
 
   return (
-    <TarotTable
-      className="mx-auto w-full"
-      style={{
-        height: tableHeight,
-        minHeight: isMobile ? 280 : 320,
-      }}
-      enablePan={enablePan}
-    >
+    <div className={isMobile ? "relative left-1/2 w-[calc(100vw-1.5rem)] -translate-x-1/2" : "w-full"}>
+      <TarotTable
+        className="mx-auto w-full"
+        style={{
+          height: tableHeight,
+          minHeight: isMobile ? 340 : 320,
+        }}
+        enablePan={!isMobile && enablePan}
+      >
       <motion.div
         ref={containerRef}
         className="relative h-full w-full"
@@ -169,7 +170,8 @@ function SpreadTableView({
           );
         })}
       </motion.div>
-    </TarotTable>
+      </TarotTable>
+    </div>
   );
 }
 
@@ -278,7 +280,7 @@ export function TarotSpreadRenderer({
   const active = displayCards[activeIndex];
 
   const enablePan =
-    isMobile &&
+    !isMobile &&
     (allDone || revealedCount > 0) &&
     (expectedCount > 5 ||
       spread === "celtic" ||

@@ -212,6 +212,7 @@ export function AiOraclePanel({
   }, [refreshUser, retryPendingChat]);
 
   const handleStartInterpretation = () => {
+    if (loading) return;
     if (!user) {
       openAuth();
       return;
@@ -285,7 +286,7 @@ export function AiOraclePanel({
           <button
             type="button"
             onClick={handleStartInterpretation}
-            className="rounded-full border border-accent/40 bg-accent/15 px-5 py-2 text-sm text-frost transition hover:bg-accent/25"
+            className="touch-manipulation rounded-full border border-accent/40 bg-accent/15 px-5 py-2 text-sm text-frost transition active:scale-[0.98] hover:bg-accent/25"
           >
             {question ? "针对你的问题解读" : "生成牌阵解读"}
           </button>

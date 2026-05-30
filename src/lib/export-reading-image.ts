@@ -81,54 +81,17 @@ function estimateHeight(
   ctx: CanvasRenderingContext2D,
   session: ReadingSession,
 ): number {
-  let h = PAD + 200;
+  let h = PAD + 220;
 
   if (session.question) h += 80;
-  h += 280;
+  const previewCount = Math.min(session.cards.length, 8);
+  const previewRows = Math.max(1, Math.ceil(previewCount / 4));
+  h += previewRows * 300 + 80;
 
   if (session.aiInterpretation) {
     ctx.font = "28px sans-serif";
     const lines = wrapLines(ctx, session.aiInterpretation, CONTENT_W - 48);
-    h += 80 + lines.length * 42;
-  }
-
-  const readings =
-    session.cardReadings ??
-    session.cards.map((d) => ({
-      cardName: d.card.name,
-      position: d.position,
-      reversed: d.reversed,
-      summary: "",
-      detail: "",
-    }));
-
-  for (const r of readings) {
-    h += 60;
-    if (r.summary) {
-      ctx.font = "26px sans-serif";
-      h += wrapLines(ctx, r.summary, CONTENT_W - 48).length * 38;
-    }
-    if (r.detail) {
-      ctx.font = "24px sans-serif";
-      h += wrapLines(ctx, r.detail, CONTENT_W - 48).length * 34;
-    }
-    h += 24;
-  }
-
-  if (session.aiFollowUps?.length) {
-    for (const fu of session.aiFollowUps) {
-      h += 100;
-      ctx.font = "24px sans-serif";
-      h += wrapLines(ctx, fu.answer, CONTENT_W - 48).length * 34;
-    }
-  }
-
-  if (session.combinations?.length) {
-    for (const c of session.combinations) {
-      h += 80;
-      ctx.font = "24px sans-serif";
-      h += wrapLines(ctx, c.summary, CONTENT_W - 48).length * 34;
-    }
+    h += 120 + lines.length * 44;
   }
 
   h += 120;
@@ -204,7 +167,7 @@ export async function exportReadingImage(
 
   ctx.fillStyle = COLORS.accent;
   ctx.font = "22px sans-serif";
-  ctx.fillText("TAROT READING", WIDTH / 2, y);
+  ctx.fillText("ORACLE READING REPORT", WIDTH / 2, y);
   y += 48;
 
   const spreadLabel = getSessionSpreadLabel(session);
@@ -257,15 +220,21 @@ export async function exportReadingImage(
       detail: "",
     }));
 
-  const cardCount = Math.min(cardReadings.length, 6);
-  const cardW = cardCount <= 3 ? 160 : cardCount <= 5 ? 130 : 110;
+  ctx.textAlign = "left";
+  ctx.fillStyle = COLORS.accent;
+  ctx.font = "bold 24px sans-serif";
+  ctx.fillText("✦ 牌面概览", PAD, y);
+  y += 36;
+
+  const cardCount = Math.min(cardReadings.length, 8);
+  const cols = Math.min(cardCount, 4);
+  const cardW = cols <= 3 ? 160 : 132;
   const cardH = Math.round(cardW * 1.45);
-  const gap = cardCount <= 3 ? 32 : 20;
-  const rowW = cardCount * cardW + (cardCount - 1) * gap;
-  let cx = (WIDTH - rowW) / 2;
+  const gap = cols <= 3 ? 32 : 22;
+  const rowGap = 118;
 
   const cardImages = await Promise.all(
-    cardReadings.slice(0, 6).map(async (r) => {
+    cardReadings.slice(0, 8).map(async (r) => {
       try {
         return await loadImage(r.image);
       } catch {
@@ -276,7 +245,14 @@ export async function exportReadingImage(
 
   for (let i = 0; i < cardCount; i++) {
     const r = cardReadings[i];
-    roundRect(ctx, cx, y, cardW, cardH, 10);
+    const row = Math.floor(i / 4);
+    const col = i % 4;
+    const countInRow = Math.min(4, cardCount - row * 4);
+    const rowW = countInRow * cardW + (countInRow - 1) * gap;
+    const cx = (WIDTH - rowW) / 2 + col * (cardW + gap);
+    const cy = y + row * (cardH + rowGap);
+
+    roundRect(ctx, cx, cy, cardW, cardH, 10);
     ctx.fillStyle = COLORS.cardBg;
     ctx.fill();
     ctx.strokeStyle = "rgba(155,140,255,0.3)";
@@ -286,19 +262,19 @@ export async function exportReadingImage(
     const img = cardImages[i];
     if (img) {
       const pad = 6;
-      ctx.drawImage(img, cx + pad, y + pad, cardW - pad * 2, cardH - pad * 2);
+      ctx.drawImage(img, cx + pad, cy + pad, cardW - pad * 2, cardH - pad * 2);
     }
 
     ctx.textAlign = "center";
     ctx.fillStyle = COLORS.accent;
     ctx.font = "18px sans-serif";
     if (r.position) {
-      ctx.fillText(r.position, cx + cardW / 2, y + cardH + 28);
+      ctx.fillText(r.position, cx + cardW / 2, cy + cardH + 28);
     }
 
     ctx.fillStyle = COLORS.frost;
     ctx.font = "20px sans-serif";
-    ctx.fillText(r.cardName, cx + cardW / 2, y + cardH + (r.position ? 54 : 32));
+    ctx.fillText(r.cardName, cx + cardW / 2, cy + cardH + (r.position ? 54 : 32));
 
     if (session.deck !== "lenormand" && r.reversed !== undefined) {
       ctx.fillStyle = COLORS.muted;
@@ -306,20 +282,18 @@ export async function exportReadingImage(
       ctx.fillText(
         r.reversed ? "逆位" : "正位",
         cx + cardW / 2,
-        y + cardH + (r.position ? 78 : 56),
+        cy + cardH + (r.position ? 78 : 56),
       );
     }
-
-    cx += cardW + gap;
   }
 
-  y += cardH + (cardReadings[0]?.position ? 100 : 72);
+  y += Math.ceil(cardCount / 4) * (cardH + rowGap) + 12;
 
   if (session.aiInterpretation) {
     ctx.textAlign = "left";
     ctx.fillStyle = COLORS.accent;
     ctx.font = "bold 24px sans-serif";
-    ctx.fillText("✦ AI 神谕解读", PAD, y);
+    ctx.fillText("✦ AI 解读", PAD, y);
     y += 36;
 
     roundRect(ctx, PAD, y, CONTENT_W, 24, 14);
@@ -343,95 +317,6 @@ export async function exportReadingImage(
       42,
     );
     y += 32;
-  }
-
-  if (session.combinations?.length) {
-    ctx.fillStyle = COLORS.accent;
-    ctx.font = "bold 24px sans-serif";
-    ctx.fillText("✦ 组合解读", PAD, y);
-    y += 36;
-
-    for (const combo of session.combinations) {
-      ctx.fillStyle = COLORS.frost;
-      ctx.font = "bold 26px Georgia, serif";
-      ctx.fillText(combo.title, PAD, y);
-      y += 32;
-      ctx.fillStyle = COLORS.muted;
-      ctx.font = "24px sans-serif";
-      y = drawWrappedText(ctx, combo.summary, PAD, y, CONTENT_W - 24, 36);
-      y += 20;
-    }
-  }
-
-  const readingsWithText = cardReadings.filter((r) => r.summary || r.detail);
-  if (readingsWithText.length > 0) {
-    ctx.fillStyle = COLORS.accent;
-    ctx.font = "bold 24px sans-serif";
-    ctx.fillText("✦ 牌义详解", PAD, y);
-    y += 40;
-
-    for (const r of readingsWithText) {
-      const blockTop = y;
-      ctx.font = "bold 26px Georgia, serif";
-      let title = r.cardName;
-      if (r.position) title = `${r.position} · ${title}`;
-      if (session.deck !== "lenormand" && r.reversed !== undefined) {
-        title += r.reversed ? " · 逆位" : " · 正位";
-      }
-
-      ctx.font = "26px sans-serif";
-      let blockH = 56;
-      if (r.summary) {
-        blockH += wrapLines(ctx, r.summary, CONTENT_W - 48).length * 38 + 8;
-      }
-      ctx.font = "24px sans-serif";
-      if (r.detail) {
-        blockH += wrapLines(ctx, r.detail, CONTENT_W - 48).length * 34 + 8;
-      }
-
-      roundRect(ctx, PAD, blockTop, CONTENT_W, blockH, 12);
-      ctx.fillStyle = "rgba(255,255,255,0.03)";
-      ctx.fill();
-      ctx.strokeStyle = COLORS.line;
-      ctx.stroke();
-
-      y = blockTop + 36;
-      ctx.fillStyle = COLORS.frost;
-      ctx.font = "bold 26px Georgia, serif";
-      ctx.fillText(title, PAD + 24, y);
-      y += 32;
-
-      if (r.summary) {
-        ctx.font = "26px sans-serif";
-        ctx.fillStyle = COLORS.frost;
-        y = drawWrappedText(ctx, r.summary, PAD + 24, y, CONTENT_W - 48, 38);
-        y += 8;
-      }
-      if (r.detail) {
-        ctx.font = "24px sans-serif";
-        ctx.fillStyle = COLORS.muted;
-        y = drawWrappedText(ctx, r.detail, PAD + 24, y, CONTENT_W - 48, 34);
-      }
-      y += 32;
-    }
-  }
-
-  if (session.aiFollowUps?.length) {
-    ctx.fillStyle = COLORS.accent;
-    ctx.font = "bold 24px sans-serif";
-    ctx.fillText("✦ 追问记录", PAD, y);
-    y += 36;
-
-    for (const fu of session.aiFollowUps) {
-      ctx.fillStyle = COLORS.frost;
-      ctx.font = "bold 24px sans-serif";
-      ctx.fillText(`问：${fu.question}`, PAD, y);
-      y += 32;
-      ctx.fillStyle = COLORS.muted;
-      ctx.font = "24px sans-serif";
-      y = drawWrappedText(ctx, fu.answer, PAD, y, CONTENT_W - 24, 36);
-      y += 24;
-    }
   }
 
   y = height - 80;

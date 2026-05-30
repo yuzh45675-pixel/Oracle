@@ -28,12 +28,28 @@ export function ReadingExportButton({
     setDone(false);
     try {
       const blob = await exportReadingImage(session);
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = downloadReadingImageFilename(session);
-      link.click();
-      URL.revokeObjectURL(url);
+      const filename = downloadReadingImageFilename(session);
+      const file = new File([blob], filename, { type: "image/png" });
+
+      // 手机浏览器优先打开系统分享面板，用户可直接保存到相册。
+      if (
+        typeof navigator !== "undefined" &&
+        "canShare" in navigator &&
+        navigator.canShare?.({ files: [file] })
+      ) {
+        await navigator.share({
+          title: "Oracle 解读长图",
+          text: "保存你的牌面解读结果",
+          files: [file],
+        });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
       setDone(true);
       window.setTimeout(() => setDone(false), 2500);
     } catch {
@@ -56,7 +72,7 @@ export function ReadingExportButton({
       whileTap={{ scale: 0.98 }}
       className={`rounded-full border px-5 py-2.5 text-sm transition disabled:cursor-wait disabled:opacity-60 ${base} ${className}`}
     >
-      {loading ? "正在生成图片…" : done ? "已保存到相册/下载" : "下载解读长图"}
+      {loading ? "正在生成图片…" : done ? "已打开保存面板" : "保存解读长图"}
     </motion.button>
   );
 }

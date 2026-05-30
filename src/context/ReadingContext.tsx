@@ -46,6 +46,11 @@ interface ReadingContextValue {
   completeCut: (selection: number | string[]) => Promise<DrawnCard[]>;
   /** 自由抽牌（不选牌阵）：直接写入已抽好的牌并生成会话 */
   completeFreeReading: (freeCards: DrawnCard[]) => ReadingSession | null;
+  /** 牌面解读：手动录入线下抽到的牌，可带牌阵位置 */
+  completeManualReading: (
+    manualCards: DrawnCard[],
+    options?: { spread?: SpreadType; lenormandSpread?: LenormandSpreadType },
+  ) => ReadingSession | null;
   shuffledPool: import("@/types/tarot").TarotCard[];
   reset: () => void;
   prepareNewReading: () => void;
@@ -179,6 +184,42 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
     [deck, question],
   );
 
+  const completeManualReading = useCallback(
+    (
+      manualCards: DrawnCard[],
+      options?: { spread?: SpreadType; lenormandSpread?: LenormandSpreadType },
+    ): ReadingSession | null => {
+      if (!deck || manualCards.length === 0) return null;
+      const nextSpread = deck === "waite" ? options?.spread : undefined;
+      const nextLenormandSpread =
+        deck === "lenormand" ? options?.lenormandSpread : undefined;
+      const combos =
+        deck === "lenormand" && nextLenormandSpread
+          ? buildLenormandCombinations(nextLenormandSpread, manualCards)
+          : [];
+
+      setSpread(nextSpread ?? null);
+      setLenormandSpread(nextLenormandSpread ?? null);
+      setCombinations(combos);
+      setCards(manualCards);
+      const newSession: ReadingSession = {
+        id: crypto.randomUUID(),
+        deck,
+        spread: nextSpread,
+        lenormandSpread: nextLenormandSpread,
+        cards: manualCards,
+        freeCount: nextSpread || nextLenormandSpread ? undefined : manualCards.length,
+        combinations: combos.length ? combos : undefined,
+        createdAt: new Date().toISOString(),
+        question: question.trim() || undefined,
+      };
+      setSession(newSession);
+      setRitualPhase("spread");
+      return newSession;
+    },
+    [deck, question],
+  );
+
   const persistSession = useCallback(
     (patch?: Partial<ReadingSession>) => {
       setSession((prev) => {
@@ -253,6 +294,7 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
       startRitual,
       completeCut,
       completeFreeReading,
+      completeManualReading,
       reset,
       prepareNewReading,
       persistSession,
@@ -274,6 +316,7 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
       startRitual,
       completeCut,
       completeFreeReading,
+      completeManualReading,
       persistSession,
       updateSession,
       reset,
