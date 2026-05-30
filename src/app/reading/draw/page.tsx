@@ -22,6 +22,7 @@ import {
 } from "@/lib/spreadReveal";
 import { FLIP_GUIDANCE } from "@/types/tarot";
 import { useParticleInteraction } from "@/context/ParticleInteractionContext";
+import { ritualParticleDissolve } from "@/lib/ritual-performance";
 
 export default function DrawPage() {
   const router = useRouter();
@@ -150,8 +151,9 @@ export default function DrawPage() {
     <ReadingLayout
       title={title}
       subtitle={subtitle}
-      dissolve={ritualPhase === "spread" ? 1 : 0.75}
+      dissolve={ritualParticleDissolve(ritualPhase)}
       wide={ritualPhase === "cutting" || ritualPhase === "spread"}
+      performanceMode={ritualPhase === "cutting"}
     >
       <RitualStepGuideToggle
         enabled={stepGuideEnabled}

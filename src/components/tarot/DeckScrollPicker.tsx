@@ -1,10 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { TarotCard } from "./TarotCard";
 import { useParticleInteraction } from "@/context/ParticleInteractionContext";
 import { useIsDesktopLayout } from "@/hooks/useMediaQuery";
+import {
+  SCROLL_CARD_STRIDE,
+  scrollVisibleWindow,
+} from "@/lib/ritual-performance";
 import type { TarotCard as TarotCardType } from "@/types/tarot";
 
 interface DeckScrollPickerProps {
@@ -18,6 +22,50 @@ function splitRows(cards: TarotCardType[]) {
   const mid = Math.ceil(cards.length / 2);
   return [cards.slice(0, mid), cards.slice(mid)] as const;
 }
+
+const PickerCardButton = memo(function PickerCardButton({
+  card,
+  order,
+  selected,
+  full,
+  cardSize,
+  onToggle,
+}: {
+  card: TarotCardType;
+  order?: number;
+  selected: boolean;
+  full: boolean;
+  cardSize: "xs" | "sm";
+  onToggle: (id: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={full}
+      onClick={() => onToggle(card.id)}
+      className={`relative shrink-0 rounded-xl transition-transform active:scale-95 disabled:opacity-35 ${
+        selected
+          ? "ring-2 ring-accent/70 ring-offset-2 ring-offset-void"
+          : "opacity-90 hover:opacity-100"
+      }`}
+      style={{ contentVisibility: "auto", containIntrinsicSize: "108px 74px" }}
+      aria-pressed={selected}
+      aria-label={card.name}
+    >
+      <TarotCard
+        size={cardSize}
+        interactive={false}
+        instant
+        backDetail="lite"
+      />
+      {selected && order !== undefined && (
+        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-medium text-void shadow-[0_0_12px_rgba(155,140,255,0.45)] lg:h-6 lg:w-6 lg:text-[11px]">
+          {order}
+        </span>
+      )}
+    </button>
+  );
+});
 
 function ScrollRow({
   cards,
@@ -33,6 +81,36 @@ function ScrollRow({
   cardSize: "xs" | "sm";
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const stride = SCROLL_CARD_STRIDE[cardSize];
+  const [range, setRange] = useState({ start: 0, end: Math.min(cards.length, 14) });
+
+  const updateRange = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const next = scrollVisibleWindow(
+      el.scrollLeft,
+      el.clientWidth,
+      cards.length,
+      stride,
+    );
+    setRange((prev) =>
+      prev.start === next.start && prev.end === next.end ? prev : next,
+    );
+  }, [cards.length, stride]);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    updateRange();
+    el.addEventListener("scroll", updateRange, { passive: true });
+    const ro = new ResizeObserver(updateRange);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateRange);
+      ro.disconnect();
+    };
+  }, [updateRange]);
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -60,40 +138,51 @@ function ScrollRow({
     return () => el.removeEventListener("wheel", onWheel);
   }, [cards.length]);
 
+  const leftSpacer = range.start * stride;
+  const rightSpacer = Math.max(0, cards.length - range.end) * stride;
+  const visible = cards.slice(range.start, range.end);
+
   return (
     <div
       ref={scrollerRef}
       className="overflow-x-auto overscroll-x-contain touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      style={{ WebkitOverflowScrolling: "touch" }}
     >
-      <div className="flex w-max gap-2.5 px-1 py-1 lg:gap-3.5">
-        {cards.map((card) => {
+      <div
+        className="flex w-max gap-2.5 px-1 py-1 lg:gap-3.5"
+        style={{ contain: "layout style" }}
+      >
+        {leftSpacer > 0 && (
+          <div
+            aria-hidden
+            className="shrink-0"
+            style={{ width: leftSpacer }}
+          />
+        )}
+        {visible.map((card) => {
           const order = selectedOrder.get(card.id);
           const selected = order !== undefined;
           const full = selectedOrder.size >= pickCount && !selected;
 
           return (
-            <button
+            <PickerCardButton
               key={card.id}
-              type="button"
-              disabled={full}
-              onClick={() => onToggle(card.id)}
-              className={`relative shrink-0 rounded-xl transition-transform active:scale-95 disabled:opacity-35 ${
-                selected
-                  ? "ring-2 ring-accent/70 ring-offset-2 ring-offset-void"
-                  : "opacity-90 hover:opacity-100"
-              }`}
-              aria-pressed={selected}
-              aria-label={card.name}
-            >
-              <TarotCard size={cardSize} interactive={false} />
-              {selected && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-medium text-void shadow-[0_0_12px_rgba(155,140,255,0.45)] lg:h-6 lg:w-6 lg:text-[11px]">
-                  {order}
-                </span>
-              )}
-            </button>
+              card={card}
+              order={order}
+              selected={selected}
+              full={full}
+              cardSize={cardSize}
+              onToggle={onToggle}
+            />
           );
         })}
+        {rightSpacer > 0 && (
+          <div
+            aria-hidden
+            className="shrink-0"
+            style={{ width: rightSpacer }}
+          />
+        )}
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import {
 import { TarotCard } from "./TarotCard";
 import { useParticleInteraction } from "@/context/ParticleInteractionContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
 import { cutGroupCount } from "@/lib/particle-formations";
 
 interface SwipeCutRitualProps {
@@ -28,7 +29,11 @@ export function SwipeCutRitual({
   const [phase, setPhase] = useState<"stream" | "cutting" | "done">("stream");
   const [selectedPile, setSelectedPile] = useState<number | null>(null);
 
+  const isTouch = useIsTouchDevice();
+  const streamCount = isTouch ? 8 : 14;
+  const cardSize = isTouch ? "xs" : "sm";
   const groupCount = cutGroupCount(spreadCardCount);
+  const streamCenter = (streamCount - 1) / 2;
   const streamX = useMotionValue(0);
   const cutProgress = useMotionValue(0);
   const streamSkew = useTransform(streamX, [-120, 120], [-6, 6]);
@@ -96,14 +101,14 @@ export function SwipeCutRitual({
             }
           }}
         >
-          {Array.from({ length: 14 }).map((_, i) => (
+          {Array.from({ length: streamCount }).map((_, i) => (
             <motion.div
               key={i}
               className="relative shrink-0"
               style={{
-                marginLeft: i === 0 ? 0 : -48,
+                marginLeft: i === 0 ? 0 : isTouch ? -36 : -48,
                 zIndex: i,
-                rotate: (i - 7) * 2.2,
+                rotate: (i - streamCenter) * 2.2,
               }}
               animate={
                 phase === "stream"
@@ -117,7 +122,12 @@ export function SwipeCutRitual({
                 default: { duration: 0.5 },
               }}
             >
-              <TarotCard size="sm" interactive={false} />
+              <TarotCard
+                size={cardSize}
+                interactive={false}
+                instant
+                backDetail="lite"
+              />
             </motion.div>
           ))}
         </motion.div>

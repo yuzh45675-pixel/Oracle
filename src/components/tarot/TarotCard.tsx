@@ -4,6 +4,7 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useState } from "react";
 import { CardFace } from "./CardFace";
 import type { TarotCard as TarotCardType } from "@/types/tarot";
+import type { CardBackDetail } from "@/lib/ritual-performance";
 
 interface TarotCardProps {
   card?: TarotCardType;
@@ -15,6 +16,9 @@ interface TarotCardProps {
   interactive?: boolean;
   className?: string;
   delay?: number;
+  /** 跳过入场动画（滑动选牌等批量渲染） */
+  instant?: boolean;
+  backDetail?: CardBackDetail;
 }
 
 const sizes = {
@@ -35,6 +39,8 @@ export function TarotCard({
   interactive = true,
   className = "",
   delay = 0,
+  instant = false,
+  backDetail = "full",
 }: TarotCardProps) {
   const [internalFlipped, setInternalFlipped] = useState(false);
   const flipped = controlledFlipped ?? internalFlipped;
@@ -59,14 +65,16 @@ export function TarotCard({
     else setInternalFlipped((f) => !f);
   };
 
+  const skipMotion = isLocked || instant;
+
   return (
     <motion.div
       className={`perspective-[1200px] ${sizes[size]} ${className}`}
       style={{ perspective: 1200 }}
-      initial={isLocked ? false : { opacity: 0, y: 30, scale: 0.95 }}
-      animate={isLocked ? undefined : { opacity: 1, y: 0, scale: 1 }}
+      initial={skipMotion ? false : { opacity: 0, y: 30, scale: 0.95 }}
+      animate={skipMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
       transition={
-        isLocked
+        skipMotion
           ? undefined
           : {
               delay,
@@ -104,7 +112,7 @@ export function TarotCard({
           className="absolute inset-0 shadow-card transition-shadow duration-500"
           style={{ backfaceVisibility: "hidden" }}
         >
-          <CardFace back orbitSpin={size === "hero"} />
+          <CardFace back orbitSpin={size === "hero"} backDetail={backDetail} />
         </motion.div>
         <motion.div
           className="absolute inset-0 shadow-card"

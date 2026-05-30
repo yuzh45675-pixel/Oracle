@@ -14,6 +14,7 @@ import {
   getLenormandActiveIndex,
   getLenormandRevealPrompt,
 } from "@/lib/lenormand/reveal";
+import { ritualParticleDissolve } from "@/lib/ritual-performance";
 
 export function LenormandDrawFlow() {
   const {
@@ -106,6 +107,8 @@ export function LenormandDrawFlow() {
               : revealPrompt
       }
       wide={isTableau || ritualPhase === "spread" || ritualPhase === "cutting"}
+      dissolve={ritualParticleDissolve(ritualPhase)}
+      performanceMode={ritualPhase === "cutting"}
     >
       <AnimatePresence mode="wait">
         {ritualPhase === "idle" && (

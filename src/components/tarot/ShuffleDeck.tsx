@@ -36,7 +36,11 @@ function MobileShuffleStack({ isShuffling }: { isShuffling: boolean }) {
             animationDelay: isShuffling ? `${i * 0.12}s` : undefined,
           }}
         >
-          <CardFace back className="h-full w-full rounded-xl shadow-card" />
+          <CardFace
+            back
+            backDetail="lite"
+            className="h-full w-full rounded-xl shadow-card"
+          />
         </div>
       ))}
     </div>

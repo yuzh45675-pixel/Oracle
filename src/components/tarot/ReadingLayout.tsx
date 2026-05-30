@@ -15,6 +15,8 @@ interface ReadingLayoutProps {
   badge?: string;
   /** Minimal header for ritual phases */
   minimal?: boolean;
+  /** 滑动选牌等阶段：降低粒子与光效负载 */
+  performanceMode?: boolean;
 }
 
 export function ReadingLayout({
@@ -25,6 +27,7 @@ export function ReadingLayout({
   wide = false,
   badge = "Oracle Reading",
   minimal = false,
+  performanceMode = false,
 }: ReadingLayoutProps) {
   const { theme } = useTheme();
 
@@ -36,17 +39,26 @@ export function ReadingLayout({
       exit={{ opacity: 0, filter: "blur(12px)" }}
       transition={{ duration: 0.6 }}
     >
-      <ParticleBackground dissolve={dissolve} intensity={1} />
-      <FloatingGlow
-        className="left-1/2 top-[22%] -translate-x-1/2 lg:scale-110"
-        size={480}
-        color={theme.colors.glowPrimary}
+      <ParticleBackground
+        dissolve={dissolve}
+        intensity={performanceMode ? 0.42 : 1}
+        interactive={!performanceMode}
+        showGlow={!performanceMode}
       />
-      <FloatingGlow
-        className="right-[-15%] bottom-[10%]"
-        color={theme.colors.glowSecondary}
-        size={320}
-      />
+      {!performanceMode && (
+        <>
+          <FloatingGlow
+            className="left-1/2 top-[22%] -translate-x-1/2 lg:scale-110"
+            size={480}
+            color={theme.colors.glowPrimary}
+          />
+          <FloatingGlow
+            className="right-[-15%] bottom-[10%]"
+            color={theme.colors.glowSecondary}
+            size={320}
+          />
+        </>
+      )}
 
       <motion.div
         className={`relative z-10 mx-auto px-3 sm:px-6 lg:px-8 ${
