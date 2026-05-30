@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getLenormandLayout } from "@/lib/lenormand/layouts";
+import { spreadCenterBias } from "@/lib/spread-visual-bias";
 import type { SpreadCardSlot } from "@/lib/spreadLayouts";
 import type { LenormandSpreadType } from "@/types/lenormand";
 
@@ -44,6 +45,7 @@ export function useLenormandSpreadLayout(
     const scaleX = availW / layout.viewport.width;
     const scaleY = availH / layout.viewport.height;
     const scale = Math.min(scaleX, scaleY, isCompact ? 1 : 1.1);
+    const bias = spreadCenterBias(containerWidth);
 
     const contentW = layout.viewport.width * scale;
     const contentH = layout.viewport.height * scale;
@@ -62,8 +64,8 @@ export function useLenormandSpreadLayout(
       const ys = scaledSlots.map((s) => s.y);
       const gx = (Math.min(...xs) + Math.max(...xs)) / 2;
       const gy = (Math.min(...ys) + Math.max(...ys)) / 2;
-      const dx = containerWidth / 2 - gx;
-      const dy = containerHeight / 2 - gy;
+      const dx = containerWidth / 2 - gx + bias.x;
+      const dy = containerHeight / 2 - gy + bias.y;
       scaledSlots = scaledSlots.map((s) => ({
         ...s,
         x: s.x + dx,
@@ -75,8 +77,8 @@ export function useLenormandSpreadLayout(
       scaledSlots = [
         {
           ...scaledSlots[0],
-          x: containerWidth / 2,
-          y: containerHeight / 2,
+          x: containerWidth / 2 + bias.x,
+          y: containerHeight / 2 + bias.y,
         },
       ];
     }

@@ -8,6 +8,8 @@ interface TarotTableProps {
   className?: string;
   style?: React.CSSProperties;
   enablePan?: boolean;
+  /** 裁切左上空白，纠正牌阵偏右下 */
+  cropTopLeft?: { top: number; left: number };
 }
 
 export function TarotTable({
@@ -15,6 +17,7 @@ export function TarotTable({
   className = "",
   style,
   enablePan = false,
+  cropTopLeft,
 }: TarotTableProps) {
   return (
     <div
@@ -51,7 +54,14 @@ export function TarotTable({
       />
 
       <motion.div
-        className="relative h-full w-full"
+        className="relative h-full w-full overflow-hidden"
+        style={
+          cropTopLeft
+            ? {
+                clipPath: `inset(${cropTopLeft.top}px 0 0 ${cropTopLeft.left}px)`,
+              }
+            : undefined
+        }
         drag={enablePan ? "x" : false}
         dragConstraints={{ left: -180, right: 180 }}
         dragElastic={0.08}

@@ -11,6 +11,7 @@ import {
 import { useIsMobileLayout } from "@/hooks/useMediaQuery";
 import { getSpreadLayout } from "@/lib/spreadLayouts";
 import { getActiveCardIndex } from "@/lib/spreadReveal";
+import { spreadTableCrop } from "@/lib/spread-visual-bias";
 import type { DrawnCard, SpreadType } from "@/types/tarot";
 
 interface TarotSpreadRendererProps {
@@ -75,6 +76,7 @@ function SpreadTableView({
         minHeight: isMobile ? 340 : 320,
       }}
       enablePan={!isMobile && enablePan}
+      cropTopLeft={spreadTableCrop(isMobile)}
     >
       <div ref={containerRef} className="relative h-full w-full">
         {displayCards.map((drawn, i) => {

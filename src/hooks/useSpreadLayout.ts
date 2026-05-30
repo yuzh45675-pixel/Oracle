@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { getSpreadLayout } from "@/lib/spreadLayouts";
 import type { SpreadCardSlot } from "@/lib/spreadLayouts";
+import { spreadCenterBias } from "@/lib/spread-visual-bias";
 import type { SpreadType } from "@/types/tarot";
 
 export interface ScaledSlot extends SpreadCardSlot {
@@ -71,6 +72,7 @@ export function useSpreadLayout(
     const mobile = containerWidth < 768;
     const maxScale = mobile ? (isCompact ? 1.06 : 0.92) : isCompact ? 1 : 1.12;
     const scale = Math.min(scaleX, scaleY, maxScale);
+    const bias = spreadCenterBias(containerWidth);
 
     let slots: ScaledSlot[] = layout.slots.map((slot) => ({
       ...slot,
@@ -84,8 +86,8 @@ export function useSpreadLayout(
       const ys = slots.map((s) => s.y);
       const gx = (Math.min(...xs) + Math.max(...xs)) / 2;
       const gy = (Math.min(...ys) + Math.max(...ys)) / 2;
-      const dx = containerWidth / 2 - gx;
-      const dy = containerHeight / 2 - gy;
+      const dx = containerWidth / 2 - gx + bias.x;
+      const dy = containerHeight / 2 - gy + bias.y;
       slots = slots.map((s) => ({ ...s, x: s.x + dx, y: s.y + dy }));
     }
 
@@ -93,8 +95,8 @@ export function useSpreadLayout(
       slots = [
         {
           ...slots[0],
-          x: containerWidth / 2,
-          y: containerHeight / 2,
+          x: containerWidth / 2 + bias.x,
+          y: containerHeight / 2 + bias.y,
         },
       ];
     }
