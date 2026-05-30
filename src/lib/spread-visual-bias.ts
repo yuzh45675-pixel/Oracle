@@ -7,8 +7,8 @@ export const SPREAD_CENTER_BIAS = {
 
 /** 牌桌可视区域裁切（去掉左上多余空白，等效把牌阵往中间推） */
 export const SPREAD_TABLE_CROP = {
-  mobile: { top: 34, left: 32 },
-  desktop: { top: 64, left: 76 },
+  mobile: { top: 34, left: 40 },
+  desktop: { top: 64, left: 88 },
 } as const;
 
 export function spreadCenterBias(containerWidth: number) {
