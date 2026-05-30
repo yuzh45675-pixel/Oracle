@@ -23,7 +23,11 @@ function authMiddleware(req, res, next) {
     const payload = jwt.verify(header.slice(7), JWT_SECRET);
     const user = store.findUserById(payload.sub);
     if (!user) {
-      res.status(401).json({ error: "用户不存在或已失效" });
+      res.status(401).json({
+        error: "用户不存在或已失效",
+        code: "AUTH_STALE",
+        hint: "内测服务器重启后账号数据会清空，请重新注册或登录",
+      });
       return;
     }
     req.user = user;

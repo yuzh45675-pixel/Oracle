@@ -14,10 +14,17 @@ export type ChatResponse = {
   billing?: { type: "free" | "credit" };
 };
 
-export async function fetchChatHealth(): Promise<{ ok: boolean; hasApiKey: boolean }> {
+export async function fetchChatHealth(): Promise<{
+  ok: boolean;
+  hasApiKey?: boolean;
+}> {
   const res = await fetchApiWithRetry("/api/health", { method: "GET" });
   if (!res.ok) throw new Error("AI 服务未启动");
-  return res.json();
+  const data = (await res.json()) as { ok?: boolean; hasApiKey?: boolean };
+  if (data.hasApiKey === false) {
+    throw new Error("Missing DEEPSEEK_API_KEY");
+  }
+  return { ok: Boolean(data.ok), hasApiKey: data.hasApiKey };
 }
 
 export async function sendChatRequest(options: {

@@ -11,7 +11,13 @@ import {
   createPayment,
   devCompletePayment,
   fetchPaymentStatus,
+  setStoredToken,
 } from "@/lib/auth-client";
+import {
+  apiErrorFootnote,
+  classifyApiError,
+  isAuthStaleError,
+} from "@/lib/api-error-hints";
 import {
   fetchChatHealth,
   sendChatRequest,
@@ -62,13 +68,14 @@ export function AiOraclePanel({
   const [loading, setLoading] = useState(false);
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorHint, setErrorHint] = useState<string | null>(null);
   const [paymentRequired, setPaymentRequired] = useState(false);
   const [started, setStarted] = useState(false);
   const pendingRetry = useRef<{
     messages: ChatMessage[];
     display: DisplayMessage[];
   } | null>(null);
-  const { user, openAuth, refreshUser } = useAuth();
+  const { user, openAuth, refreshUser, logout } = useAuth();
 
   const excludeCardIds = useMemo(() => {
     const ids = new Set<string>();
@@ -102,6 +109,7 @@ export function AiOraclePanel({
       }
       setLoading(true);
       setError(null);
+      setErrorHint(null);
       setPaymentRequired(false);
       try {
         await fetchChatHealth();
@@ -143,17 +151,23 @@ export function AiOraclePanel({
           };
           setPaymentRequired(true);
           setError(null);
+          setErrorHint(null);
+        } else if (isAuthStaleError(err.message, err.status)) {
+          setStoredToken(null);
+          logout();
+          setError("登录已失效，请重新注册或登录后再解读");
+          setErrorHint(apiErrorFootnote("auth_stale"));
+          openAuth();
         } else {
-          setError(
-            err.message ||
-              "解读失败，请确认已运行 npm run server 并配置 .env",
-          );
+          const hint = classifyApiError(err.message, err.status);
+          setError(err.message || "解读失败，请稍后再试");
+          setErrorHint(apiErrorFootnote(hint));
         }
       } finally {
         setLoading(false);
       }
     },
-    [user, openAuth, refreshUser, onSessionUpdate],
+    [user, openAuth, refreshUser, onSessionUpdate, logout],
   );
 
   const retryPendingChat = useCallback(async () => {
@@ -357,10 +371,11 @@ export function AiOraclePanel({
       {error && (
         <p className="mb-4 rounded-lg border border-red-500/30 bg-red-950/40 px-4 py-3 text-sm text-red-200">
           {error}
-          <span className="mt-2 block text-xs text-red-200/70">
-            请先运行 <code className="text-red-100">npm run server</code>
-            ，并在项目根目录 .env 中设置 DEEPSEEK_API_KEY
-          </span>
+          {errorHint && (
+            <span className="mt-2 block text-xs leading-relaxed text-red-200/70">
+              {errorHint}
+            </span>
+          )}
         </p>
       )}
 
