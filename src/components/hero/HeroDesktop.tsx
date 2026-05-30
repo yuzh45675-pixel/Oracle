@@ -22,8 +22,8 @@ interface HeroDesktopProps {
 
 /** 左列统一宽度，体系 / 呼吸 / 按钮纵向对齐 */
 const LEFT_COL = "w-[17.5rem] xl:w-[19.5rem]";
-/** 左列与悬浮牌间距 ≈ 1.5×「牌面解读」按钮宽度 */
-const MID_GAP = "gap-[10.875rem] xl:gap-[12.125rem] 2xl:gap-[13.125rem]";
+/** 左列与悬浮牌间距 */
+const MID_GAP = "gap-[12.875rem] xl:gap-[14.125rem] 2xl:gap-[15.125rem]";
 
 export function HeroDesktop({
   system,
