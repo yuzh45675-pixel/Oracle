@@ -124,7 +124,7 @@ export function ReadingSystemSelector({
       <div
         className={
           variant === "desktop"
-            ? `flex items-stretch gap-4 xl:gap-5 ${
+            ? `flex items-stretch gap-3 xl:gap-3.5 ${
                 align === "start" ? "justify-start" : "justify-center"
               }`
             : `grid w-full max-w-[17rem] grid-cols-2 gap-3 sm:max-w-none ${

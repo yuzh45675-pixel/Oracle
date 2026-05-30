@@ -40,16 +40,16 @@ export function HeroDesktop({
       />
 
       {/*
-        3:2 画幅容器（宽:高 = 3:2）
-        从浏览器正中裁 3:2 时，内容落在这个比例框里
+        4:3 横屏画幅（宽:高 = 4:3）
+        录站视频时从浏览器正中裁这一块即可
       */}
       <motion.div
-        className="relative z-10 mx-auto flex aspect-[3/2] w-[min(92vw,calc(100dvh*1.5))] max-h-[calc(100dvh-4.5rem)] items-center px-[7%] py-[6%]"
+        className="relative z-10 mx-auto flex aspect-[4/3] w-[min(94vw,calc(100dvh*4/3))] max-h-[calc(100dvh-4.5rem)] items-center px-[4%] py-[5%]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="grid w-full grid-cols-[1.08fr_0.92fr] items-center gap-[6%]">
+        <div className="grid w-full grid-cols-[1.05fr_0.95fr] items-center gap-[2.5%]">
           <div className="flex min-w-0 flex-col items-start text-left">
             <motion.p
               className="mb-3 text-xs tracking-[0.5em] text-accent/90 uppercase xl:mb-4"
