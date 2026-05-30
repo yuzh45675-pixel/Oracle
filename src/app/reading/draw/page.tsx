@@ -263,7 +263,7 @@ export default function DrawPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.7 }}
-              className="flex w-full max-w-none flex-col items-center"
+              className="flex w-full min-w-0 max-w-none flex-col items-center"
             >
               {jumpCard && (
                 <motion.p

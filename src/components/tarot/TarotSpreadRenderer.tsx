@@ -40,8 +40,6 @@ interface SpreadTableViewProps {
   displayCards: DrawnCard[];
   flipped: boolean[];
   scaledSlots: ScaledSlot[];
-  contentWidth: number;
-  contentHeight: number;
   containerRef: (node: HTMLDivElement | null) => void;
   tableHeight: number;
   isMobile: boolean;
@@ -57,8 +55,6 @@ function SpreadTableView({
   displayCards,
   flipped,
   scaledSlots,
-  contentWidth,
-  contentHeight,
   containerRef,
   tableHeight,
   isMobile,
@@ -73,93 +69,90 @@ function SpreadTableView({
 
   return (
     <TarotTable
-      className="mx-auto w-full max-w-full"
+      className="mx-auto w-full min-w-0 max-w-full"
       style={{
         height: tableHeight,
         minHeight: isMobile ? 340 : 320,
       }}
       enablePan={!isMobile && enablePan}
     >
-      {/* 测量层：铺满牌桌，用于计算缩放 */}
-      <div ref={containerRef} className="absolute inset-0" />
+      <div ref={containerRef} className="relative h-full w-full">
+        {displayCards.map((drawn, i) => {
+          const slot = scaledSlots[i];
+          if (!slot || !drawn?.card?.id) return null;
 
-      {/* 居中层：纯 CSS 把内容框放到正中央，不依赖坐标测量 */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <motion.div
-          className="relative"
-          style={{ width: contentWidth, height: contentHeight }}
-          initial={isMobile && allDone ? { opacity: 0, scale: 0.96 } : false}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {displayCards.map((drawn, i) => {
-            const slot = scaledSlots[i];
-            if (!slot || !drawn?.card?.id) return null;
+          const isFlipped = flipped[i];
+          const isActive = !allDone && i === activeIndex && !isFlipped;
+          const canFlip = isActive && !hideActiveInTable;
+          const hideSlot = hideActiveInTable && isActive;
 
-            const isFlipped = flipped[i];
-            const isActive = !allDone && i === activeIndex && !isFlipped;
-            const canFlip = isActive && !hideActiveInTable;
-            const hideSlot = hideActiveInTable && isActive;
-
-            if (hideSlot) {
-              return (
-                <motion.div
-                  key={`slot-marker-${drawn.slotId ?? drawn.card.id}-${i}`}
-                  className="absolute left-0 top-0"
-                  style={{
-                    left: slot.x,
-                    top: slot.y,
-                    zIndex: slot.zIndex + 5,
-                    transform: `translate(-50%, -50%) rotate(${slot.rotation}deg)`,
-                  }}
-                >
-                  <div className="flex h-[108px] w-[74px] items-center justify-center rounded-xl border-2 border-dashed border-accent/35 bg-accent/5 sm:h-[140px] sm:w-[96px]">
-                    <span className="text-[8px] text-accent/70">此处</span>
-                  </div>
-                </motion.div>
-              );
-            }
-
-            const showFace = isFlipped;
-            const showBack = !isFlipped && showBacksForUnflipped;
-
-            if (!showFace && !showBack && !canFlip) return null;
-
+          if (hideSlot) {
             return (
               <motion.div
-                key={`${drawn.slotId ?? drawn.card.id}-${i}`}
+                key={`slot-marker-${drawn.slotId ?? drawn.card.id}-${i}`}
                 className="absolute left-0 top-0"
                 style={{
                   left: slot.x,
                   top: slot.y,
-                  zIndex: isActive ? 200 : isFlipped ? 50 + i : slot.zIndex + 10,
-                  pointerEvents: canFlip ? "auto" : "none",
+                  zIndex: slot.zIndex + 5,
                   transform: `translate(-50%, -50%) rotate(${slot.rotation}deg)`,
-                  transformOrigin: "center center",
-                }}
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{
-                  opacity: showBack ? 0.55 : 1,
-                  scale: isFlipped && isMobile ? 1 : isActive ? 1.04 : 1,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 280,
-                  damping: 26,
-                  delay: isFlipped ? i * 0.03 : 0,
                 }}
               >
-                <div className="relative inline-block">
-                  {(showFace || canFlip) && (
-                    <span
-                      className={`pointer-events-none absolute bottom-full left-1/2 mb-1.5 w-max max-w-[96px] -translate-x-1/2 text-center text-[8px] tracking-[0.2em] uppercase sm:text-[9px] ${
-                        isActive ? "text-accent" : "text-muted/90"
-                      }`}
-                    >
+                <div className="flex h-[108px] w-[74px] items-center justify-center rounded-xl border-2 border-dashed border-accent/35 bg-accent/5 sm:h-[140px] sm:w-[96px]">
+                  <span className="text-[8px] text-accent/70">此处</span>
+                </div>
+              </motion.div>
+            );
+          }
+
+          const showFace = isFlipped;
+          const showBack = !isFlipped && showBacksForUnflipped;
+          const showGhost = !isFlipped && !showBack && !canFlip;
+
+          if (!showFace && !showBack && !canFlip && !showGhost) return null;
+
+          return (
+            <motion.div
+              key={`${drawn.slotId ?? drawn.card.id}-${i}`}
+              className="absolute left-0 top-0"
+              style={{
+                left: slot.x,
+                top: slot.y,
+                zIndex: isActive ? 200 : isFlipped ? 50 + i : slot.zIndex + 10,
+                pointerEvents: canFlip ? "auto" : "none",
+                transform: `translate(-50%, -50%) rotate(${slot.rotation}deg)`,
+                transformOrigin: "center center",
+              }}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{
+                opacity: showGhost ? 0.28 : showBack ? 0.55 : 1,
+                scale: isFlipped && isMobile ? 1 : isActive ? 1.04 : 1,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 280,
+                damping: 26,
+                delay: isFlipped ? i * 0.03 : 0,
+              }}
+            >
+              <div className="relative inline-block">
+                {(showFace || canFlip || showGhost) && (
+                  <span
+                    className={`pointer-events-none absolute bottom-full left-1/2 mb-1.5 w-max max-w-[96px] -translate-x-1/2 text-center text-[8px] tracking-[0.2em] uppercase sm:text-[9px] ${
+                      isActive ? "text-accent" : "text-muted/90"
+                    }`}
+                  >
+                    {drawn.position}
+                    {isActive ? " · 翻开" : ""}
+                  </span>
+                )}
+                {showGhost ? (
+                  <div className="flex h-[108px] w-[74px] items-center justify-center rounded-xl border border-dashed border-white/15 bg-white/[0.03] sm:h-[140px] sm:w-[96px]">
+                    <span className="text-[7px] tracking-widest text-muted/60">
                       {drawn.position}
-                      {isActive ? " · 翻开" : ""}
                     </span>
-                  )}
+                  </div>
+                ) : (
                   <div
                     className={`rounded-xl ${isActive ? "ring-2 ring-accent/50 ring-offset-2 ring-offset-transparent" : ""}`}
                   >
@@ -171,13 +164,15 @@ function SpreadTableView({
                       onFlip={canFlip ? onReveal : undefined}
                       size={size}
                       interactive={canFlip}
+                      backDetail={showBack ? "lite" : "full"}
+                      instant={showBack}
                     />
                   </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </TarotTable>
   );
@@ -248,6 +243,11 @@ function MobileFlipFocus({
   );
 }
 
+function fallbackSpreadWidth(): number {
+  if (typeof window === "undefined") return 360;
+  return Math.max(Math.min(window.innerWidth - 24, 896), 280);
+}
+
 export function TarotSpreadRenderer({
   spread,
   cards,
@@ -266,20 +266,14 @@ export function TarotSpreadRenderer({
   const allDone = revealedCount >= expectedCount;
 
   const layoutWidth =
-    containerSize.width > 0
-      ? containerSize.width
-      : isMobile
-        ? 0
-        : typeof window !== "undefined"
-          ? Math.min(window.innerWidth - 48, 420)
-          : 360;
+    containerSize.width > 0 ? containerSize.width : fallbackSpreadWidth();
   const layoutHeight =
     containerSize.height > 0
       ? containerSize.height
-      : isMobile && !allDone && revealedCount > 0
+      : isMobile && !allDone
         ? previewHeight
         : tableHeight;
-  const { scaledSlots, contentWidth, contentHeight } = useSpreadLayout(
+  const { scaledSlots } = useSpreadLayout(
     spread,
     layoutWidth,
     layoutHeight,
@@ -299,8 +293,6 @@ export function TarotSpreadRenderer({
     displayCards,
     flipped,
     scaledSlots,
-    contentWidth,
-    contentHeight,
     isMobile,
     allDone,
     activeIndex,
@@ -310,7 +302,7 @@ export function TarotSpreadRenderer({
 
   if (isMobile && !allDone) {
     return (
-      <div className="w-full">
+      <div className="w-full min-w-0">
         <MobileFlipFocus
           displayCards={displayCards}
           activeIndex={activeIndex}
@@ -319,27 +311,25 @@ export function TarotSpreadRenderer({
           onReveal={onReveal}
         />
 
-        {revealedCount > 0 && (
-          <div className="md:hidden">
-            <p className="mb-2 text-center text-[10px] tracking-widest text-muted uppercase">
-              已翻开 · 牌阵合成中
-            </p>
-            <SpreadTableView
-              {...tableProps}
-              containerRef={setContainerRef}
-              tableHeight={previewHeight}
-              showBacksForUnflipped
-              hideActiveInTable
-            />
-          </div>
-        )}
+        <div className="md:hidden">
+          <p className="mb-2 text-center text-[10px] tracking-widest text-muted uppercase">
+            {revealedCount > 0 ? "已翻开 · 牌阵合成中" : "牌阵预览"}
+          </p>
+          <SpreadTableView
+            {...tableProps}
+            containerRef={setContainerRef}
+            tableHeight={revealedCount > 0 ? previewHeight : Math.min(previewHeight, 300)}
+            showBacksForUnflipped
+            hideActiveInTable
+          />
+        </div>
       </div>
     );
   }
 
   if (isMobile && allDone) {
     return (
-      <div className="w-full">
+      <div className="w-full min-w-0">
         <AnimatePresence>
           <motion.p
             key="merged"

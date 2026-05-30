@@ -15,7 +15,6 @@ export interface SpreadLayoutResult {
   layout: ReturnType<typeof getSpreadLayout> | null;
   scale: number;
   scaledSlots: ScaledSlot[];
-  /** 牌阵内容框尺寸（按牌位中心包围盒计算），用于 CSS 居中 */
   contentWidth: number;
   contentHeight: number;
   cardScale: number;
@@ -29,7 +28,6 @@ function computeTableHeight(spreadHeight: number): number {
   const isLarge = w >= 1024;
   const tall = spreadHeight > 900;
   if (isMobile) {
-    const tall = spreadHeight > 900;
     const wide = spreadHeight >= 720;
     return Math.min(h * (tall ? 0.68 : wide ? 0.62 : 0.58), tall ? 680 : wide ? 580 : 520);
   }
@@ -37,6 +35,11 @@ function computeTableHeight(spreadHeight: number): number {
     return Math.min(tall ? 960 : 760, h * 0.68);
   }
   return Math.min(tall ? 900 : 680, h * 0.62);
+}
+
+function fallbackContainerWidth(): number {
+  if (typeof window === "undefined") return 360;
+  return Math.max(Math.min(window.innerWidth - 24, 896), 280);
 }
 
 export function useSpreadLayout(
@@ -56,9 +59,9 @@ export function useSpreadLayout(
       };
     }
 
-    const pad = containerWidth < 768 ? 14 : 48;
-    const availW = containerWidth - pad * 2;
-    const availH = containerHeight - pad * 2;
+    const pad = containerWidth < 768 ? 12 : 36;
+    const availW = Math.max(containerWidth - pad * 2, 1);
+    const availH = Math.max(containerHeight - pad * 2, 1);
 
     const scaleX = availW / layout.viewport.width;
     const scaleY = availH / layout.viewport.height;
@@ -66,29 +69,45 @@ export function useSpreadLayout(
       layout.cardCount <= 5 &&
       ["single", "three", "five"].includes(layout.id);
     const mobile = containerWidth < 768;
-    const maxScale = mobile ? (isCompact ? 1.08 : 0.9) : isCompact ? 1 : 1.15;
+    const maxScale = mobile ? (isCompact ? 1.06 : 0.92) : isCompact ? 1 : 1.12;
     const scale = Math.min(scaleX, scaleY, maxScale);
 
-    // 牌位中心在缩放后的坐标
-    const sx = layout.slots.map((s) => s.position.x * scale);
-    const sy = layout.slots.map((s) => s.position.y * scale);
-    const minX = Math.min(...sx);
-    const maxX = Math.max(...sx);
-    const minY = Math.min(...sy);
-    const maxY = Math.max(...sy);
-
-    // 内容框 = 牌位中心包围盒；牌位坐标相对内容框左上角，靠 CSS 居中内容框即可
-    const contentWidth = maxX - minX;
-    const contentHeight = maxY - minY;
-
-    const scaledSlots: ScaledSlot[] = layout.slots.map((slot, i) => ({
+    let slots: ScaledSlot[] = layout.slots.map((slot) => ({
       ...slot,
-      x: (sx[i] ?? 0) - minX,
-      y: (sy[i] ?? 0) - minY,
+      x: slot.position.x * scale,
+      y: slot.position.y * scale,
       scale,
     }));
 
-    return { scale, scaledSlots, contentWidth, contentHeight };
+    if (slots.length > 0) {
+      const xs = slots.map((s) => s.x);
+      const ys = slots.map((s) => s.y);
+      const gx = (Math.min(...xs) + Math.max(...xs)) / 2;
+      const gy = (Math.min(...ys) + Math.max(...ys)) / 2;
+      const dx = containerWidth / 2 - gx;
+      const dy = containerHeight / 2 - gy;
+      slots = slots.map((s) => ({ ...s, x: s.x + dx, y: s.y + dy }));
+    }
+
+    if (layout.cardCount === 1 && slots[0]) {
+      slots = [
+        {
+          ...slots[0],
+          x: containerWidth / 2,
+          y: containerHeight / 2,
+        },
+      ];
+    }
+
+    const xs = slots.map((s) => s.x);
+    const ys = slots.map((s) => s.y);
+
+    return {
+      scale,
+      scaledSlots: slots,
+      contentWidth: Math.max(...xs) - Math.min(...xs),
+      contentHeight: Math.max(...ys) - Math.min(...ys),
+    };
   }, [layout, containerWidth, containerHeight]);
 
   return {
@@ -103,7 +122,7 @@ export function useSpreadLayout(
 
 export function useSpreadContainerSize(spreadHeight = 720) {
   const [tableHeight, setTableHeight] = useState(() =>
-    computeTableHeight(spreadHeight)
+    computeTableHeight(spreadHeight),
   );
   const [layoutSize, setLayoutSize] = useState({ width: 0, height: 0 });
   const [node, setNode] = useState<HTMLDivElement | null>(null);
@@ -132,7 +151,7 @@ export function useSpreadContainerSize(spreadHeight = 720) {
   const size =
     layoutSize.width > 0
       ? layoutSize
-      : { width: 0, height: tableHeight };
+      : { width: fallbackContainerWidth(), height: tableHeight };
 
   return { size, tableHeight, setContainerRef: setNode };
 }
