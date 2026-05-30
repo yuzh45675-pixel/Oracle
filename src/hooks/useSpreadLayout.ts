@@ -11,6 +11,16 @@ export interface ScaledSlot extends SpreadCardSlot {
   scale: number;
 }
 
+export interface SpreadLayoutResult {
+  layout: ReturnType<typeof getSpreadLayout> | null;
+  scale: number;
+  scaledSlots: ScaledSlot[];
+  /** 牌阵内容框尺寸（按牌位中心包围盒计算），用于 CSS 居中 */
+  contentWidth: number;
+  contentHeight: number;
+  cardScale: number;
+}
+
 function computeTableHeight(spreadHeight: number): number {
   if (typeof window === "undefined") return 520;
   const w = window.innerWidth;
@@ -33,20 +43,20 @@ export function useSpreadLayout(
   spread: SpreadType | null,
   containerWidth: number,
   containerHeight: number,
-) {
+): SpreadLayoutResult {
   const layout = spread ? getSpreadLayout(spread) : null;
 
-  const { scale, offsetX, offsetY, scaledSlots } = useMemo(() => {
+  const { scale, scaledSlots, contentWidth, contentHeight } = useMemo(() => {
     if (!layout || containerWidth <= 0 || containerHeight <= 0) {
       return {
         scale: 1,
-        offsetX: 0,
-        offsetY: 0,
         scaledSlots: [] as ScaledSlot[],
+        contentWidth: 0,
+        contentHeight: 0,
       };
     }
 
-    const pad = containerWidth < 768 ? 16 : 48;
+    const pad = containerWidth < 768 ? 14 : 48;
     const availW = containerWidth - pad * 2;
     const availH = containerHeight - pad * 2;
 
@@ -59,48 +69,34 @@ export function useSpreadLayout(
     const maxScale = mobile ? (isCompact ? 1.08 : 0.9) : isCompact ? 1 : 1.15;
     const scale = Math.min(scaleX, scaleY, maxScale);
 
-    const contentW = layout.viewport.width * scale;
-    const contentH = layout.viewport.height * scale;
-    const offsetX = (containerWidth - contentW) / 2;
-    const offsetY = (containerHeight - contentH) / 2;
+    // 牌位中心在缩放后的坐标
+    const sx = layout.slots.map((s) => s.position.x * scale);
+    const sy = layout.slots.map((s) => s.position.y * scale);
+    const minX = Math.min(...sx);
+    const maxX = Math.max(...sx);
+    const minY = Math.min(...sy);
+    const maxY = Math.max(...sy);
 
-    let scaledSlots: ScaledSlot[] = layout.slots.map((slot) => ({
+    // 内容框 = 牌位中心包围盒；牌位坐标相对内容框左上角，靠 CSS 居中内容框即可
+    const contentWidth = maxX - minX;
+    const contentHeight = maxY - minY;
+
+    const scaledSlots: ScaledSlot[] = layout.slots.map((slot, i) => ({
       ...slot,
-      x: offsetX + slot.position.x * scale,
-      y: offsetY + slot.position.y * scale,
+      x: (sx[i] ?? 0) - minX,
+      y: (sy[i] ?? 0) - minY,
       scale,
     }));
 
-    if (scaledSlots.length > 0) {
-      const xs = scaledSlots.map((s) => s.x);
-      const ys = scaledSlots.map((s) => s.y);
-      const minX = Math.min(...xs);
-      const maxX = Math.max(...xs);
-      const minY = Math.min(...ys);
-      const maxY = Math.max(...ys);
-      const gx = (minX + maxX) / 2;
-      const gy = (minY + maxY) / 2;
-      const dx = containerWidth / 2 - gx;
-      const dy = containerHeight / 2 - gy;
-
-      scaledSlots = scaledSlots.map((s) => ({
-        ...s,
-        x: s.x + dx,
-        y: s.y + dy,
-      }));
-    }
-
-    return { scale, offsetX, offsetY, scaledSlots };
+    return { scale, scaledSlots, contentWidth, contentHeight };
   }, [layout, containerWidth, containerHeight]);
 
   return {
     layout,
     scale,
-    offsetX,
-    offsetY,
     scaledSlots,
-    viewportWidth: layout ? layout.viewport.width * scale : 0,
-    viewportHeight: layout ? layout.viewport.height * scale : 0,
+    contentWidth,
+    contentHeight,
     cardScale: scale,
   };
 }

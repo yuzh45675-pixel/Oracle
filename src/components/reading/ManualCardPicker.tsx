@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { getDeck } from "@/lib/tarot";
 import type { DeckType, DrawnCard } from "@/types/tarot";
@@ -141,27 +142,36 @@ export function ManualCardPicker({
               const selected = idx !== undefined;
               const reversed = isTarot && Boolean(reversedMap[card.id]);
               return (
-                <div key={card.id} className="flex flex-col">
+                <div
+                  key={card.id}
+                  className="flex flex-col"
+                  style={{
+                    contentVisibility: "auto",
+                    containIntrinsicSize: "120px 210px",
+                  }}
+                >
                   <button
                     type="button"
                     onClick={() => toggleCard(card.id)}
-                    className={`relative aspect-[2/3] touch-manipulation overflow-hidden rounded-lg border transition-all ${
+                    className={`relative aspect-[2/3] touch-manipulation overflow-hidden rounded-lg border bg-[#f5f0e8] transition-all ${
                       selected
                         ? "border-accent/70 shadow-glow"
                         : "border-white/[0.08] opacity-80 hover:opacity-100"
                     }`}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={faceSrc(card.image)}
                       alt={card.name}
+                      fill
+                      sizes="(max-width: 640px) 30vw, (max-width: 1024px) 16vw, 110px"
+                      quality={45}
                       loading="lazy"
-                      className={`h-full w-full bg-[#f5f0e8] object-contain transition-transform ${
+                      className={`object-contain transition-transform ${
                         reversed ? "rotate-180" : ""
                       }`}
                     />
                     {selected && (
-                      <span className="absolute left-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-semibold text-void">
+                      <span className="absolute left-1 top-1 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-semibold text-void">
                         {(idx ?? 0) + 1}
                       </span>
                     )}

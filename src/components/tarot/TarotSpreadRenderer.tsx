@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TarotCard } from "./TarotCard";
 import { TarotTable } from "./TarotTable";
@@ -41,6 +40,8 @@ interface SpreadTableViewProps {
   displayCards: DrawnCard[];
   flipped: boolean[];
   scaledSlots: ScaledSlot[];
+  contentWidth: number;
+  contentHeight: number;
   containerRef: (node: HTMLDivElement | null) => void;
   tableHeight: number;
   isMobile: boolean;
@@ -56,6 +57,8 @@ function SpreadTableView({
   displayCards,
   flipped,
   scaledSlots,
+  contentWidth,
+  contentHeight,
   containerRef,
   tableHeight,
   isMobile,
@@ -69,24 +72,22 @@ function SpreadTableView({
   const size = cardSizeForCount(displayCards.length, isMobile, isMobile);
 
   return (
-    <div
-      ref={containerRef}
-      className={
-        isMobile
-          ? "relative mx-auto w-full min-w-0 max-w-full"
-          : "w-full"
-      }
+    <TarotTable
+      className="mx-auto w-full max-w-full"
+      style={{
+        height: tableHeight,
+        minHeight: isMobile ? 340 : 320,
+      }}
+      enablePan={!isMobile && enablePan}
     >
-      <TarotTable
-        className="mx-auto w-full max-w-full"
-        style={{
-          height: tableHeight,
-          minHeight: isMobile ? 340 : 320,
-        }}
-        enablePan={!isMobile && enablePan}
-      >
+      {/* 测量层：铺满牌桌，用于计算缩放 */}
+      <div ref={containerRef} className="absolute inset-0" />
+
+      {/* 居中层：纯 CSS 把内容框放到正中央，不依赖坐标测量 */}
+      <div className="absolute inset-0 flex items-center justify-center">
         <motion.div
-          className="relative h-full w-full"
+          className="relative"
+          style={{ width: contentWidth, height: contentHeight }}
           initial={isMobile && allDone ? { opacity: 0, scale: 0.96 } : false}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
@@ -177,8 +178,8 @@ function SpreadTableView({
             );
           })}
         </motion.div>
-      </TarotTable>
-    </div>
+      </div>
+    </TarotTable>
   );
 }
 
@@ -278,7 +279,11 @@ export function TarotSpreadRenderer({
       : isMobile && !allDone && revealedCount > 0
         ? previewHeight
         : tableHeight;
-  const { scaledSlots } = useSpreadLayout(spread, layoutWidth, layoutHeight);
+  const { scaledSlots, contentWidth, contentHeight } = useSpreadLayout(
+    spread,
+    layoutWidth,
+    layoutHeight,
+  );
 
   const active = displayCards[activeIndex];
 
@@ -294,21 +299,14 @@ export function TarotSpreadRenderer({
     displayCards,
     flipped,
     scaledSlots,
+    contentWidth,
+    contentHeight,
     isMobile,
     allDone,
     activeIndex,
     onReveal,
     enablePan,
   };
-
-  const spreadShell = (content: ReactNode) =>
-    isMobile ? (
-      <div className="flex w-full justify-center overflow-x-hidden">
-        {content}
-      </div>
-    ) : (
-      content
-    );
 
   if (isMobile && !allDone) {
     return (
@@ -321,21 +319,20 @@ export function TarotSpreadRenderer({
           onReveal={onReveal}
         />
 
-        {revealedCount > 0 &&
-          spreadShell(
-            <div className="md:hidden">
-              <p className="mb-2 text-center text-[10px] tracking-widest text-muted uppercase">
-                已翻开 · 牌阵合成中
-              </p>
-              <SpreadTableView
-                {...tableProps}
-                containerRef={setContainerRef}
-                tableHeight={previewHeight}
-                showBacksForUnflipped
-                hideActiveInTable
-              />
-            </div>,
-          )}
+        {revealedCount > 0 && (
+          <div className="md:hidden">
+            <p className="mb-2 text-center text-[10px] tracking-widest text-muted uppercase">
+              已翻开 · 牌阵合成中
+            </p>
+            <SpreadTableView
+              {...tableProps}
+              containerRef={setContainerRef}
+              tableHeight={previewHeight}
+              showBacksForUnflipped
+              hideActiveInTable
+            />
+          </div>
+        )}
       </div>
     );
   }
@@ -353,13 +350,11 @@ export function TarotSpreadRenderer({
             牌面已全部翻开 · 牌阵已与线下摆法一致
           </motion.p>
         </AnimatePresence>
-        {spreadShell(
-          <SpreadTableView
-            {...tableProps}
-            containerRef={setContainerRef}
-            tableHeight={tableHeight}
-          />,
-        )}
+        <SpreadTableView
+          {...tableProps}
+          containerRef={setContainerRef}
+          tableHeight={tableHeight}
+        />
       </div>
     );
   }
