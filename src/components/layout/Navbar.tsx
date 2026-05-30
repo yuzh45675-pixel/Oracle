@@ -31,7 +31,7 @@ export function Navbar() {
         className="fixed top-0 right-0 left-0 z-50 px-4 pt-[max(0.75rem,env(safe-area-inset-top))]"
       >
         <nav
-          className={`mx-auto flex max-w-lg items-center justify-between sm:max-w-2xl lg:max-w-5xl xl:max-w-6xl ${
+          className={`mx-auto flex max-w-lg items-center justify-between sm:max-w-2xl lg:max-w-[56.75rem] xl:max-w-[64.75rem] ${
             inRitual
               ? "px-1 py-2"
               : "glass-panel rounded-full px-4 py-2.5 lg:px-5 lg:py-3"

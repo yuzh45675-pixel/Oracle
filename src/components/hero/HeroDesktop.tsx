@@ -22,8 +22,8 @@ interface HeroDesktopProps {
 
 /** 左列统一宽度，体系 / 呼吸 / 按钮纵向对齐 */
 const LEFT_COL = "w-[17.5rem] xl:w-[19.5rem]";
-/** 左列与悬浮牌间距 ≈ 「牌面解读」按钮宽度 */
-const MID_GAP = "gap-[7.25rem] xl:gap-[8.5rem] 2xl:gap-[9.5rem]";
+/** 左列与悬浮牌间距 ≈ 1.5×「牌面解读」按钮宽度 */
+const MID_GAP = "gap-[10.875rem] xl:gap-[12.125rem] 2xl:gap-[13.125rem]";
 
 export function HeroDesktop({
   system,
@@ -40,7 +40,7 @@ export function HeroDesktop({
         color={theme.colors.glowPrimary}
       />
       <FloatingGlow
-        className="left-[62%] top-[58%] -translate-x-1/2 opacity-55"
+        className="left-[64%] top-[58%] -translate-x-1/2 opacity-55"
         size={420}
         color={theme.colors.glowSecondary}
       />
@@ -51,9 +51,9 @@ export function HeroDesktop({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
       >
-        <header className="mb-6 flex shrink-0 flex-col items-center text-center xl:mb-8">
+        <header className="mx-auto mb-4 flex w-full max-w-[calc(34rem-7.25rem)] shrink-0 flex-col items-center text-center xl:mb-5">
           <motion.p
-            className="mb-3 text-xs tracking-[0.5em] text-accent/90 uppercase"
+            className="mb-2 text-xs tracking-[0.5em] text-accent/90 uppercase"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
@@ -74,7 +74,7 @@ export function HeroDesktop({
           </motion.h1>
 
           <motion.p
-            className="mt-4 max-w-[34rem] text-[clamp(0.8rem,1.1vw,1rem)] leading-relaxed"
+            className="mt-3 max-w-full text-[clamp(0.8rem,1.1vw,1rem)] leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.55, duration: 0.8 }}
