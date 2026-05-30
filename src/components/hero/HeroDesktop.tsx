@@ -20,6 +20,11 @@ interface HeroDesktopProps {
   theme: OracleTheme;
 }
 
+/** 左列统一宽度，体系 / 呼吸 / 按钮纵向对齐 */
+const LEFT_COL = "w-[17.5rem] xl:w-[19.5rem]";
+/** 左列与悬浮牌间距 ≈ 「牌面解读」按钮宽度 */
+const MID_GAP = "gap-[7.25rem] xl:gap-[8.5rem] 2xl:gap-[9.5rem]";
+
 export function HeroDesktop({
   system,
   onSystemChange,
@@ -35,107 +40,94 @@ export function HeroDesktop({
         color={theme.colors.glowPrimary}
       />
       <FloatingGlow
-        className="left-1/2 top-[58%] -translate-x-1/2 opacity-55"
+        className="left-[62%] top-[58%] -translate-x-1/2 opacity-55"
         size={420}
         color={theme.colors.glowSecondary}
       />
 
-      {/*
-        4:3 横屏画幅（宽:高 = 4:3）
-        左：解读体系 · 中：标题与操作 · 右：牌面
-      */}
       <motion.div
-        className="relative z-10 mx-auto flex aspect-[4/3] w-[min(94vw,calc(100dvh*4/3))] max-h-[calc(100dvh-4.5rem)] items-center px-[3%] py-[5%]"
+        className="relative z-10 mx-auto flex aspect-[4/3] w-[min(94vw,calc(100dvh*4/3))] max-h-[calc(100dvh-4.5rem)] flex-col px-[5%] py-[5%]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="grid w-full grid-cols-[minmax(10.5rem,12.5rem)_minmax(0,1fr)_auto] items-center gap-0 xl:gap-1">
-          {/* 左：塔罗 / 雷诺曼 */}
+        <header className="mb-6 flex shrink-0 flex-col items-center text-center xl:mb-8">
+          <motion.p
+            className="mb-3 text-xs tracking-[0.5em] text-accent/90 uppercase"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            Digital Oracle
+          </motion.p>
+
+          <motion.h1
+            className="font-display text-[clamp(1.9rem,3.2vw,3.1rem)] leading-tight font-extralight tracking-tight whitespace-nowrap text-frost"
+            initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          >
+            在静默中
+            <span className="bg-gradient-to-r from-frost via-metal to-accent/80 bg-clip-text text-transparent">
+              遇见答案
+            </span>
+          </motion.h1>
+
+          <motion.p
+            className="mt-4 max-w-[34rem] text-[clamp(0.8rem,1.1vw,1rem)] leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.55, duration: 0.8 }}
+          >
+            <span className="tracking-wide" style={{ color: theme.colors.accentSoft }}>
+              Oracle —— 并非预测未来，而是重新理解当下。
+            </span>
+          </motion.p>
+        </header>
+
+        <div className={`flex min-h-0 flex-1 items-center justify-center ${MID_GAP}`}>
           <motion.div
-            className="origin-left scale-[0.9] xl:scale-[0.92]"
-            initial={{ opacity: 0, x: -12 }}
+            className={`flex flex-col items-stretch gap-7 xl:gap-8 ${LEFT_COL}`}
+            initial={{ opacity: 0, x: -14 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.7, duration: 0.7 }}
+            transition={{ delay: 0.65, duration: 0.7 }}
           >
             <ReadingSystemSelector
               value={system}
               onChange={onSystemChange}
-              align="start"
+              align="center"
               variant="desktop"
+              orientation="vertical"
+              showHint={false}
             />
-          </motion.div>
 
-          {/* 中：标题、文案、按钮、呼吸、意识色调 */}
-          <div className="flex min-w-0 flex-col items-center px-1 text-center sm:px-2">
-            <motion.p
-              className="mb-3 text-xs tracking-[0.5em] text-accent/90 uppercase"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-            >
-              Digital Oracle
-            </motion.p>
-
-            <motion.h1
-              className="font-display max-w-full text-[clamp(1.65rem,2.8vw,2.75rem)] leading-tight font-extralight tracking-tight whitespace-nowrap text-frost"
-              initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            >
-              在静默中
-              <span className="bg-gradient-to-r from-frost via-metal to-accent/80 bg-clip-text text-transparent">
-                遇见答案
-              </span>
-            </motion.h1>
-
-            <motion.p
-              className="mt-4 max-w-[28rem] text-[clamp(0.8rem,1.1vw,1rem)] leading-relaxed"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-            >
-              <span
-                className="tracking-wide"
-                style={{ color: theme.colors.accentSoft }}
-              >
-                Oracle —— 并非预测未来，而是重新理解当下。
-              </span>
-            </motion.p>
+            <BreatheEntry variant="inline" shape="ellipse" className="w-full" />
 
             <motion.div
-              className="mt-6 flex flex-row flex-wrap items-center justify-center gap-3 xl:mt-7 xl:gap-4"
-              initial={{ opacity: 0, y: 16 }}
+              className="flex w-full flex-row flex-wrap items-center justify-center gap-3 xl:gap-3.5"
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.85, duration: 0.7 }}
+              transition={{ delay: 0.8, duration: 0.7 }}
             >
               <RitualEnterButton system={system} />
             </motion.div>
 
-            <BreatheEntry variant="inline" />
-
-            <motion.div
-              className="mt-6 flex w-full flex-col items-center xl:mt-7"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.05 }}
-            >
-              <p className="mb-3 text-center text-[9px] tracking-[0.28em] text-muted/70 uppercase xl:text-[10px]">
-                意识色调 · 移动鼠标凝聚粒子
+            <div className="flex flex-col items-center pt-1">
+              <p className="mb-3 text-[9px] tracking-[0.28em] text-muted/65 uppercase">
+                意识色调
               </p>
-              <ThemeOrbStrip className="!justify-center" />
-            </motion.div>
-          </div>
+              <ThemeOrbStrip compact />
+            </div>
+          </motion.div>
 
-          {/* 右：牌面（略向左靠，贴近中间操作区） */}
           <motion.div
-            className="-ml-1 flex shrink-0 items-center justify-center xl:-ml-3"
+            className="flex shrink-0 items-center justify-center"
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             <motion.div
-              className="relative origin-center scale-[0.92] xl:scale-95"
+              className="relative origin-center scale-100 xl:scale-110"
               style={{ x: cardX, y: cardY }}
               animate={{ y: [0, -10, 0] }}
               transition={{

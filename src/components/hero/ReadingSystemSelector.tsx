@@ -52,7 +52,11 @@ interface ReadingSystemSelectorProps {
   onChange: (value: ReadingSystemChoice) => void;
   disabled?: boolean;
   align?: "center" | "start";
-  variant?: "default" | "desktop";
+  variant?: "default" | "desktop" | "compact";
+  /** vertical：竖向堆叠宽条；compact 时忽略 */
+  orientation?: "horizontal" | "vertical";
+  /** compact 模式下隐藏下方说明文案 */
+  showHint?: boolean;
 }
 
 export function ReadingSystemSelector({
@@ -61,7 +65,11 @@ export function ReadingSystemSelector({
   disabled = false,
   align = "center",
   variant = "default",
+  orientation = "horizontal",
+  showHint = true,
 }: ReadingSystemSelectorProps) {
+  const compact = variant === "compact";
+  const vertical = !compact && orientation === "vertical";
   const isTouch = useIsTouchDevice();
   const { setFocusFromElement } = useParticleInteraction();
   const [hovered, setHovered] = useState<ReadingSystemChoice | null>(null);
@@ -123,13 +131,17 @@ export function ReadingSystemSelector({
 
       <div
         className={
-          variant === "desktop"
-            ? `flex items-stretch gap-3 xl:gap-3.5 ${
-                align === "start" ? "justify-start" : "justify-center"
-              }`
-            : `grid w-full max-w-[17rem] grid-cols-2 gap-3 sm:max-w-none ${
-                align === "start" ? "justify-items-start" : "justify-items-center"
-              }`
+          compact
+            ? "flex w-full flex-col gap-3"
+            : vertical
+              ? "flex w-full flex-col gap-3"
+              : variant === "desktop"
+                ? `flex items-stretch gap-3 xl:gap-3.5 ${
+                    align === "start" ? "justify-start" : "justify-center"
+                  }`
+                : `grid w-full max-w-[17rem] grid-cols-2 gap-3 sm:max-w-none ${
+                    align === "start" ? "justify-items-start" : "justify-items-center"
+                  }`
         }
       >
         {SYSTEMS.map((sys) => {
@@ -172,10 +184,16 @@ export function ReadingSystemSelector({
               onTouchEnd={() => setPressed(null)}
               onTouchCancel={() => setPressed(null)}
               initial={false}
-              className={`relative flex flex-col items-center overflow-visible rounded-2xl border text-center touch-manipulation ${
-                variant === "desktop"
-                  ? "w-[9.5rem] px-4 py-5 xl:w-[11rem] xl:px-5 xl:py-6"
-                  : "w-full px-2.5 py-3 sm:px-3 sm:py-3.5 md:py-4"
+              className={`relative overflow-visible border touch-manipulation ${
+                compact
+                  ? "flex aspect-square w-[4.75rem] flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-center xl:w-[5.25rem]"
+                  : vertical
+                    ? "flex w-full flex-row items-center gap-3.5 rounded-full px-5 py-3 text-left xl:px-6 xl:py-3.5"
+                    : `flex flex-col items-center rounded-2xl text-center ${
+                        variant === "desktop"
+                          ? "w-[9.5rem] px-4 py-5 xl:w-[11rem] xl:px-5 xl:py-6"
+                          : "w-full px-2.5 py-3 sm:px-3 sm:py-3.5 md:py-4"
+                      }`
               } ${
                 selected
                   ? "border-accent/30 bg-accent/[0.08]"
@@ -192,7 +210,9 @@ export function ReadingSystemSelector({
               <SystemMistCloud active={showMist && !disabled} />
 
               <motion.div
-                className="pointer-events-none absolute inset-0 rounded-2xl"
+                className={`pointer-events-none absolute inset-0 ${
+                  vertical || compact ? "rounded-full" : "rounded-2xl"
+                }`}
                 animate={{
                   boxShadow:
                     mode === "active"
@@ -207,27 +227,56 @@ export function ReadingSystemSelector({
               />
 
               <div
-                className={`relative z-10 mb-2 flex shrink-0 items-center justify-center ${
-                  variant === "desktop"
-                    ? "h-14 w-14 xl:h-16 xl:w-16"
-                    : "h-10 w-10 sm:mb-3 sm:h-11 sm:w-11 md:h-12 md:w-12"
+                className={`relative z-10 flex shrink-0 items-center justify-center ${
+                  compact
+                    ? "h-8 w-8"
+                    : vertical
+                      ? "h-11 w-11"
+                      : variant === "desktop"
+                        ? "mb-2 h-14 w-14 xl:h-16 xl:w-16"
+                        : "mb-2 h-10 w-10 sm:mb-3 sm:h-11 sm:w-11 md:h-12 md:w-12"
                 }`}
               >
                 <SystemEmblem system={sys.id} hovered={showEmblemHover} />
               </div>
 
-              <span className="relative z-10 text-[9px] tracking-[0.28em] uppercase text-muted/80">
-                {sys.en}
-              </span>
-              <span
-                className={`relative z-10 mt-0.5 font-display tracking-wide ${
-                  variant === "desktop"
-                    ? "mt-1 text-base xl:text-lg"
-                    : "text-xs sm:mt-1 sm:text-sm"
-                } ${dimmed ? "text-muted/70" : "text-frost/90 md:text-frost"}`}
-              >
-                {sys.cn}
-              </span>
+              {vertical ? (
+                <span className="relative z-10 flex min-w-0 flex-col">
+                  <span className="text-[9px] tracking-[0.28em] uppercase text-muted/80">
+                    {sys.en}
+                  </span>
+                  <span
+                    className={`font-display text-base tracking-wide ${
+                      dimmed ? "text-muted/70" : "text-frost"
+                    }`}
+                  >
+                    {sys.cn}
+                  </span>
+                </span>
+              ) : compact ? (
+                <span
+                  className={`relative z-10 font-display text-sm tracking-wide ${
+                    dimmed ? "text-muted/70" : "text-frost"
+                  }`}
+                >
+                  {sys.cn}
+                </span>
+              ) : (
+                <>
+                  <span className="relative z-10 text-[9px] tracking-[0.28em] uppercase text-muted/80">
+                    {sys.en}
+                  </span>
+                  <span
+                    className={`relative z-10 mt-0.5 font-display tracking-wide ${
+                      variant === "desktop"
+                        ? "mt-1 text-base xl:text-lg"
+                        : "text-xs sm:mt-1 sm:text-sm"
+                    } ${dimmed ? "text-muted/70" : "text-frost/90 md:text-frost"}`}
+                  >
+                    {sys.cn}
+                  </span>
+                </>
+              )}
             </motion.button>
           );
         })}
@@ -239,24 +288,30 @@ export function ReadingSystemSelector({
         </p>
       )}
 
-      <AnimatePresence mode="wait">
-        <motion.p
-          key={value}
-          className={`text-xs leading-relaxed text-muted/90 ${
-            align === "start" ? "text-left" : "text-center"
-          } ${
-            variant === "desktop"
-              ? "max-w-md text-sm xl:max-w-lg xl:text-base"
-              : "max-w-sm lg:max-w-md lg:text-sm"
-          }`}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.35, ease }}
-        >
-          {SYSTEMS.find((s) => s.id === value)?.hint}
-        </motion.p>
-      </AnimatePresence>
+      {showHint && (
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={value}
+            className={`text-xs leading-relaxed text-muted/90 ${
+              align === "start" ? "text-left" : "text-center"
+            } ${
+              compact
+                ? "max-w-[11rem] text-[10px] leading-snug"
+                : vertical
+                  ? "max-w-full text-[11px] leading-snug"
+                  : variant === "desktop"
+                    ? "max-w-md text-sm xl:max-w-lg xl:text-base"
+                    : "max-w-sm lg:max-w-md lg:text-sm"
+            }`}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.35, ease }}
+          >
+            {SYSTEMS.find((s) => s.id === value)?.hint}
+          </motion.p>
+        </AnimatePresence>
+      )}
     </div>
   );
 }
