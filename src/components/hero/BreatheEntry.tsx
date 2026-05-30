@@ -3,11 +3,48 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-/** 首页悬浮呼吸入口：右下角小圆钮 → /breathe */
-export function FloatingBreatheButton() {
+interface BreatheEntryProps {
+  variant?: "floating" | "inline";
+  className?: string;
+}
+
+/** 呼吸入口：手机右下角悬浮 / 桌面居中排在主按钮下方 */
+export function BreatheEntry({
+  variant = "floating",
+  className = "",
+}: BreatheEntryProps) {
+  if (variant === "inline") {
+    return (
+      <motion.div
+        className="mt-4 flex justify-center"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.95, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <Link
+          href="/breathe"
+          className="group relative flex h-14 w-14 items-center justify-center rounded-full border border-accent/40 bg-white/[0.06] text-frost backdrop-blur-xl transition-colors hover:border-accent/65 hover:bg-accent/10"
+          aria-label="呼吸练习"
+        >
+          <span
+            aria-hidden
+            className="absolute -inset-3 rounded-full opacity-70 blur-md"
+            style={{
+              background:
+                "radial-gradient(circle, var(--glow-primary) 0%, transparent 70%)",
+            }}
+          />
+          <span className="relative text-[11px] tracking-[0.2em] text-frost/95">
+            呼吸
+          </span>
+        </Link>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
-      className="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-5 z-40"
+      className={`fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-5 z-40 ${className}`}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1, y: [0, -5, 0] }}
       transition={{

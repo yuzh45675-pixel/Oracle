@@ -115,10 +115,10 @@ export function BreathingExperience() {
           </AnimatePresence>
         </div>
 
-        <footer className="mx-auto w-full max-w-lg pb-2 lg:max-w-2xl">
+        <footer className="mx-auto w-full max-w-lg overflow-visible pb-2 lg:max-w-2xl">
           {step === "pick" && (
             <motion.div
-              className="flex flex-col items-center gap-8"
+              className="flex w-full flex-col items-center gap-8 overflow-visible"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >

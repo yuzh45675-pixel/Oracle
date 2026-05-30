@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TarotCard } from "./TarotCard";
 import { TarotTable } from "./TarotTable";
@@ -68,108 +69,114 @@ function SpreadTableView({
   const size = cardSizeForCount(displayCards.length, isMobile, isMobile);
 
   return (
-    <div className={isMobile ? "relative left-1/2 w-[calc(100vw-1.5rem)] -translate-x-1/2" : "w-full"}>
+    <div
+      ref={containerRef}
+      className={
+        isMobile
+          ? "relative mx-auto w-full min-w-0 max-w-full"
+          : "w-full"
+      }
+    >
       <TarotTable
-        className="mx-auto w-full"
+        className="mx-auto w-full max-w-full"
         style={{
           height: tableHeight,
           minHeight: isMobile ? 340 : 320,
         }}
         enablePan={!isMobile && enablePan}
       >
-      <motion.div
-        ref={containerRef}
-        className="relative h-full w-full"
-        initial={isMobile && allDone ? { opacity: 0, scale: 0.96 } : false}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-      >
-        {displayCards.map((drawn, i) => {
-          const slot = scaledSlots[i];
-          if (!slot || !drawn?.card?.id) return null;
+        <motion.div
+          className="relative h-full w-full"
+          initial={isMobile && allDone ? { opacity: 0, scale: 0.96 } : false}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {displayCards.map((drawn, i) => {
+            const slot = scaledSlots[i];
+            if (!slot || !drawn?.card?.id) return null;
 
-          const isFlipped = flipped[i];
-          const isActive = !allDone && i === activeIndex && !isFlipped;
-          const canFlip = isActive && !hideActiveInTable;
-          const hideSlot = hideActiveInTable && isActive;
+            const isFlipped = flipped[i];
+            const isActive = !allDone && i === activeIndex && !isFlipped;
+            const canFlip = isActive && !hideActiveInTable;
+            const hideSlot = hideActiveInTable && isActive;
 
-          if (hideSlot) {
+            if (hideSlot) {
+              return (
+                <motion.div
+                  key={`slot-marker-${drawn.slotId ?? drawn.card.id}-${i}`}
+                  className="absolute left-0 top-0"
+                  style={{
+                    left: slot.x,
+                    top: slot.y,
+                    zIndex: slot.zIndex + 5,
+                    transform: `translate(-50%, -50%) rotate(${slot.rotation}deg)`,
+                  }}
+                >
+                  <div className="flex h-[108px] w-[74px] items-center justify-center rounded-xl border-2 border-dashed border-accent/35 bg-accent/5 sm:h-[140px] sm:w-[96px]">
+                    <span className="text-[8px] text-accent/70">此处</span>
+                  </div>
+                </motion.div>
+              );
+            }
+
+            const showFace = isFlipped;
+            const showBack = !isFlipped && showBacksForUnflipped;
+
+            if (!showFace && !showBack && !canFlip) return null;
+
             return (
               <motion.div
-                key={`slot-marker-${drawn.slotId ?? drawn.card.id}-${i}`}
+                key={`${drawn.slotId ?? drawn.card.id}-${i}`}
                 className="absolute left-0 top-0"
                 style={{
                   left: slot.x,
                   top: slot.y,
-                  zIndex: slot.zIndex + 5,
+                  zIndex: isActive ? 200 : isFlipped ? 50 + i : slot.zIndex + 10,
+                  pointerEvents: canFlip ? "auto" : "none",
                   transform: `translate(-50%, -50%) rotate(${slot.rotation}deg)`,
+                  transformOrigin: "center center",
+                }}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{
+                  opacity: showBack ? 0.55 : 1,
+                  scale: isFlipped && isMobile ? 1 : isActive ? 1.04 : 1,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 280,
+                  damping: 26,
+                  delay: isFlipped ? i * 0.03 : 0,
                 }}
               >
-                <div className="flex h-[108px] w-[74px] items-center justify-center rounded-xl border-2 border-dashed border-accent/35 bg-accent/5 sm:h-[140px] sm:w-[96px]">
-                  <span className="text-[8px] text-accent/70">此处</span>
+                <div className="relative inline-block">
+                  {(showFace || canFlip) && (
+                    <span
+                      className={`pointer-events-none absolute bottom-full left-1/2 mb-1.5 w-max max-w-[96px] -translate-x-1/2 text-center text-[8px] tracking-[0.2em] uppercase sm:text-[9px] ${
+                        isActive ? "text-accent" : "text-muted/90"
+                      }`}
+                    >
+                      {drawn.position}
+                      {isActive ? " · 翻开" : ""}
+                    </span>
+                  )}
+                  <div
+                    className={`rounded-xl ${isActive ? "ring-2 ring-accent/50 ring-offset-2 ring-offset-transparent" : ""}`}
+                  >
+                    <TarotCard
+                      card={drawn.card}
+                      reversed={drawn.reversed}
+                      flipped={showFace}
+                      settled={showFace}
+                      onFlip={canFlip ? onReveal : undefined}
+                      size={size}
+                      interactive={canFlip}
+                    />
+                  </div>
                 </div>
               </motion.div>
             );
-          }
-
-          const showFace = isFlipped;
-          const showBack = !isFlipped && showBacksForUnflipped;
-
-          if (!showFace && !showBack && !canFlip) return null;
-
-          return (
-            <motion.div
-              key={`${drawn.slotId ?? drawn.card.id}-${i}`}
-              className="absolute left-0 top-0"
-              style={{
-                left: slot.x,
-                top: slot.y,
-                zIndex: isActive ? 200 : isFlipped ? 50 + i : slot.zIndex + 10,
-                pointerEvents: canFlip ? "auto" : "none",
-                transform: `translate(-50%, -50%) rotate(${slot.rotation}deg)`,
-                transformOrigin: "center center",
-              }}
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{
-                opacity: showBack ? 0.55 : 1,
-                scale: isFlipped && isMobile ? 1 : isActive ? 1.04 : 1,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 280,
-                damping: 26,
-                delay: isFlipped ? i * 0.03 : 0,
-              }}
-            >
-              <div className="relative inline-block">
-                {(showFace || canFlip) && (
-                  <span
-                    className={`pointer-events-none absolute bottom-full left-1/2 mb-1.5 w-max max-w-[96px] -translate-x-1/2 text-center text-[8px] tracking-[0.2em] uppercase sm:text-[9px] ${
-                      isActive ? "text-accent" : "text-muted/90"
-                    }`}
-                  >
-                    {drawn.position}
-                    {isActive ? " · 翻开" : ""}
-                  </span>
-                )}
-                <div
-                  className={`rounded-xl ${isActive ? "ring-2 ring-accent/50 ring-offset-2 ring-offset-transparent" : ""}`}
-                >
-                  <TarotCard
-                    card={drawn.card}
-                    reversed={drawn.reversed}
-                    flipped={showFace}
-                    settled={showFace}
-                    onFlip={canFlip ? onReveal : undefined}
-                    size={size}
-                    interactive={canFlip}
-                  />
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
+          })}
+        </motion.div>
       </TarotTable>
     </div>
   );
@@ -256,12 +263,12 @@ export function TarotSpreadRenderer({
   const displayCards = cards.slice(0, expectedCount);
   const activeIndex = getActiveCardIndex(spread, revealedCount);
   const allDone = revealedCount >= expectedCount;
+
   const layoutWidth =
     containerSize.width > 0
       ? containerSize.width
       : isMobile
-        ? // 手机端：测量完成前不定位，避免按错误宽度渲染导致牌偏一侧
-          0
+        ? 0
         : typeof window !== "undefined"
           ? Math.min(window.innerWidth - 48, 420)
           : 360;
@@ -271,11 +278,7 @@ export function TarotSpreadRenderer({
       : isMobile && !allDone && revealedCount > 0
         ? previewHeight
         : tableHeight;
-  const { scaledSlots } = useSpreadLayout(
-    spread,
-    layoutWidth,
-    layoutHeight,
-  );
+  const { scaledSlots } = useSpreadLayout(spread, layoutWidth, layoutHeight);
 
   const active = displayCards[activeIndex];
 
@@ -298,6 +301,15 @@ export function TarotSpreadRenderer({
     enablePan,
   };
 
+  const spreadShell = (content: ReactNode) =>
+    isMobile ? (
+      <div className="flex w-full justify-center overflow-x-hidden">
+        {content}
+      </div>
+    ) : (
+      content
+    );
+
   if (isMobile && !allDone) {
     return (
       <div className="w-full">
@@ -309,20 +321,21 @@ export function TarotSpreadRenderer({
           onReveal={onReveal}
         />
 
-        {revealedCount > 0 && (
-          <div className="md:hidden">
-            <p className="mb-2 text-center text-[10px] tracking-widest text-muted uppercase">
-              已翻开 · 牌阵合成中
-            </p>
-            <SpreadTableView
-              {...tableProps}
-              containerRef={setContainerRef}
-              tableHeight={previewHeight}
-              showBacksForUnflipped
-              hideActiveInTable
-            />
-          </div>
-        )}
+        {revealedCount > 0 &&
+          spreadShell(
+            <div className="md:hidden">
+              <p className="mb-2 text-center text-[10px] tracking-widest text-muted uppercase">
+                已翻开 · 牌阵合成中
+              </p>
+              <SpreadTableView
+                {...tableProps}
+                containerRef={setContainerRef}
+                tableHeight={previewHeight}
+                showBacksForUnflipped
+                hideActiveInTable
+              />
+            </div>,
+          )}
       </div>
     );
   }
@@ -340,11 +353,13 @@ export function TarotSpreadRenderer({
             牌面已全部翻开 · 牌阵已与线下摆法一致
           </motion.p>
         </AnimatePresence>
-        <SpreadTableView
-          {...tableProps}
-          containerRef={setContainerRef}
-          tableHeight={tableHeight}
-        />
+        {spreadShell(
+          <SpreadTableView
+            {...tableProps}
+            containerRef={setContainerRef}
+            tableHeight={tableHeight}
+          />,
+        )}
       </div>
     );
   }

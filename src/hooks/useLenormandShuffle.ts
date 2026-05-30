@@ -26,6 +26,10 @@ export function useLenormandShuffle() {
       setShowJumpNotice(false);
       setJumpCard(null);
 
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      });
+
       const pool = shuffleDeck(LENORMAND_DECK);
       shuffledPoolRef.current = pool;
       setShuffledPool(pool);

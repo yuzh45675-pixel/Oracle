@@ -25,6 +25,11 @@ export function useTarotShuffle() {
       setIsShuffling(true);
       setShowJumpNotice(false);
 
+      // 先让洗牌 UI 绘制一帧，再跑洗牌计算，避免点击后卡顿
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      });
+
       const layout = getSpreadLayout(spread);
       const pool = shuffleDeck(getDeck(deckType));
       shuffledPoolRef.current = pool;

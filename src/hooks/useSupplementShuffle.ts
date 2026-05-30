@@ -12,6 +12,9 @@ export function useSupplementShuffle() {
 
   const runShuffle = useCallback(async (deckType: DeckType, excludeIds: string[]) => {
     setIsShuffling(true);
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    });
     const pool = shuffleDeck(
       getDeck(deckType).filter((c) => !excludeIds.includes(c.id)),
     );

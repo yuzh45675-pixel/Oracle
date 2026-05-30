@@ -181,6 +181,30 @@ body {
   animation: card-back-holo-shift 9s ease-in-out infinite;
 }
 
+@keyframes shuffle-card-mobile {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  35% {
+    transform: translate(10px, -14px) rotate(7deg);
+  }
+  70% {
+    transform: translate(-8px, 6px) rotate(-5deg);
+  }
+}
+
+.shuffle-card-mobile {
+  animation: shuffle-card-mobile 0.85s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shuffle-card-mobile {
+    animation: none;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 3px;
 }

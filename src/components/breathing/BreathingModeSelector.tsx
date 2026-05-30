@@ -92,12 +92,14 @@ export function BreathingModeSelector({
   const activeMode = BREATHING_MODES.find((m) => m.id === value);
 
   return (
-    <div className="flex w-full flex-col items-center gap-3">
+    <div className="flex w-full flex-col items-center gap-3 overflow-visible">
       <p className="text-[10px] tracking-[0.35em] text-muted/80 uppercase">
         {label}
       </p>
 
-      <div className="-mx-1 flex w-full items-stretch justify-start gap-2.5 overflow-x-auto px-1 pb-1 snap-x snap-mandatory [scrollbar-width:none] sm:justify-center sm:overflow-visible [&::-webkit-scrollbar]:hidden">
+      {/* 预留选中放大（scale≈1.1）与上浮空间，避免被裁切 */}
+      <div className="w-full overflow-visible px-1 py-3 sm:py-2">
+      <div className="-mx-1 flex min-h-[9.75rem] w-full items-center justify-start gap-2.5 overflow-x-auto overflow-y-visible px-1 snap-x snap-mandatory [scrollbar-width:none] sm:min-h-[10.25rem] sm:justify-center sm:overflow-visible [&::-webkit-scrollbar]:hidden">
         {modes.map((mode) => {
           const selected = value === mode.id;
           const isActive =
@@ -105,8 +107,17 @@ export function BreathingModeSelector({
           const vMode = visualMode(selected, isActive, isTouch);
           const dimmed = vMode === "idle-unselected";
 
-          const scale =
-            vMode === "active" ? 1.1 : vMode === "touch-selected" ? 1.04 : 1;
+          const scale = isTouch
+            ? selected
+              ? 1.05
+              : vMode === "active"
+                ? 1.03
+                : 1
+            : vMode === "active"
+              ? 1.1
+              : vMode === "touch-selected"
+                ? 1.04
+                : 1;
           const opacity =
             vMode === "idle-unselected"
               ? INACTIVE_OPACITY
@@ -144,7 +155,7 @@ export function BreathingModeSelector({
               } ${disabled ? "pointer-events-none opacity-50" : ""}`}
               animate={{
                 scale,
-                y: vMode === "active" ? -4 : 0,
+                y: !isTouch && vMode === "active" ? -4 : 0,
                 opacity,
               }}
               transition={{ duration: 0.55, ease }}
@@ -195,6 +206,7 @@ export function BreathingModeSelector({
             </motion.button>
           );
         })}
+      </div>
       </div>
 
       {isTouch && !excludeId && (

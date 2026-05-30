@@ -32,7 +32,7 @@ function computeTableHeight(spreadHeight: number): number {
 export function useSpreadLayout(
   spread: SpreadType | null,
   containerWidth: number,
-  containerHeight: number
+  containerHeight: number,
 ) {
   const layout = spread ? getSpreadLayout(spread) : null;
 
@@ -46,7 +46,7 @@ export function useSpreadLayout(
       };
     }
 
-    const pad = containerWidth < 768 ? 28 : 48;
+    const pad = containerWidth < 768 ? 16 : 48;
     const availW = containerWidth - pad * 2;
     const availH = containerHeight - pad * 2;
 
@@ -74,10 +74,15 @@ export function useSpreadLayout(
     if (scaledSlots.length > 0) {
       const xs = scaledSlots.map((s) => s.x);
       const ys = scaledSlots.map((s) => s.y);
-      const gx = (Math.min(...xs) + Math.max(...xs)) / 2;
-      const gy = (Math.min(...ys) + Math.max(...ys)) / 2;
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const gx = (minX + maxX) / 2;
+      const gy = (minY + maxY) / 2;
       const dx = containerWidth / 2 - gx;
       const dy = containerHeight / 2 - gy;
+
       scaledSlots = scaledSlots.map((s) => ({
         ...s,
         x: s.x + dx,
