@@ -222,7 +222,7 @@ export default function DrawPage() {
             exit={{ opacity: 0, filter: "blur(6px)" }}
             className="relative flex flex-col items-center"
           >
-            <div className="relative w-full max-w-[17rem] sm:max-w-md lg:max-w-xl">
+            <div className="relative w-full max-w-[17rem] overflow-visible sm:max-w-md lg:max-w-xl">
               <ShuffleDeck isShuffling={isShuffling} />
               <JumpCardEffect
                 jumpCard={jumpCard}

@@ -25,9 +25,9 @@ function ShuffleStack({ isShuffling }: { isShuffling: boolean }) {
 
   return (
     <div
-      className={`relative mx-auto origin-top ${
+      className={`relative mx-auto origin-center ${
         isShuffling
-          ? "shuffle-deck-perf mt-10 h-[168px] w-[120px] sm:mt-12 sm:h-[220px] sm:w-[158px]"
+          ? "shuffle-deck-perf mt-8 h-[200px] w-[156px] overflow-visible sm:mt-10 sm:h-[220px] sm:w-[172px]"
           : "shuffle-stack-idle mt-10 h-[168px] w-[120px] sm:mt-0 sm:h-[340px] sm:w-[250px]"
       }`}
       aria-label={isShuffling ? "正在洗牌" : "牌组"}
@@ -38,10 +38,10 @@ function ShuffleStack({ isShuffling }: { isShuffling: boolean }) {
         return (
           <div
             key={i}
-            className={`absolute left-1/2 top-1/2 h-[140px] w-[96px] [backface-visibility:hidden] sm:h-[280px] sm:w-[190px] ${
+            className={`absolute left-1/2 top-1/2 [backface-visibility:hidden] ${
               isShuffling
-                ? "-translate-x-1/2 -translate-y-1/2 shuffle-card-mobile"
-                : "shuffle-idle-card"
+                ? "h-[128px] w-[88px] shuffle-card-mobile sm:h-[136px] sm:w-[94px]"
+                : "shuffle-idle-card h-[140px] w-[96px] sm:h-[280px] sm:w-[190px]"
             }`}
             style={{
               zIndex: count - i,
