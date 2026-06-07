@@ -52,6 +52,10 @@ function findUserById(id) {
   return getUsers().find((u) => u.id === id);
 }
 
+function findUserByOpenId(openid) {
+  return getUsers().find((u) => u.wechatOpenId === openid);
+}
+
 function createUser({ username, passwordHash, avatarType, avatarTheme, avatarData }) {
   const users = getUsers();
   const user = {
@@ -61,6 +65,38 @@ function createUser({ username, passwordHash, avatarType, avatarTheme, avatarDat
     avatarType: avatarType ?? "theme",
     avatarTheme: avatarTheme ?? "astral-void",
     avatarData: avatarData ?? null,
+    credits: 0,
+    lastFreeDate: null,
+    freeQuotaDate: null,
+    freeUsedToday: 0,
+    createdAt: new Date().toISOString(),
+  };
+  users.push(user);
+  saveUsers(users);
+  return user;
+}
+
+function createWechatUser({ openid, unionid, nickName }) {
+  const users = getUsers();
+  let base = `wx_${String(openid).slice(-8)}`;
+  let username = base;
+  let n = 0;
+  while (findUserByUsername(username)) {
+    n += 1;
+    username = `${base}${n}`;
+  }
+
+  const user = {
+    id: newId("usr"),
+    username,
+    passwordHash: "",
+    authProvider: "wechat",
+    wechatOpenId: openid,
+    wechatUnionId: unionid ?? null,
+    wechatNickName: nickName ?? null,
+    avatarType: "theme",
+    avatarTheme: "astral-void",
+    avatarData: null,
     credits: 0,
     lastFreeDate: null,
     freeQuotaDate: null,
@@ -93,31 +129,37 @@ function findOrderById(id) {
   return getOrders().find((o) => o.id === id);
 }
 
-function createOrder({ userId, amount, subject }) {
+function createOrder({ userId, amount, subject, channel = "alipay" }) {
   const orders = getOrders();
   const order = {
     id: newId("ord"),
     userId,
     amount,
     subject,
+    channel,
     status: "pending",
     createdAt: new Date().toISOString(),
     paidAt: null,
     alipayTradeNo: null,
+    wechatTransactionId: null,
   };
   orders.push(order);
   saveOrders(orders);
   return order;
 }
 
-function markOrderPaid(orderId, alipayTradeNo) {
+function markOrderPaid(orderId, tradeNo, channel = "alipay") {
   const orders = getOrders();
   const order = orders.find((o) => o.id === orderId);
   if (!order) return null;
   if (order.status === "paid") return order;
   order.status = "paid";
   order.paidAt = new Date().toISOString();
-  order.alipayTradeNo = alipayTradeNo ?? null;
+  if (channel === "wechat") {
+    order.wechatTransactionId = tradeNo ?? null;
+  } else {
+    order.alipayTradeNo = tradeNo ?? null;
+  }
   saveOrders(orders);
   return order;
 }
@@ -127,7 +169,9 @@ module.exports = {
   getUsers,
   findUserByUsername,
   findUserById,
+  findUserByOpenId,
   createUser,
+  createWechatUser,
   updateUser,
   getOrders,
   findOrderById,
