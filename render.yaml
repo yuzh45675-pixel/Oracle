@@ -23,6 +23,10 @@ services:
         value: "true"
       - key: CORS_ORIGIN
         value: https://oracle-tarot-xi.vercel.app,https://oracletarot.top,https://www.oracletarot.top
+      - key: FRONTEND_URL
+        value: https://oracle-tarot-xi.vercel.app
+      - key: ADMIN_PASSWORD
+        value: Oracle-0defcbcb-6b4b3bf4
       - key: JWT_SECRET
         generateValue: true
       - key: DEEPSEEK_API_KEY

@@ -3,8 +3,11 @@ const feedback = require("./feedback");
 const activity = require("./activity");
 const billing = require("./billing");
 
+/** 内置管理密钥；Render 上设置 ADMIN_PASSWORD 可覆盖 */
+const DEFAULT_ADMIN_PASSWORD = "Oracle-0defcbcb-6b4b3bf4";
+
 function getAdminPassword() {
-  return process.env.ADMIN_PASSWORD?.trim() || "";
+  return process.env.ADMIN_PASSWORD?.trim() || DEFAULT_ADMIN_PASSWORD;
 }
 
 function adminMiddleware(req, res, next) {

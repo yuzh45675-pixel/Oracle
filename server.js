@@ -69,11 +69,9 @@ app.listen(PORT, HOST, () => {
   if (alipay.isDevPayment()) {
     console.log("[server] PAYMENT_DEV_MODE=true (mock payments)");
   }
-  if (admin.getAdminPassword()) {
-    console.log("[server] Admin dashboard: set FRONTEND_URL + open /manage");
-  } else {
-    console.warn("[server] ADMIN_PASSWORD not set — /manage disabled");
-  }
+  console.log(
+    "[server] Admin dashboard: https://oracle-tarot-xi.vercel.app/manage",
+  );
   if (wechat.isWechatLoginConfigured()) {
     console.log("[server] WeChat mini program login configured");
   } else if (process.env.PAYMENT_DEV_MODE === "true") {
