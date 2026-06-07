@@ -16,11 +16,21 @@ type FieldErrors = {
   price?: string;
 };
 
+type BetaFeedbackSurveyProps = {
+  deck?: string;
+  spreadTitle?: string;
+  question?: string;
+};
+
 /**
  * 内测反馈问卷：展示在解读结果页底部。
  * 提交成功后隐藏表单，显示感谢文案 2 秒后消失；每次进入结果页可重新填写。
  */
-export function BetaFeedbackSurvey() {
+export function BetaFeedbackSurvey({
+  deck,
+  spreadTitle,
+  question,
+}: BetaFeedbackSurveyProps) {
   const [accuracy, setAccuracy] = useState("");
   const [dislike, setDislike] = useState("");
   const [price, setPrice] = useState("");
@@ -54,6 +64,12 @@ export function BetaFeedbackSurvey() {
         accuracy,
         dislike: dislike.trim(),
         price,
+        meta: {
+          deck,
+          spreadTitle,
+          question,
+          source: "web",
+        },
       });
 
       if (res.code === 0) {
@@ -79,7 +95,7 @@ export function BetaFeedbackSurvey() {
       </p>
       <h2 className="mt-1 font-display text-lg text-frost">帮助我们做得更好</h2>
       <p className="mt-1 text-xs text-muted">
-        你的意见仅用于内测改进，每次占卜后都可以填写。
+        你的意见仅用于内测改进，每次测算后都可以填写。
       </p>
 
       {/* 提交失败：红色提示 */}

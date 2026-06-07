@@ -2,8 +2,11 @@ const ORACLE_SYSTEM_PROMPT = require("../oracle-system-prompt");
 const auth = require("./auth");
 const billing = require("./billing");
 const alipay = require("./alipay");
+const wechat = require("./wechat");
 const store = require("./store");
 const feedback = require("./feedback");
+const activity = require("./activity");
+const admin = require("./admin");
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DEEPSEEK_BASE =
@@ -16,19 +19,45 @@ function registerRoutes(app) {
   app.get("/api/health", (_req, res) => {
     res.json({
       ok: true,
-      features: ["register", "login", "chat", "payment", "feedback"],
+      features: [
+        "register",
+        "login",
+        "wechat-login",
+        "chat",
+        "payment",
+        "wechat-pay",
+        "feedback",
+      ],
+      hasApiKey: Boolean(DEEPSEEK_API_KEY),
+      model: DEEPSEEK_MODEL,
+      auth: Boolean(process.env.JWT_SECRET),
+      alipay: alipay.isAlipayConfigured(),
+      wechatLogin: wechat.isWechatLoginConfigured(),
+      wechatPay: wechat.isWechatPayConfigured(),
+      paymentDev: alipay.isDevPayment(),
     });
   });
 
+  admin.registerAdminRoutes(app);
+
   /** 内测反馈：追加写入 feedback.json */
-  app.post("/api/feedback", (req, res) => {
+  app.post("/api/feedback", auth.optionalAuthMiddleware, (req, res) => {
     try {
       const validated = feedback.validatePayload(req.body);
       if (!validated.ok) {
         res.json({ code: 2, msg: validated.msg });
         return;
       }
-      feedback.appendFeedback(validated);
+      const meta = req.body?.meta ?? {};
+      feedback.appendFeedback({
+        ...validated,
+        userId: req.user?.id ?? meta.userId ?? null,
+        username: req.user?.username ?? meta.username ?? null,
+        deck: meta.deck ?? null,
+        spreadTitle: meta.spreadTitle ?? null,
+        question: meta.question ?? null,
+        source: meta.source ?? "web",
+      });
       res.json({ code: 0, msg: "反馈成功" });
     } catch (e) {
       console.error("[feedback]", e);
@@ -53,6 +82,15 @@ function registerRoutes(app) {
   app.post("/api/login", async (req, res) => {
     try {
       const result = await auth.login(req.body?.username, req.body?.password);
+      res.json({ ok: true, ...result });
+    } catch (e) {
+      res.status(e.status ?? 500).json({ error: e.message });
+    }
+  });
+
+  app.post("/api/wechat/login", async (req, res) => {
+    try {
+      const result = await wechat.loginWithCode(req.body?.code);
       res.json({ ok: true, ...result });
     } catch (e) {
       res.status(e.status ?? 500).json({ error: e.message });
@@ -130,16 +168,39 @@ function registerRoutes(app) {
     res.json({ ok: true, user: billing.publicUser(user) });
   });
 
-  app.get("/api/health", (_req, res) => {
-    res.json({
-      ok: true,
-      hasApiKey: Boolean(DEEPSEEK_API_KEY),
-      model: DEEPSEEK_MODEL,
-      auth: Boolean(process.env.JWT_SECRET),
-      alipay: alipay.isAlipayConfigured(),
-      paymentDev: alipay.isDevPayment(),
-    });
+  app.post("/api/payment/wechat/create", auth.authMiddleware, async (req, res) => {
+    try {
+      const openid = req.user.wechatOpenId;
+      if (!openid) {
+        res.status(400).json({ error: "请使用微信小程序登录后再支付" });
+        return;
+      }
+      const payload = await wechat.createJsapiPayment(req.user, openid);
+      res.json({ ok: true, ...payload });
+    } catch (e) {
+      res.status(e.status ?? 500).json({ error: e.message, orderId: e.orderId });
+    }
   });
+
+  app.post(
+    "/api/payment/wechat/dev-complete",
+    auth.authMiddleware,
+    (req, res) => {
+      if (process.env.PAYMENT_DEV_MODE !== "true") {
+        res.status(403).json({ error: "未开启开发支付模式" });
+        return;
+      }
+      const orderId = req.body?.orderId;
+      const order = store.findOrderById(orderId);
+      if (!order || order.userId !== req.user.id) {
+        res.status(404).json({ error: "订单不存在" });
+        return;
+      }
+      wechat.fulfillOrder(orderId, `wx_dev_${Date.now()}`);
+      const user = store.findUserById(req.user.id);
+      res.json({ ok: true, user: billing.publicUser(user) });
+    },
+  );
 
   app.post("/api/chat", auth.authMiddleware, async (req, res) => {
     if (!DEEPSEEK_API_KEY) {
@@ -212,6 +273,18 @@ function registerRoutes(app) {
         "";
 
       const consumed = billing.consumeReading(req.user);
+      const meta = req.body?.readingMeta ?? {};
+      activity.logReading({
+        userId: req.user.id,
+        username: req.user.username,
+        deck: meta.deck,
+        spreadTitle: meta.spreadTitle,
+        question: meta.question,
+        cardNames: meta.cardNames,
+        kind: meta.kind ?? "initial",
+        billing: consumed.type,
+        source: meta.source ?? "web",
+      });
 
       res.json({
         reply,

@@ -10,6 +10,8 @@ const cors = require("cors");
 const { registerRoutes } = require("./server/routes");
 const alipay = require("./server/alipay");
 const billing = require("./server/billing");
+const wechat = require("./server/wechat");
+const admin = require("./server/admin");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3002;
@@ -25,7 +27,7 @@ app.use(
         ? true
         : corsOrigin.split(",").map((s) => s.trim()),
     methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Admin-Key"],
   }),
 );
 app.use(express.json({ limit: "1mb" }));
@@ -66,5 +68,15 @@ app.listen(PORT, HOST, () => {
   }
   if (alipay.isDevPayment()) {
     console.log("[server] PAYMENT_DEV_MODE=true (mock payments)");
+  }
+  if (admin.getAdminPassword()) {
+    console.log("[server] Admin dashboard: set FRONTEND_URL + open /manage");
+  } else {
+    console.warn("[server] ADMIN_PASSWORD not set — /manage disabled");
+  }
+  if (wechat.isWechatLoginConfigured()) {
+    console.log("[server] WeChat mini program login configured");
+  } else if (process.env.PAYMENT_DEV_MODE === "true") {
+    console.log("[server] WeChat dev login: POST /api/wechat/login { code: dev_test }");
   }
 });

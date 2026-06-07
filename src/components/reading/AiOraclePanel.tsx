@@ -114,7 +114,21 @@ export function AiOraclePanel({
       setPaymentRequired(false);
       try {
         await fetchChatHealth();
-        const result = await sendChatRequest({ messages: nextMessages });
+        const isFirstReply = nextMessages.length === 1;
+        const result = await sendChatRequest({
+          messages: nextMessages,
+          readingMeta: {
+            deck,
+            spreadTitle,
+            question,
+            cardNames: [
+              ...cards.map((c) => c.card.name),
+              ...(jumpCard?.card ? [jumpCard.card.name] : []),
+            ],
+            kind: isFirstReply ? "initial" : "followup",
+            source: "web",
+          },
+        });
         setChatMessages([
           ...nextMessages,
           { role: "assistant", content: result.reply },
@@ -123,7 +137,6 @@ export function AiOraclePanel({
           ...nextDisplay,
           { role: "assistant", content: result.reply },
         ]);
-        const isFirstReply = nextMessages.length === 1;
         if (isFirstReply) {
           onSessionUpdate?.((prev) => ({
             ...prev,
@@ -168,7 +181,18 @@ export function AiOraclePanel({
         setLoading(false);
       }
     },
-    [user, openAuth, refreshUser, onSessionUpdate, logout],
+    [
+      user,
+      openAuth,
+      refreshUser,
+      onSessionUpdate,
+      logout,
+      deck,
+      spreadTitle,
+      question,
+      cards,
+      jumpCard,
+    ],
   );
 
   const retryPendingChat = useCallback(async () => {

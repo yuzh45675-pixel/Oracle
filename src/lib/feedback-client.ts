@@ -1,9 +1,18 @@
+import { authHeaders } from "@/lib/auth-client";
 import { getApiBase } from "@/lib/api-base";
+
+export type FeedbackMeta = {
+  deck?: string;
+  spreadTitle?: string;
+  question?: string;
+  source?: string;
+};
 
 export type FeedbackPayload = {
   accuracy: string;
   dislike: string;
   price: string;
+  meta?: FeedbackMeta;
 };
 
 export type FeedbackResponse = {
@@ -19,7 +28,10 @@ export async function submitFeedback(
   try {
     res = await fetch(`${getApiBase()}/api/feedback`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders(),
+      },
       body: JSON.stringify(payload),
     });
   } catch {

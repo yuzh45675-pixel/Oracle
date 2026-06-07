@@ -13,6 +13,22 @@ function signToken(user) {
   });
 }
 
+function optionalAuthMiddleware(req, res, next) {
+  const header = req.headers.authorization;
+  if (!header?.startsWith("Bearer ")) {
+    next();
+    return;
+  }
+  try {
+    const payload = jwt.verify(header.slice(7), JWT_SECRET);
+    const user = store.findUserById(payload.sub);
+    if (user) req.user = user;
+  } catch {
+    /* ignore invalid token for optional auth */
+  }
+  next();
+}
+
 function authMiddleware(req, res, next) {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer ")) {
@@ -113,6 +129,7 @@ async function updateAvatar(user, avatarInput) {
 
 module.exports = {
   authMiddleware,
+  optionalAuthMiddleware,
   register,
   login,
   updateAvatar,

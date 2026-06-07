@@ -56,7 +56,17 @@ function validatePayload(body) {
 }
 
 /** 追加一条反馈并写回文件 */
-function appendFeedback({ accuracy, dislike, price }) {
+function appendFeedback({
+  accuracy,
+  dislike,
+  price,
+  userId,
+  username,
+  deck,
+  spreadTitle,
+  question,
+  source,
+}) {
   ensureFeedbackFile();
   const data = readAll();
   if (!Array.isArray(data.feedback)) data.feedback = [];
@@ -65,6 +75,12 @@ function appendFeedback({ accuracy, dislike, price }) {
     accuracy,
     dislike: dislike || "",
     price,
+    userId: userId ?? null,
+    username: username ?? null,
+    deck: deck ?? null,
+    spreadTitle: spreadTitle ?? null,
+    question: question ? String(question).slice(0, 200) : null,
+    source: source ?? "web",
     timestamp: new Date().toISOString(),
   };
 

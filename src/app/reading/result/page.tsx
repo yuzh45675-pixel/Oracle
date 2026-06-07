@@ -135,7 +135,11 @@ export default function ResultPage() {
           </motion.div>
         )}
 
-        <BetaFeedbackSurvey />
+        <BetaFeedbackSurvey
+          deck={deck ?? undefined}
+          spreadTitle={spreadTitle}
+          question={question}
+        />
 
         {lenormandSpread !== "tableau" && (
           <motion.div className="mt-10 space-y-4">
@@ -184,7 +188,7 @@ export default function ResultPage() {
               router.push(`/reading?deck=${deckType}`);
             }}
           >
-            新的占卜
+            新的测算
           </AnimatedButton>
           <AnimatedButton href="/history" variant="ghost">
             查看记录
@@ -247,7 +251,11 @@ export default function ResultPage() {
         </motion.div>
       )}
 
-      <BetaFeedbackSurvey />
+      <BetaFeedbackSurvey
+        deck={deck ?? undefined}
+        spreadTitle={spreadTitle}
+        question={question}
+      />
 
       <motion.div className="mt-12 flex flex-wrap justify-center gap-4">
         <AnimatedButton
@@ -256,7 +264,7 @@ export default function ResultPage() {
             router.push("/reading");
           }}
         >
-          新的占卜
+          新的测算
         </AnimatedButton>
         <AnimatedButton href="/history" variant="ghost">
           查看记录

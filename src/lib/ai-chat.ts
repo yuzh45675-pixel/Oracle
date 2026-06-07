@@ -27,9 +27,19 @@ export async function fetchChatHealth(): Promise<{
   return { ok: Boolean(data.ok), hasApiKey: data.hasApiKey };
 }
 
+export type ReadingMeta = {
+  deck?: string;
+  spreadTitle?: string;
+  question?: string;
+  cardNames?: string[];
+  kind?: "initial" | "followup";
+  source?: string;
+};
+
 export async function sendChatRequest(options: {
   message?: string;
   messages?: ChatMessage[];
+  readingMeta?: ReadingMeta;
 }): Promise<ChatResponse> {
   const res = await fetchApiWithRetry("/api/chat", {
     method: "POST",
