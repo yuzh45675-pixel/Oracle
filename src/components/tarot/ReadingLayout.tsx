@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { ParticleBackground } from "@/components/three/ParticleBackground";
 import { FloatingGlow } from "@/components/ui/FloatingGlow";
 import { useTheme } from "@/context/ThemeContext";
+import { ritualParticleIntensity } from "@/lib/ritual-performance";
 
 interface ReadingLayoutProps {
   children: ReactNode;
@@ -41,9 +42,10 @@ export function ReadingLayout({
     >
       <ParticleBackground
         dissolve={dissolve}
-        intensity={performanceMode ? 0.42 : 1}
+        intensity={ritualParticleIntensity(performanceMode)}
         interactive={!performanceMode}
         showGlow={!performanceMode}
+        pauseLoop={performanceMode}
       />
       {!performanceMode && (
         <>

@@ -117,18 +117,28 @@ function ScrollRow({
     setThumb({ width, left, visible: true });
   }, [cards.length, stride]);
 
+  const syncRaf = useRef<number | null>(null);
+  const scheduleSync = useCallback(() => {
+    if (syncRaf.current != null) return;
+    syncRaf.current = requestAnimationFrame(() => {
+      syncRaf.current = null;
+      syncMetrics();
+    });
+  }, [syncMetrics]);
+
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
     syncMetrics();
-    el.addEventListener("scroll", syncMetrics, { passive: true });
-    const ro = new ResizeObserver(syncMetrics);
+    el.addEventListener("scroll", scheduleSync, { passive: true });
+    const ro = new ResizeObserver(scheduleSync);
     ro.observe(el);
     return () => {
-      el.removeEventListener("scroll", syncMetrics);
+      if (syncRaf.current != null) cancelAnimationFrame(syncRaf.current);
+      el.removeEventListener("scroll", scheduleSync);
       ro.disconnect();
     };
-  }, [syncMetrics]);
+  }, [scheduleSync, syncMetrics]);
 
   // 鼠标按住卡面拖拽浏览（触摸交给原生横向滚动，避免与页面竖向滚动冲突）
   const onPointerDown = (e: React.PointerEvent) => {

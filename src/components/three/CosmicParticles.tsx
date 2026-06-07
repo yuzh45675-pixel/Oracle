@@ -10,6 +10,7 @@ import {
   pickFormation,
 } from "@/lib/particle-formations";
 import { shouldIgnoreParticleGesture } from "@/lib/particle-gesture";
+import type { FormationId } from "@/lib/themes";
 
 function useAdaptiveParticleCount() {
   const [count] = useState(() => {
@@ -21,20 +22,22 @@ function useAdaptiveParticleCount() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
     if (reduced) return 500;
-    if (mobile) return 1400;
-    return 2400;
+    if (mobile) return 1100;
+    return 2200;
   });
   return count;
 }
 
+/** 复用向量，避免 mousemove 每帧 new Vector2 触发 GC */
 function clientToWorld(
   clientX: number,
   clientY: number,
   viewport: { width: number; height: number },
+  out: THREE.Vector2,
 ) {
   const x = (clientX / window.innerWidth) * 2 - 1;
   const y = -(clientY / window.innerHeight) * 2 + 1;
-  return new THREE.Vector2(x * (viewport.width / 2), y * (viewport.height / 2));
+  return out.set(x * (viewport.width / 2), y * (viewport.height / 2));
 }
 
 const vertexShader = /* glsl */ `
@@ -51,6 +54,7 @@ const vertexShader = /* glsl */ `
   uniform float uRitualExpand;
   uniform float uAttract;
   uniform float uSizeScale;
+  uniform float uIntensity;
   attribute float aSize;
   attribute float aPhase;
   attribute float aBreathGather;
@@ -127,12 +131,12 @@ const vertexShader = /* glsl */ `
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     float sizeBoost = 1.0 + uFocusStrength * 0.18 + uRitualExpand * 0.65;
-    gl_PointSize = aSize * (105.0 / -mvPosition.z) * sizeBoost * (1.0 + uBurst * 0.35) * uSizeScale;
+    gl_PointSize = aSize * (105.0 / -mvPosition.z) * sizeBoost * (1.0 + uBurst * 0.35) * uSizeScale * uIntensity;
     if (uBreathMode > 0.5) {
       gl_PointSize *= mix(1.0, mix(0.86, 0.92, 1.0 - aBreathGather), breathPull);
     }
     gl_Position = projectionMatrix * mvPosition;
-    vAlpha = (0.28 + aSize * 0.42) * uDissolve;
+    vAlpha = (0.28 + aSize * 0.42) * uDissolve * mix(0.72, 1.0, uIntensity);
     if (uBreathMode > 0.5) {
       float gatherFade = mix(0.62, 0.5, aBreathGather);
       vAlpha *= mix(0.88, gatherFade, breathPull * aBreathGather + breathPull * (1.0 - aBreathGather) * 0.35);
@@ -193,23 +197,20 @@ export function CosmicParticles({
     );
   });
   const meshRef = useRef<THREE.Points>(null);
+  const worldScratch = useRef(new THREE.Vector2());
   const targetPointer = useRef(new THREE.Vector2(0, 0));
   const targetFocus = useRef(new THREE.Vector2(0, 0));
   const focusStrengthRef = useRef(0);
   const ritualExpandRef = useRef(0);
-  const formationStrength = useRef(0);
-  const burstStrength = useRef(0);
+  const formationStrengthRef = useRef(0);
+  const burstStrengthRef = useRef(0);
+  const lastBurstTickRef = useRef(0);
+  const lastFormationRef = useRef<FormationId | null>(null);
   const longPressTimer = useRef<number | null>(null);
   const touchStartRef = useRef<{ x: number; y: number; t: number } | null>(null);
   const { viewport } = useThree();
   const {
-    burstStrength: burstSignal,
-    formation,
-    formationStrength: formationSignal,
-    focusAnchor,
-    focusStrength,
-    ritualExpand,
-    ritualActive,
+    signalsRef,
     triggerBurst,
     triggerFormation,
     releaseFormation,
@@ -224,6 +225,7 @@ export function CosmicParticles({
     const phases = new Float32Array(count);
     const targets = new Float32Array(count * 2);
     const breathGathers = new Float32Array(count);
+    const themeIntensity = theme.particles.intensity;
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
@@ -255,9 +257,9 @@ export function CosmicParticles({
         0.8;
 
       if (breathMode && gather < 0.1) {
-        sizes[i] = (Math.random() * 0.16 + 0.06) * intensity * theme.particles.intensity;
+        sizes[i] = (Math.random() * 0.16 + 0.06) * themeIntensity;
       } else {
-        sizes[i] = (Math.random() * 0.28 + 0.1) * intensity * theme.particles.intensity;
+        sizes[i] = (Math.random() * 0.28 + 0.1) * themeIntensity;
       }
       phases[i] = Math.random() * Math.PI * 2;
       targets[i * 2] = positions[i3];
@@ -265,40 +267,16 @@ export function CosmicParticles({
     }
 
     return { positions, sizes, phases, targets, breathGathers };
-  }, [count, intensity, theme.particles.intensity, breathMode]);
+  }, [count, theme.particles.intensity, breathMode]);
 
   const targetAttrRef = useRef<Float32Array>(targets);
 
   useEffect(() => {
-    if (!formation || formation === "none") return;
-    const next = buildFormationTargets(formation, count);
-    targetAttrRef.current = next;
-    const geom = meshRef.current?.geometry as THREE.BufferGeometry | undefined;
-    const attr = geom?.getAttribute("aTarget") as
-      | THREE.BufferAttribute
-      | undefined;
-    if (attr) {
-      (attr as THREE.BufferAttribute).array = next;
-      attr.needsUpdate = true;
-    }
-  }, [formation, count]);
-
-  useEffect(() => {
-    // 手机端关闭爆发反馈
-    if (isMobile) return;
-    burstStrength.current = Math.max(burstStrength.current, burstSignal);
-  }, [burstSignal, isMobile]);
-
-  useEffect(() => {
-    formationStrength.current = formationSignal;
-  }, [formationSignal]);
-
-  useEffect(() => {
-    if (focusAnchor) {
-      const world = clientToWorld(focusAnchor.x, focusAnchor.y, viewport);
-      targetFocus.current.copy(world);
-    }
-  }, [focusAnchor, viewport.width, viewport.height]);
+    const material = meshRef.current?.material as THREE.ShaderMaterial | undefined;
+    if (!material) return;
+    material.uniforms.uDissolve.value = dissolve;
+    material.uniforms.uIntensity.value = intensity;
+  }, [dissolve, intensity]);
 
   const uniforms = useMemo(
     () => ({
@@ -313,29 +291,29 @@ export function CosmicParticles({
       uFormation: { value: 0 },
       uBurst: { value: 0 },
       uRitualExpand: { value: 0 },
-      uColorA: { value: colorA.clone() },
-      uColorB: { value: colorB.clone() },
+      uColorA: { value: colorA },
+      uColorB: { value: colorB },
       uTrail: { value: theme.particles.trail },
       uAttract: { value: theme.particles.attract },
-      // 手机端：更小的粒子尺寸与更收敛的光晕
       uSizeScale: { value: isMobile ? 0.62 : 1 },
       uHaloScale: { value: isMobile ? 0.6 : 1 },
+      uIntensity: { value: intensity },
     }),
-    [dissolve, colorA, colorB, theme.particles.trail, theme.particles.attract, breathMode, isMobile],
+    [colorA, colorB, theme.particles.trail, theme.particles.attract, breathMode, isMobile],
   );
 
   useEffect(() => {
     if (!interactive || breathMode) return;
     const toPointer = (clientX: number, clientY: number) => {
-      targetPointer.current.copy(clientToWorld(clientX, clientY, viewport));
+      clientToWorld(clientX, clientY, viewport, targetPointer.current);
     };
 
     const onMove = (e: MouseEvent) => {
-      if (!ritualActive) toPointer(e.clientX, e.clientY);
+      if (!signalsRef.current.ritualActive) toPointer(e.clientX, e.clientY);
     };
     const onTouchMove = (e: TouchEvent) => {
       const t = e.touches[0];
-      if (t && !ritualActive) toPointer(t.clientX, t.clientY);
+      if (t && !signalsRef.current.ritualActive) toPointer(t.clientX, t.clientY);
     };
 
     const clearLongPress = () => {
@@ -346,7 +324,7 @@ export function CosmicParticles({
     };
 
     const startLongPress = (x: number, y: number) => {
-      if (ritualActive) return;
+      if (signalsRef.current.ritualActive) return;
       clearLongPress();
       toPointer(x, y);
       longPressTimer.current = window.setTimeout(() => {
@@ -413,7 +391,7 @@ export function CosmicParticles({
     theme.formations,
     triggerFormation,
     releaseFormation,
-    ritualActive,
+    signalsRef,
     triggerBurst,
     interactive,
     breathMode,
@@ -422,6 +400,38 @@ export function CosmicParticles({
   useFrame((state) => {
     const material = meshRef.current?.material as THREE.ShaderMaterial | undefined;
     if (!material) return;
+
+    const sig = signalsRef.current;
+
+    if (sig.burstTick !== lastBurstTickRef.current) {
+      lastBurstTickRef.current = sig.burstTick;
+      burstStrengthRef.current = 1;
+    }
+
+    const formationId = sig.formation;
+    if (formationId !== lastFormationRef.current) {
+      lastFormationRef.current = formationId;
+      if (formationId && formationId !== "none") {
+        const next = buildFormationTargets(formationId, count);
+        targetAttrRef.current = next;
+        const geom = meshRef.current?.geometry as THREE.BufferGeometry | undefined;
+        const attr = geom?.getAttribute("aTarget") as THREE.BufferAttribute | undefined;
+        if (attr) {
+          attr.array = next;
+          attr.needsUpdate = true;
+        }
+      }
+    }
+
+    if (sig.focusAnchor) {
+      clientToWorld(
+        sig.focusAnchor.x,
+        sig.focusAnchor.y,
+        viewport,
+        worldScratch.current,
+      );
+      targetFocus.current.copy(worldScratch.current);
+    }
 
     const breath =
       breathAmount ??
@@ -435,31 +445,38 @@ export function CosmicParticles({
       dissolve,
       0.12,
     );
+    material.uniforms.uIntensity.value = THREE.MathUtils.lerp(
+      material.uniforms.uIntensity.value,
+      intensity,
+      0.1,
+    );
     material.uniforms.uPointer.value.lerp(targetPointer.current, 0.4);
     material.uniforms.uFocus.value.lerp(targetFocus.current, 0.18);
     focusStrengthRef.current = THREE.MathUtils.lerp(
       focusStrengthRef.current,
-      focusStrength,
-      focusStrength > focusStrengthRef.current ? 0.14 : 0.06,
+      sig.focusStrength,
+      sig.focusStrength > focusStrengthRef.current ? 0.14 : 0.06,
     );
     material.uniforms.uFocusStrength.value = focusStrengthRef.current;
 
     ritualExpandRef.current = THREE.MathUtils.lerp(
       ritualExpandRef.current,
-      ritualExpand,
-      ritualExpand > ritualExpandRef.current ? 0.09 : 0.05,
+      sig.ritualExpand,
+      sig.ritualExpand > ritualExpandRef.current ? 0.09 : 0.05,
     );
     material.uniforms.uRitualExpand.value = ritualExpandRef.current;
 
-    formationStrength.current = THREE.MathUtils.lerp(
-      formationStrength.current,
-      formationSignal,
-      formationSignal > formationStrength.current ? 0.07 : 0.035,
+    formationStrengthRef.current = THREE.MathUtils.lerp(
+      formationStrengthRef.current,
+      sig.formationStrength,
+      sig.formationStrength > formationStrengthRef.current ? 0.07 : 0.035,
     );
-    material.uniforms.uFormation.value = formationStrength.current;
+    material.uniforms.uFormation.value = formationStrengthRef.current;
 
-    burstStrength.current = THREE.MathUtils.lerp(burstStrength.current, 0, 0.12);
-    material.uniforms.uBurst.value = burstStrength.current;
+    if (!isMobile) {
+      burstStrengthRef.current = THREE.MathUtils.lerp(burstStrengthRef.current, 0, 0.12);
+      material.uniforms.uBurst.value = burstStrengthRef.current;
+    }
 
     material.uniforms.uColorA.value.lerp(colorA, 0.08);
     material.uniforms.uColorB.value.lerp(colorB, 0.08);

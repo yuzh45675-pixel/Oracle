@@ -19,6 +19,8 @@ interface TarotCardProps {
   /** 跳过入场动画（滑动选牌等批量渲染） */
   instant?: boolean;
   backDetail?: CardBackDetail;
+  imageQuality?: number;
+  priority?: boolean;
 }
 
 const sizes = {
@@ -27,6 +29,14 @@ const sizes = {
   md: "h-[200px] w-[136px]",
   lg: "h-[280px] w-[190px]",
   hero: "h-[220px] w-[152px] sm:h-[280px] sm:w-[190px] md:h-[380px] md:w-[260px]",
+};
+
+const faceQuality: Record<keyof typeof sizes, number> = {
+  xs: 48,
+  sm: 52,
+  md: 58,
+  lg: 68,
+  hero: 72,
 };
 
 export function TarotCard({
@@ -41,6 +51,8 @@ export function TarotCard({
   delay = 0,
   instant = false,
   backDetail = "full",
+  imageQuality,
+  priority = false,
 }: TarotCardProps) {
   const [internalFlipped, setInternalFlipped] = useState(false);
   const flipped = controlledFlipped ?? internalFlipped;
@@ -104,7 +116,11 @@ export function TarotCard({
             : { rotateX, rotateY, transformStyle: "preserve-3d" }
         }
         animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ type: "spring", stiffness: 320, damping: 28 }}
+        transition={
+          flipped
+            ? { type: "tween", duration: settled ? 0.32 : 0.42, ease: [0.22, 1, 0.36, 1] }
+            : { type: "spring", stiffness: 320, damping: 28 }
+        }
         onClick={handleFlip}
         whileHover={canInteract ? { scale: 1.02 } : {}}
       >
@@ -121,7 +137,12 @@ export function TarotCard({
             transform: "rotateY(180deg)",
           }}
         >
-          <CardFace card={card} reversed={reversed} />
+          <CardFace
+            card={card}
+            reversed={reversed}
+            imageQuality={imageQuality ?? faceQuality[size]}
+            priority={priority || flipped}
+          />
         </motion.div>
       </motion.div>
     </motion.div>

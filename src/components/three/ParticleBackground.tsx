@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import { FloatingGlow } from "@/components/ui/FloatingGlow";
@@ -36,6 +36,8 @@ interface ParticleBackgroundProps {
   tremble?: number;
   interactive?: boolean;
   showGlow?: boolean;
+  /** 后台标签或仪式阶段：暂停 WebGL 帧循环，减轻主线程与 GC */
+  pauseLoop?: boolean;
 }
 
 function Scene({
@@ -80,10 +82,20 @@ export function ParticleBackground({
   tremble = 0,
   interactive = true,
   showGlow = true,
+  pauseLoop = false,
 }: ParticleBackgroundProps) {
   const { theme } = useTheme();
   const c = theme.colors;
   const [isMobile] = useState(detectMobileSync);
+  const [tabVisible, setTabVisible] = useState(true);
+
+  useEffect(() => {
+    const onVis = () => setTabVisible(!document.hidden);
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, []);
+
+  const runLoop = tabVisible && !pauseLoop;
 
   return (
     <motion.div
@@ -95,9 +107,10 @@ export function ParticleBackground({
       <Suspense fallback={null}>
         <Canvas
           camera={{ position: [0, 0, 3], fov: 60 }}
-          dpr={isMobile ? 1 : [1, 2]}
+          dpr={isMobile || pauseLoop ? 1 : [1, 2]}
+          frameloop={runLoop ? "always" : "never"}
           gl={{
-            antialias: !isMobile,
+            antialias: !isMobile && !pauseLoop,
             alpha: true,
             powerPreference: "low-power",
           }}

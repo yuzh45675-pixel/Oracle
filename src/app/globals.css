@@ -199,6 +199,28 @@ body {
   will-change: transform;
 }
 
+/* 洗牌性能层：略缩小绘制区域 + 隔离重绘 */
+.shuffle-deck-perf {
+  contain: layout style paint;
+  transform: scale(0.88) translateZ(0);
+  will-change: transform;
+}
+
+.shuffle-idle-card {
+  transform: translate(calc(-50% + var(--idle-x, 0px)), calc(-50% + var(--idle-y, 0px)))
+    rotate(var(--idle-rot, 0deg));
+}
+
+@media (min-width: 640px) {
+  .shuffle-stack-idle .shuffle-idle-card {
+    left: 0;
+    top: 0;
+    margin-left: 95px;
+    margin-top: 140px;
+    transform: translate(var(--idle-x, 0px), var(--idle-y, 0px)) rotate(var(--idle-rot, 0deg));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .shuffle-card-mobile {
     animation: none;

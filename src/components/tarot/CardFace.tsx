@@ -15,6 +15,9 @@ interface CardFaceProps {
   orbitSpin?: boolean;
   /** static：完整卡背线稿，关闭动画并略降 GPU 负载 */
   backDetail?: CardBackDetail;
+  /** 牌阵揭示等场景降低解码体积 */
+  imageQuality?: number;
+  priority?: boolean;
 }
 
 const MAJOR_ROMAN = [
@@ -107,6 +110,8 @@ export function CardFace({
   className = "",
   orbitSpin = false,
   backDetail = "full",
+  imageQuality = 92,
+  priority = false,
 }: CardFaceProps) {
   const [imgError, setImgError] = useState(false);
 
@@ -146,7 +151,9 @@ export function CardFace({
             fill
             className="object-contain object-center p-1.5"
             sizes="(max-width: 768px) 140px, 260px"
-            quality={92}
+            quality={imageQuality}
+            priority={priority}
+            loading={priority ? "eager" : undefined}
             onError={() => setImgError(true)}
           />
         )}

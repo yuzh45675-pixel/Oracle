@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { prefetchCardFaces } from "@/lib/prefetch-card-images";
 import { TarotCard } from "./TarotCard";
 import { TarotTable } from "./TarotTable";
 import {
@@ -125,17 +127,16 @@ function SpreadTableView({
                 transform: `translate(-50%, -50%) rotate(${slot.rotation}deg)`,
                 transformOrigin: "center center",
               }}
-              initial={{ opacity: 0, scale: 0.85 }}
+              initial={isFlipped ? false : { opacity: 0, scale: 0.85 }}
               animate={{
                 opacity: showGhost ? 0.28 : showBack ? 0.55 : 1,
                 scale: isFlipped && isMobile ? 1 : isActive ? 1.04 : 1,
               }}
-              transition={{
-                type: "spring",
-                stiffness: 280,
-                damping: 26,
-                delay: isFlipped ? i * 0.03 : 0,
-              }}
+              transition={
+                isFlipped
+                  ? { type: "tween", duration: 0.22, ease: "easeOut" }
+                  : { type: "spring", stiffness: 280, damping: 26 }
+              }
             >
               <div className="relative inline-block">
                 {(showFace || canFlip || showGhost) && (
@@ -167,7 +168,8 @@ function SpreadTableView({
                       size={size}
                       interactive={canFlip}
                       backDetail={showBack ? "static" : "full"}
-                      instant={showBack}
+                      instant={showBack || showFace}
+                      priority={showFace && (isActive || allDone)}
                     />
                   </div>
                 )}
@@ -237,6 +239,7 @@ function MobileFlipFocus({
               onFlip={onReveal}
               size="md"
               interactive
+              priority
             />
           </motion.div>
         )}
@@ -266,6 +269,10 @@ export function TarotSpreadRenderer({
   const displayCards = cards.slice(0, expectedCount);
   const activeIndex = getActiveCardIndex(spread, revealedCount);
   const allDone = revealedCount >= expectedCount;
+
+  useEffect(() => {
+    if (displayCards.length > 0) prefetchCardFaces(displayCards);
+  }, [displayCards]);
 
   const layoutWidth =
     containerSize.width > 0 ? containerSize.width : fallbackSpreadWidth();

@@ -23,6 +23,8 @@ import {
 import { FLIP_GUIDANCE } from "@/types/tarot";
 import { useParticleInteraction } from "@/context/ParticleInteractionContext";
 import { ritualParticleDissolve } from "@/lib/ritual-performance";
+import { ritualPerformanceMode } from "@/lib/runtime-performance";
+import { prefetchCardFaces } from "@/lib/prefetch-card-images";
 
 export default function DrawPage() {
   const router = useRouter();
@@ -89,6 +91,7 @@ export default function DrawPage() {
       prepareNewReading();
       return;
     }
+    prefetchCardFaces(spreadCards);
     setFlipped(new Array(expectedCount).fill(false));
     setRevealedCount(0);
   }, [ritualPhase, expectedCount, spreadCards.length, prepareNewReading]);
@@ -153,7 +156,7 @@ export default function DrawPage() {
       subtitle={subtitle}
       dissolve={ritualParticleDissolve(ritualPhase)}
       wide={ritualPhase === "cutting" || ritualPhase === "spread"}
-      performanceMode={ritualPhase === "cutting" || ritualPhase === "shuffling"}
+      performanceMode={ritualPerformanceMode(ritualPhase, allRevealed)}
     >
       <RitualStepGuideToggle
         enabled={stepGuideEnabled}
