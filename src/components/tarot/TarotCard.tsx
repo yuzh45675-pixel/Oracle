@@ -21,6 +21,8 @@ interface TarotCardProps {
   backDetail?: CardBackDetail;
   imageQuality?: number;
   priority?: boolean;
+  /** 揭示阶段使用 ritual WebP + 更快翻转 */
+  faceVariant?: "full" | "ritual";
 }
 
 const sizes = {
@@ -53,6 +55,7 @@ export function TarotCard({
   backDetail = "full",
   imageQuality,
   priority = false,
+  faceVariant = "full",
 }: TarotCardProps) {
   const [internalFlipped, setInternalFlipped] = useState(false);
   const flipped = controlledFlipped ?? internalFlipped;
@@ -118,7 +121,18 @@ export function TarotCard({
         animate={{ rotateY: flipped ? 180 : 0 }}
         transition={
           flipped
-            ? { type: "tween", duration: settled ? 0.32 : 0.42, ease: [0.22, 1, 0.36, 1] }
+            ? {
+                type: "tween",
+                duration:
+                  faceVariant === "ritual"
+                    ? settled
+                      ? 0.16
+                      : 0.22
+                    : settled
+                      ? 0.32
+                      : 0.42,
+                ease: [0.22, 1, 0.36, 1],
+              }
             : { type: "spring", stiffness: 320, damping: 28 }
         }
         onClick={handleFlip}
@@ -141,7 +155,8 @@ export function TarotCard({
             card={card}
             reversed={reversed}
             imageQuality={imageQuality ?? faceQuality[size]}
-            priority={priority || flipped}
+            priority={priority || flipped || Boolean(card)}
+            faceVariant={faceVariant}
           />
         </motion.div>
       </motion.div>

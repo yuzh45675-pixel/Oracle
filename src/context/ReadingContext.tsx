@@ -13,6 +13,7 @@ import { useLenormandShuffle } from "@/hooks/useLenormandShuffle";
 import { getSpreadLayout } from "@/lib/spreadLayouts";
 import { getLenormandLayout } from "@/lib/lenormand/layouts";
 import { buildLenormandCombinations } from "@/lib/lenormand/combinationEngine";
+import { prefetchCardFaces } from "@/lib/prefetch-card-images";
 import { upsertReading } from "@/lib/storage";
 import type {
   DeckType,
@@ -134,6 +135,7 @@ export function ReadingProvider({ children }: { children: ReactNode }) {
       }
 
       setCards(drawn);
+      prefetchCardFaces(drawn, "ritual");
       const newSession: ReadingSession = {
         id: crypto.randomUUID(),
         deck,

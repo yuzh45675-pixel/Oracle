@@ -1,6 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { useState } from "react";
+import {
+  prefetchCardFaces,
+  prefetchRevealBatch,
+} from "@/lib/prefetch-card-images";
 import { motion } from "framer-motion";
 import { LenormandCard } from "./LenormandCard";
 import { LenormandTable } from "./LenormandTable";
@@ -62,6 +67,16 @@ export function LenormandSpreadRenderer({
   const activeIndex = getLenormandActiveIndex(spread, revealedCount);
   const allDone = revealedCount >= expectedCount;
   const size = cardSize(expectedCount);
+
+  useEffect(() => {
+    if (displayCards.length > 0) prefetchCardFaces(displayCards, "ritual");
+  }, [displayCards]);
+
+  useEffect(() => {
+    if (displayCards.length > 0) {
+      prefetchRevealBatch(displayCards, activeIndex, "ritual");
+    }
+  }, [displayCards, activeIndex]);
 
   return (
     <LenormandTable

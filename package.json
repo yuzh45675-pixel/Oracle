@@ -5,13 +5,14 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "server": "node server.js",
-    "build": "next build",
+    "build": "node scripts/generate-ritual-card-thumbs.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "download-cards": "node scripts/download-commons-decks.mjs",
     "download-cards:lenormand": "node scripts/split-lenormand-game-of-hope.mjs",
     "lenormand-audit": "node scripts/generate-lenormand-audit.mjs",
-    "qrcode": "node scripts/generate-qrcode.mjs"
+    "qrcode": "node scripts/generate-qrcode.mjs",
+    "card-thumbs": "node scripts/generate-ritual-card-thumbs.mjs"
   },
   "engines": {
     "node": ">=20"

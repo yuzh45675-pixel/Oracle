@@ -38,6 +38,8 @@ export function LenormandCard({
         onFlip={onFlip}
         size={size}
         interactive={interactive}
+        priority={Boolean(card)}
+        faceVariant="ritual"
       />
     </div>
   );

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import type { TarotCard as TarotCardType } from "@/types/tarot";
 import type { CardBackDetail } from "@/lib/ritual-performance";
+import { fullFaceUrl, resolveFaceUrl } from "@/lib/card-face-url";
 import { ThemedCardBack } from "./ThemedCardBack";
 
 interface CardFaceProps {
@@ -11,13 +12,12 @@ interface CardFaceProps {
   reversed?: boolean;
   back?: boolean;
   className?: string;
-  /** 入口 hero：卡背星环缓慢自转 */
   orbitSpin?: boolean;
-  /** static：完整卡背线稿，关闭动画并略降 GPU 负载 */
   backDetail?: CardBackDetail;
-  /** 牌阵揭示等场景降低解码体积 */
   imageQuality?: number;
   priority?: boolean;
+  /** 揭示阶段：原生 img + ritual WebP，跳过 Next 优化管道 */
+  faceVariant?: "full" | "ritual";
 }
 
 const MAJOR_ROMAN = [
@@ -35,10 +35,6 @@ const SUIT_LABEL: Record<string, string> = {
 
 function hasRasterArtwork(image?: string) {
   return Boolean(image?.match(/\.(png|jpe?g|webp|gif)(\?.*)?$/i));
-}
-
-function imageSrc(image: string) {
-  return image.split("?")[0] ?? image;
 }
 
 function PlaceholderFace({
@@ -103,6 +99,88 @@ function PlaceholderFace({
   );
 }
 
+function RasterFace({
+  card,
+  reversed,
+  className,
+  src,
+  priority,
+  faceVariant,
+  imageQuality,
+  onError,
+}: {
+  card: TarotCardType;
+  reversed?: boolean;
+  className?: string;
+  src: string;
+  priority?: boolean;
+  faceVariant: "full" | "ritual";
+  imageQuality: number;
+  onError: () => void;
+}) {
+  const useNative =
+    faceVariant === "ritual" || card.system === "lenormand";
+
+  return (
+    <div
+      className={`relative h-full w-full overflow-hidden rounded-xl ${
+        card.system === "lenormand" ? "bg-[#f5f0e8]" : "bg-[#0a0a0f]"
+      } ${className}`}
+      style={{ transform: reversed ? "rotate(180deg)" : undefined }}
+    >
+      {useNative ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={src}
+          alt={card.name}
+          className="absolute inset-0 h-full w-full object-contain object-center p-1.5"
+          loading="eager"
+          decoding="async"
+          fetchPriority={priority ? "high" : "auto"}
+          onError={onError}
+        />
+      ) : (
+        <Image
+          src={fullFaceUrl(card.image) ?? src}
+          alt={card.name}
+          fill
+          className="object-contain object-center p-1.5"
+          sizes="(max-width: 768px) 140px, 260px"
+          quality={imageQuality}
+          priority={priority}
+          loading={priority ? "eager" : undefined}
+          onError={onError}
+        />
+      )}
+      <div
+        className={`pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ${
+          card.system === "lenormand" ? "ring-black/10" : "ring-white/[0.08]"
+        }`}
+      />
+      <div
+        className={`pointer-events-none absolute inset-x-0 bottom-0 px-2 pb-2 pt-6 ${
+          card.system === "lenormand"
+            ? "bg-gradient-to-t from-[#e8e0d4]/95 via-[#f5f0e8]/40 to-transparent"
+            : "bg-gradient-to-t from-black/70 via-black/25 to-transparent"
+        }`}
+      >
+        <p
+          className={`text-center font-display text-sm font-light tracking-wide ${
+            card.system === "lenormand" ? "text-[#2a2520]" : "text-frost"
+          }`}
+        >
+          {card.name}
+          {card.system === "lenormand" && (
+            <span className="mt-0.5 block text-[10px] font-sans tracking-wide text-[#5c5348]">
+              {card.number}. {card.nameEn}
+            </span>
+          )}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function CardFace({
   card,
   reversed = false,
@@ -112,8 +190,10 @@ export function CardFace({
   backDetail = "full",
   imageQuality = 92,
   priority = false,
+  faceVariant = "full",
 }: CardFaceProps) {
   const [imgError, setImgError] = useState(false);
+  const [useFullFallback, setUseFullFallback] = useState(false);
 
   if (back) {
     return (
@@ -129,60 +209,32 @@ export function CardFace({
   const showImage = card && hasRasterArtwork(card.image) && !imgError;
 
   if (showImage) {
+    const ritualSrc = resolveFaceUrl(card.image, "ritual");
+    const fullSrc = fullFaceUrl(card.image);
+    const src =
+      faceVariant === "ritual" && !useFullFallback && ritualSrc
+        ? ritualSrc
+        : fullSrc ?? ritualSrc ?? card.image;
+
+    const handleError = () => {
+      if (faceVariant === "ritual" && !useFullFallback && fullSrc) {
+        setUseFullFallback(true);
+        return;
+      }
+      setImgError(true);
+    };
+
     return (
-      <div
-        className={`relative h-full w-full overflow-hidden rounded-xl ${
-          card.system === "lenormand" ? "bg-[#f5f0e8]" : "bg-[#0a0a0f]"
-        } ${className}`}
-        style={{ transform: reversed ? "rotate(180deg)" : undefined }}
-      >
-        {card.system === "lenormand" ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={card.image}
-            alt={card.name}
-            className="absolute inset-0 h-full w-full object-contain object-center p-1.5"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <Image
-            src={imageSrc(card.image)}
-            alt={card.name}
-            fill
-            className="object-contain object-center p-1.5"
-            sizes="(max-width: 768px) 140px, 260px"
-            quality={imageQuality}
-            priority={priority}
-            loading={priority ? "eager" : undefined}
-            onError={() => setImgError(true)}
-          />
-        )}
-        <div
-          className={`pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ${
-            card.system === "lenormand" ? "ring-black/10" : "ring-white/[0.08]"
-          }`}
-        />
-        <div
-          className={`pointer-events-none absolute inset-x-0 bottom-0 px-2 pb-2 pt-6 ${
-            card.system === "lenormand"
-              ? "bg-gradient-to-t from-[#e8e0d4]/95 via-[#f5f0e8]/40 to-transparent"
-              : "bg-gradient-to-t from-black/70 via-black/25 to-transparent"
-          }`}
-        >
-          <p
-            className={`text-center font-display text-sm font-light tracking-wide ${
-              card.system === "lenormand" ? "text-[#2a2520]" : "text-frost"
-            }`}
-          >
-            {card.name}
-            {card.system === "lenormand" && (
-              <span className="mt-0.5 block text-[10px] font-sans tracking-wide text-[#5c5348]">
-                {card.number}. {card.nameEn}
-              </span>
-            )}
-          </p>
-        </div>
-      </div>
+      <RasterFace
+        card={card}
+        reversed={reversed}
+        className={className}
+        src={src}
+        priority={priority}
+        faceVariant={useFullFallback ? "full" : faceVariant}
+        imageQuality={imageQuality}
+        onError={handleError}
+      />
     );
   }
 

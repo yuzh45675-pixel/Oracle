@@ -2,7 +2,10 @@
 
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { prefetchCardFaces } from "@/lib/prefetch-card-images";
+import {
+  prefetchCardFaces,
+  prefetchRevealBatch,
+} from "@/lib/prefetch-card-images";
 import { TarotCard } from "./TarotCard";
 import { TarotTable } from "./TarotTable";
 import {
@@ -169,7 +172,8 @@ function SpreadTableView({
                       interactive={canFlip}
                       backDetail={showBack ? "static" : "full"}
                       instant={showBack || showFace}
-                      priority={showFace && (isActive || allDone)}
+                      priority={Boolean(drawn.card)}
+                      faceVariant="ritual"
                     />
                   </div>
                 )}
@@ -240,6 +244,7 @@ function MobileFlipFocus({
               size="md"
               interactive
               priority
+              faceVariant="ritual"
             />
           </motion.div>
         )}
@@ -271,8 +276,14 @@ export function TarotSpreadRenderer({
   const allDone = revealedCount >= expectedCount;
 
   useEffect(() => {
-    if (displayCards.length > 0) prefetchCardFaces(displayCards);
+    if (displayCards.length > 0) prefetchCardFaces(displayCards, "ritual");
   }, [displayCards]);
+
+  useEffect(() => {
+    if (displayCards.length > 0) {
+      prefetchRevealBatch(displayCards, activeIndex, "ritual");
+    }
+  }, [displayCards, activeIndex]);
 
   const layoutWidth =
     containerSize.width > 0 ? containerSize.width : fallbackSpreadWidth();

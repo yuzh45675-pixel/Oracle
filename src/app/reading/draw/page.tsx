@@ -91,7 +91,7 @@ export default function DrawPage() {
       prepareNewReading();
       return;
     }
-    prefetchCardFaces(spreadCards);
+    prefetchCardFaces(spreadCards, "ritual");
     setFlipped(new Array(expectedCount).fill(false));
     setRevealedCount(0);
   }, [ritualPhase, expectedCount, spreadCards.length, prepareNewReading]);
