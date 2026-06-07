@@ -15,11 +15,41 @@ const FILE_MAP = {
 
 const cache = new Map();
 let pool = null;
+let neonSql = null;
+let driver = null;
 let mode = "file";
 let ready = false;
+let lastDbError = null;
+
+function getDatabaseUrl() {
+  const raw =
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.NEON_DATABASE_URL ||
+    "";
+  return normalizeDatabaseUrl(raw);
+}
 
 function isPostgres() {
-  return Boolean(process.env.DATABASE_URL?.trim());
+  return Boolean(getDatabaseUrl());
+}
+
+function normalizeDatabaseUrl(raw) {
+  let url = String(raw ?? "").trim();
+  if (
+    (url.startsWith('"') && url.endsWith('"')) ||
+    (url.startsWith("'") && url.endsWith("'"))
+  ) {
+    url = url.slice(1, -1).trim();
+  }
+  if (!url) return "";
+  if (url.startsWith("postgres://")) {
+    url = `postgresql://${url.slice("postgres://".length)}`;
+  }
+  if (!url.includes("sslmode=")) {
+    url += url.includes("?") ? "&sslmode=require" : "?sslmode=require";
+  }
+  return url;
 }
 
 function defaultForKey(key) {
@@ -51,25 +81,54 @@ function writeFileKey(key, value) {
   fs.writeFileSync(file, JSON.stringify(value, null, 2), "utf8");
 }
 
-function normalizeDatabaseUrl(raw) {
-  let url = String(raw ?? "").trim();
-  if (
-    (url.startsWith('"') && url.endsWith('"')) ||
-    (url.startsWith("'") && url.endsWith("'"))
-  ) {
-    url = url.slice(1, -1).trim();
+function loadFileCache() {
+  for (const key of Object.keys(FILE_MAP)) {
+    cache.set(key, readFileKey(key));
   }
-  return url;
 }
 
-async function initPostgres() {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function runNeonInit(connectionString) {
+  const { neon } = require("@neondatabase/serverless");
+  neonSql = neon(connectionString);
+  await neonSql`CREATE TABLE IF NOT EXISTS app_data (
+    key TEXT PRIMARY KEY,
+    value JSONB NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  )`;
+
+  for (const key of Object.keys(FILE_MAP)) {
+    const rows = await neonSql`SELECT value FROM app_data WHERE key = ${key}`;
+    if (rows[0]?.value) {
+      cache.set(
+        key,
+        typeof rows[0].value === "string"
+          ? JSON.parse(rows[0].value)
+          : rows[0].value,
+      );
+      continue;
+    }
+    const local = readFileKey(key);
+    cache.set(key, local);
+    await neonSql`
+      INSERT INTO app_data (key, value)
+      VALUES (${key}, ${local})
+      ON CONFLICT (key) DO NOTHING
+    `;
+  }
+  driver = "neon";
+}
+
+async function runPgInit(connectionString) {
   const { Pool } = require("pg");
-  const connectionString = normalizeDatabaseUrl(process.env.DATABASE_URL);
   pool = new Pool({
     connectionString,
     ssl: { rejectUnauthorized: false },
     max: 3,
-    connectionTimeoutMillis: 8_000,
+    connectionTimeoutMillis: 20_000,
     idleTimeoutMillis: 30_000,
   });
   await pool.query(`
@@ -97,11 +156,60 @@ async function initPostgres() {
       [key, JSON.stringify(local)],
     );
   }
+  driver = "pg";
 }
 
-function loadFileCache() {
-  for (const key of Object.keys(FILE_MAP)) {
-    cache.set(key, readFileKey(key));
+async function initPostgres() {
+  const connectionString = getDatabaseUrl();
+  const useNeon =
+    connectionString.includes("neon.tech") ||
+    process.env.USE_NEON_DRIVER === "true";
+
+  const attempts = 3;
+  let lastError = null;
+
+  for (let i = 1; i <= attempts; i += 1) {
+    try {
+      if (useNeon) {
+        await runNeonInit(connectionString);
+      } else {
+        await runPgInit(connectionString);
+      }
+      lastDbError = null;
+      return;
+    } catch (e) {
+      lastError = e;
+      lastDbError = e instanceof Error ? e.message : String(e);
+      console.error(
+        `[persistence] DB connect attempt ${i}/${attempts} failed:`,
+        lastDbError,
+      );
+      pool = null;
+      neonSql = null;
+      driver = null;
+      if (i < attempts) await sleep(3000 * i);
+    }
+  }
+
+  throw lastError ?? new Error("PostgreSQL connect failed");
+}
+
+async function saveToPostgres(key, value) {
+  if (driver === "neon" && neonSql) {
+    await neonSql`
+      INSERT INTO app_data (key, value, updated_at)
+      VALUES (${key}, ${value}, NOW())
+      ON CONFLICT (key) DO UPDATE
+      SET value = ${value}, updated_at = NOW()
+    `;
+    return;
+  }
+  if (driver === "pg" && pool) {
+    await pool.query(
+      `INSERT INTO app_data (key, value, updated_at) VALUES ($1, $2::jsonb, NOW())
+       ON CONFLICT (key) DO UPDATE SET value = $2::jsonb, updated_at = NOW()`,
+      [key, JSON.stringify(value)],
+    );
   }
 }
 
@@ -116,18 +224,28 @@ async function init() {
       await Promise.race([
         initPostgres(),
         new Promise((_, reject) => {
-          setTimeout(() => reject(new Error("PostgreSQL connect timeout (8s)")), 8_500);
+          setTimeout(
+            () => reject(new Error("PostgreSQL connect timeout (25s)")),
+            25_000,
+          );
         }),
       ]);
       mode = "postgres";
-      console.log("[persistence] PostgreSQL enabled — data survives redeploy");
+      console.log(
+        `[persistence] PostgreSQL enabled via ${driver} — data survives redeploy`,
+      );
     } catch (e) {
-      console.error("[persistence] PostgreSQL init failed, using files for now:", e.message);
+      lastDbError = e instanceof Error ? e.message : String(e);
+      console.error(
+        "[persistence] PostgreSQL init failed, using files for now:",
+        lastDbError,
+      );
       mode = "file";
       void retryPostgresLater();
     }
   } else {
     mode = "file";
+    lastDbError = "DATABASE_URL not configured on server";
     console.warn(
       "[persistence] DATABASE_URL not set — JSON files only (Render redeploy may wipe data)",
     );
@@ -147,17 +265,28 @@ function retryPostgresLater() {
       try {
         await initPostgres();
         mode = "postgres";
+        lastDbError = null;
         console.log("[persistence] PostgreSQL connected on retry");
       } catch (e) {
-        console.error("[persistence] PostgreSQL retry failed:", e.message);
+        lastDbError = e instanceof Error ? e.message : String(e);
+        console.error("[persistence] PostgreSQL retry failed:", lastDbError);
         retryPostgresLater();
       }
     })();
-  }, 60_000);
+  }, 45_000);
 }
 
 function getMode() {
   return mode;
+}
+
+function getStatus() {
+  return {
+    mode,
+    driver,
+    hasDatabaseUrl: isPostgres(),
+    lastDbError: mode === "postgres" ? null : lastDbError,
+  };
 }
 
 function get(key) {
@@ -167,14 +296,11 @@ function get(key) {
 
 function set(key, value) {
   cache.set(key, value);
-  if (mode === "postgres" && pool) {
-    void pool
-      .query(
-        `INSERT INTO app_data (key, value, updated_at) VALUES ($1, $2::jsonb, NOW())
-         ON CONFLICT (key) DO UPDATE SET value = $2::jsonb, updated_at = NOW()`,
-        [key, JSON.stringify(value)],
-      )
-      .catch((e) => console.error(`[persistence] save ${key} failed:`, e.message));
+  if (mode === "postgres" && (neonSql || pool)) {
+    void saveToPostgres(key, value).catch((e) => {
+      lastDbError = e.message;
+      console.error(`[persistence] save ${key} failed:`, e.message);
+    });
     return;
   }
   writeFileKey(key, value);
@@ -194,6 +320,7 @@ module.exports = {
   get,
   set,
   getMode,
+  getStatus,
   isPostgres,
   ensureReady,
   DATA_DIR,

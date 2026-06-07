@@ -29,6 +29,7 @@ services:
         value: Oracle-0defcbcb-6b4b3bf4
       - key: DATABASE_URL
         sync: false
+      # 若 Neon 用 pooler 地址，也可填 NEON_DATABASE_URL
       - key: JWT_SECRET
         generateValue: true
       - key: DEEPSEEK_API_KEY

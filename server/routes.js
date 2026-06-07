@@ -41,6 +41,7 @@ function registerRoutes(app) {
         "events",
       ],
       storage: persistence.getMode(),
+      ...persistence.getStatus(),
       hasApiKey: Boolean(DEEPSEEK_API_KEY),
       model: DEEPSEEK_MODEL,
       auth: Boolean(process.env.JWT_SECRET),
