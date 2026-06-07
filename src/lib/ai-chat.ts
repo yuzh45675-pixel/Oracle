@@ -34,6 +34,7 @@ export type ReadingMeta = {
   cardNames?: string[];
   kind?: "initial" | "followup";
   source?: string;
+  sessionId?: string;
 };
 
 export async function sendChatRequest(options: {

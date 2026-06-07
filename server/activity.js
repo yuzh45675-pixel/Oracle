@@ -36,6 +36,14 @@ function writeAll(readings) {
   );
 }
 
+function appendEntry(entry) {
+  const readings = readAll();
+  readings.unshift(entry);
+  if (readings.length > MAX_READINGS) readings.length = MAX_READINGS;
+  writeAll(readings);
+  return entry;
+}
+
 function logReading({
   userId,
   username,
@@ -46,10 +54,18 @@ function logReading({
   kind = "initial",
   billing = "unknown",
   source = "web",
+  sessionId,
 }) {
   const readings = readAll();
-  const entry = {
+  if (sessionId && kind !== "followup") {
+    const dup = readings.find(
+      (r) => r.sessionId === sessionId && r.kind === kind,
+    );
+    if (dup) return dup;
+  }
+  return appendEntry({
     id: `rd_${crypto.randomUUID()}`,
+    sessionId: sessionId ?? null,
     userId: userId ?? null,
     username: username ?? "匿名",
     deck: deck ?? null,
@@ -60,11 +76,31 @@ function logReading({
     billing,
     source,
     createdAt: new Date().toISOString(),
-  };
-  readings.unshift(entry);
-  if (readings.length > MAX_READINGS) readings.length = MAX_READINGS;
-  writeAll(readings);
-  return entry;
+  });
+}
+
+function logDrawSession({
+  sessionId,
+  userId,
+  username,
+  deck,
+  spreadTitle,
+  question,
+  cardNames,
+  source = "web",
+}) {
+  return logReading({
+    sessionId,
+    userId,
+    username,
+    deck,
+    spreadTitle,
+    question,
+    cardNames,
+    kind: "draw",
+    billing: "none",
+    source,
+  });
 }
 
 function listReadings(limit = 100) {
@@ -115,6 +151,7 @@ function importReadings(entries) {
 
 module.exports = {
   logReading,
+  logDrawSession,
   listReadings,
   stats,
   importReadings,

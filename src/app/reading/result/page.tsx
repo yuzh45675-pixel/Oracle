@@ -22,6 +22,7 @@ import { buildCardReadingSnapshots } from "@/lib/build-reading-snapshot";
 import { AiOraclePanel } from "@/components/reading/AiOraclePanel";
 import { ReadingExportButton } from "@/components/reading/ReadingExportButton";
 import { BetaFeedbackSurvey } from "@/components/reading/BetaFeedbackSurvey";
+import { logDrawActivity } from "@/lib/activity-client";
 
 export default function ResultPage() {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function ResultPage() {
 
   const isLenormand = deck === "lenormand";
   const persistedRef = useRef<string | null>(null);
+  const activityLoggedRef = useRef<string | null>(null);
 
   const orderedCards = useMemo(() => {
     const valid = validateDrawnCards(cards);
@@ -95,6 +97,21 @@ export default function ResultPage() {
         ? SPREAD_LABELS[spread]
         : "牌阵";
 
+  useEffect(() => {
+    const sessionId = session?.id;
+    if (!sessionId || !orderedCards.length || !deck) return;
+    if (activityLoggedRef.current === sessionId) return;
+    activityLoggedRef.current = sessionId;
+    void logDrawActivity({
+      sessionId,
+      deck,
+      spreadTitle,
+      question: question.trim() || undefined,
+      cardNames: orderedCards.map((c) => c.card.name),
+      source: "web",
+    });
+  }, [session?.id, orderedCards, deck, spreadTitle, question]);
+
   const jumpSummary = jumpCard?.card
     ? `提前显现的「${jumpCard.card.name}」：${jumpCard.card.upright.summary} 此牌已纳入本次组合叙事。`
     : undefined;
@@ -125,6 +142,7 @@ export default function ResultPage() {
             cards={orderedCards}
             jumpCard={jumpCard}
             combinations={lenormandCombos}
+            sessionId={session?.id}
             onSessionUpdate={updateSession}
           />
         )}
@@ -241,6 +259,7 @@ export default function ResultPage() {
           question={question}
           cards={orderedCards}
           jumpCard={jumpCard}
+          sessionId={session?.id}
           onSessionUpdate={updateSession}
         />
       )}

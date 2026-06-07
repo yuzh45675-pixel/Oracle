@@ -47,6 +47,7 @@ type AiOraclePanelProps = {
   cards: DrawnCard[];
   jumpCard?: DrawnCard | null;
   combinations?: LenormandCombination[];
+  sessionId?: string;
   onSessionUpdate?: (updater: (prev: ReadingSession) => ReadingSession) => void;
 };
 
@@ -57,6 +58,7 @@ export function AiOraclePanel({
   cards,
   jumpCard,
   combinations,
+  sessionId,
   onSessionUpdate,
 }: AiOraclePanelProps) {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -127,6 +129,7 @@ export function AiOraclePanel({
             ],
             kind: isFirstReply ? "initial" : "followup",
             source: "web",
+            sessionId,
           },
         });
         setChatMessages([
@@ -192,6 +195,7 @@ export function AiOraclePanel({
       question,
       cards,
       jumpCard,
+      sessionId,
     ],
   );
 

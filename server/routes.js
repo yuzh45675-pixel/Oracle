@@ -45,6 +45,32 @@ function registerRoutes(app) {
 
   admin.registerAdminRoutes(app);
 
+  /** 抽牌完成：记入活动（登录可选，匿名显示为「访客」） */
+  app.post("/api/activity/draw", auth.optionalAuthMiddleware, (req, res) => {
+    try {
+      const body = req.body ?? {};
+      const sessionId = String(body.sessionId ?? "").trim();
+      if (!sessionId) {
+        res.status(400).json({ error: "缺少 sessionId" });
+        return;
+      }
+      const entry = activity.logDrawSession({
+        sessionId,
+        userId: req.user?.id ?? null,
+        username: req.user?.username ?? "访客",
+        deck: body.deck ?? null,
+        spreadTitle: body.spreadTitle ?? null,
+        question: body.question ?? null,
+        cardNames: Array.isArray(body.cardNames) ? body.cardNames : [],
+        source: body.source ?? "web",
+      });
+      res.json({ ok: true, entry });
+    } catch (e) {
+      console.error("[activity draw]", e);
+      res.status(500).json({ error: "记录失败" });
+    }
+  });
+
   /** 内测反馈：追加写入 feedback.json */
   app.post("/api/feedback", auth.optionalAuthMiddleware, (req, res) => {
     try {
@@ -289,6 +315,7 @@ function registerRoutes(app) {
         kind: meta.kind ?? "initial",
         billing: consumed.type,
         source: meta.source ?? "web",
+        sessionId: meta.sessionId ?? null,
       });
 
       res.json({

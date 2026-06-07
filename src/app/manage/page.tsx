@@ -17,6 +17,13 @@ function fmtTime(iso: string) {
   }
 }
 
+function activityKindLabel(kind: string) {
+  if (kind === "draw") return "抽牌";
+  if (kind === "followup") return "AI追问";
+  if (kind === "initial") return "AI解读";
+  return kind || "—";
+}
+
 export default function ManagePage() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -53,6 +60,14 @@ export default function ManagePage() {
       load();
     }
   }, [load]);
+
+  useEffect(() => {
+    if (!authed) return;
+    const timer = window.setInterval(() => {
+      void load();
+    }, 30_000);
+    return () => window.clearInterval(timer);
+  }, [authed, load]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,6 +164,13 @@ export default function ManagePage() {
           </p>
         )}
 
+        <p className="mb-6 rounded-xl border border-accent/20 bg-accent/5 px-4 py-3 text-sm text-frost/85">
+          <span className="text-accent">记录说明：</span>
+          抽牌到结果页会记入「活动记录」；点「生成解读」并成功返回会记为 AI 解读。
+          仅注册未抽牌不会出现在活动里——请点「注册用户」查看。
+          页面每 30 秒自动刷新。
+        </p>
+
         <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {[
             ["用户", stats?.users],
@@ -173,7 +195,7 @@ export default function ManagePage() {
         <nav className="mb-4 flex flex-wrap gap-2">
           {(
             [
-              ["readings", "AI 解读记录"],
+              ["readings", "活动记录"],
               ["feedback", "用户反馈"],
               ["users", "注册用户"],
               ["orders", "订单"],
@@ -197,15 +219,15 @@ export default function ManagePage() {
         <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02]">
           {tab === "readings" && (
             <Table
-              empty="暂无解读记录（用户登录后点「生成解读」会记录在这里）"
+              empty="暂无活动（用户抽牌到结果页，或完成 AI 解读后会出现在这里）"
               rows={data?.readings ?? []}
               columns={[
                 ["时间", (r) => fmtTime(r.createdAt)],
                 ["用户", (r) => r.username],
+                ["类型", (r) => activityKindLabel(r.kind)],
                 ["牌阵", (r) => r.spreadTitle ?? "—"],
                 ["牌面", (r) => r.cardNames?.join("、") || "—"],
                 ["问题", (r) => r.question ?? "—"],
-                ["类型", (r) => (r.kind === "followup" ? "追问" : "首次")],
                 ["计费", (r) => r.billing],
               ]}
             />
