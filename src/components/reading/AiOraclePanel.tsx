@@ -24,6 +24,7 @@ import {
   type ChatMessage,
 } from "@/lib/ai-chat";
 import { useAuth } from "@/context/AuthContext";
+import { ReadingLoader } from "@/components/reading/ReadingLoader";
 import { SupplementDrawFlow } from "@/components/reading/SupplementDrawFlow";
 import type { LenormandCombination } from "@/types/lenormand";
 import type { DeckType, DrawnCard, ReadingSession } from "@/types/tarot";
@@ -379,11 +380,7 @@ export function AiOraclePanel({
         </p>
       )}
 
-      {loading && (
-        <p className="mb-4 animate-pulse text-sm text-muted">
-          正在读牌…
-        </p>
-      )}
+      <AnimatePresence>{loading && <ReadingLoader />}</AnimatePresence>
 
       <AnimatePresence>
         {displayMessages.length > 0 && (

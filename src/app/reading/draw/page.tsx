@@ -153,7 +153,7 @@ export default function DrawPage() {
       subtitle={subtitle}
       dissolve={ritualParticleDissolve(ritualPhase)}
       wide={ritualPhase === "cutting" || ritualPhase === "spread"}
-      performanceMode={ritualPhase === "cutting"}
+      performanceMode={ritualPhase === "cutting" || ritualPhase === "shuffling"}
     >
       <RitualStepGuideToggle
         enabled={stepGuideEnabled}

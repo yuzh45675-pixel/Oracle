@@ -83,10 +83,17 @@ function ScrollRow({
   const scrollerRef = useRef<HTMLDivElement>(null);
   const stride = SCROLL_CARD_STRIDE[cardSize];
   const [range, setRange] = useState({ start: 0, end: Math.min(cards.length, 14) });
+  const [thumb, setThumb] = useState({ width: 0, left: 0, visible: false });
 
-  const updateRange = useCallback(() => {
+  // 鼠标按住拖拽 / 拖动圆点滑块的状态
+  const panDrag = useRef({ active: false, startX: 0, startLeft: 0 });
+  const thumbDrag = useRef({ active: false, startX: 0, startLeft: 0 });
+  const movedRef = useRef(false);
+
+  const syncMetrics = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
+
     const next = scrollVisibleWindow(
       el.scrollLeft,
       el.clientWidth,
@@ -96,94 +103,153 @@ function ScrollRow({
     setRange((prev) =>
       prev.start === next.start && prev.end === next.end ? prev : next,
     );
+
+    const trackW = el.clientWidth;
+    const ratio = el.scrollWidth > 0 ? el.clientWidth / el.scrollWidth : 1;
+    if (ratio >= 1) {
+      setThumb((t) => (t.visible ? { ...t, visible: false } : t));
+      return;
+    }
+    const width = Math.max(ratio * trackW, 36);
+    const maxLeft = trackW - width;
+    const maxScroll = el.scrollWidth - el.clientWidth || 1;
+    const left = (el.scrollLeft / maxScroll) * maxLeft;
+    setThumb({ width, left, visible: true });
   }, [cards.length, stride]);
 
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
-
-    updateRange();
-    el.addEventListener("scroll", updateRange, { passive: true });
-    const ro = new ResizeObserver(updateRange);
+    syncMetrics();
+    el.addEventListener("scroll", syncMetrics, { passive: true });
+    const ro = new ResizeObserver(syncMetrics);
     ro.observe(el);
     return () => {
-      el.removeEventListener("scroll", updateRange);
+      el.removeEventListener("scroll", syncMetrics);
       ro.disconnect();
     };
-  }, [updateRange]);
+  }, [syncMetrics]);
 
-  useEffect(() => {
+  // 鼠标按住卡面拖拽浏览（触摸交给原生横向滚动，避免与页面竖向滚动冲突）
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
+    const el = scrollerRef.current;
+    if (!el || el.scrollWidth <= el.clientWidth) return;
+    panDrag.current = { active: true, startX: e.clientX, startLeft: el.scrollLeft };
+    movedRef.current = false;
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!panDrag.current.active) return;
     const el = scrollerRef.current;
     if (!el) return;
+    const dx = e.clientX - panDrag.current.startX;
+    if (Math.abs(dx) > 5) {
+      movedRef.current = true;
+      el.scrollLeft = panDrag.current.startLeft - dx;
+    }
+  };
 
-    const onWheel = (e: WheelEvent) => {
-      if (el.scrollWidth <= el.clientWidth) return;
+  const endPan = () => {
+    panDrag.current.active = false;
+  };
 
-      const delta =
-        Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-      if (delta === 0) return;
-
-      const atStart = el.scrollLeft <= 0;
-      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
-      const scrollingLeft = delta < 0;
-      const scrollingRight = delta > 0;
-
-      if ((atStart && scrollingLeft) || (atEnd && scrollingRight)) return;
-
+  // 拖拽期间吞掉误触选牌的 click
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (movedRef.current) {
       e.preventDefault();
-      el.scrollLeft += delta;
-    };
+      e.stopPropagation();
+      movedRef.current = false;
+    }
+  };
 
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, [cards.length]);
+  const onThumbPointerDown = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    const el = scrollerRef.current;
+    if (!el) return;
+    thumbDrag.current = { active: true, startX: e.clientX, startLeft: el.scrollLeft };
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
+  const onThumbPointerMove = (e: React.PointerEvent) => {
+    if (!thumbDrag.current.active) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    const trackW = el.clientWidth;
+    const maxLeft = trackW - thumb.width || 1;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const dx = e.clientX - thumbDrag.current.startX;
+    el.scrollLeft = thumbDrag.current.startLeft + (dx / maxLeft) * maxScroll;
+  };
+
+  const onThumbPointerUp = (e: React.PointerEvent) => {
+    thumbDrag.current.active = false;
+    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+  };
 
   const leftSpacer = range.start * stride;
   const rightSpacer = Math.max(0, cards.length - range.end) * stride;
   const visible = cards.slice(range.start, range.end);
 
   return (
-    <div
-      ref={scrollerRef}
-      className="overflow-x-auto overscroll-x-contain touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      style={{ WebkitOverflowScrolling: "touch" }}
-    >
+    <div>
       <div
-        className="flex w-max gap-2.5 px-1 py-1 lg:gap-3.5"
-        style={{ contain: "layout style" }}
+        ref={scrollerRef}
+        className="overflow-x-auto overscroll-x-contain touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ WebkitOverflowScrolling: "touch", cursor: thumb.visible ? "grab" : undefined }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endPan}
+        onPointerLeave={endPan}
+        onClickCapture={onClickCapture}
       >
-        {leftSpacer > 0 && (
-          <div
-            aria-hidden
-            className="shrink-0"
-            style={{ width: leftSpacer }}
-          />
-        )}
-        {visible.map((card) => {
-          const order = selectedOrder.get(card.id);
-          const selected = order !== undefined;
-          const full = selectedOrder.size >= pickCount && !selected;
+        <div
+          className="flex w-max gap-2.5 px-1 py-1 lg:gap-3.5"
+          style={{ contain: "layout style" }}
+        >
+          {leftSpacer > 0 && (
+            <div aria-hidden className="shrink-0" style={{ width: leftSpacer }} />
+          )}
+          {visible.map((card) => {
+            const order = selectedOrder.get(card.id);
+            const selected = order !== undefined;
+            const full = selectedOrder.size >= pickCount && !selected;
 
-          return (
-            <PickerCardButton
-              key={card.id}
-              card={card}
-              order={order}
-              selected={selected}
-              full={full}
-              cardSize={cardSize}
-              onToggle={onToggle}
-            />
-          );
-        })}
-        {rightSpacer > 0 && (
-          <div
-            aria-hidden
-            className="shrink-0"
-            style={{ width: rightSpacer }}
-          />
-        )}
+            return (
+              <PickerCardButton
+                key={card.id}
+                card={card}
+                order={order}
+                selected={selected}
+                full={full}
+                cardSize={cardSize}
+                onToggle={onToggle}
+              />
+            );
+          })}
+          {rightSpacer > 0 && (
+            <div aria-hidden className="shrink-0" style={{ width: rightSpacer }} />
+          )}
+        </div>
       </div>
+
+      {thumb.visible && (
+        <div className="relative mt-2 h-4 select-none">
+          <div className="absolute inset-x-1 top-1/2 h-1 -translate-y-1/2 rounded-full bg-white/[0.08]" />
+          <button
+            type="button"
+            aria-label="拖动浏览牌背"
+            className="absolute top-1/2 h-4 -translate-y-1/2 touch-none rounded-full border border-accent/50 bg-accent/30 shadow-[0_0_10px_rgba(155,140,255,0.5)] backdrop-blur transition-colors hover:bg-accent/45 active:bg-accent/55"
+            style={{ width: thumb.width, left: thumb.left, cursor: "grab" }}
+            onPointerDown={onThumbPointerDown}
+            onPointerMove={onThumbPointerMove}
+            onPointerUp={onThumbPointerUp}
+            onPointerCancel={onThumbPointerUp}
+          >
+            <span className="pointer-events-none absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-frost/90" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -238,7 +304,7 @@ export function DeckScrollPicker({
       <p className="mb-3 text-center text-xs leading-relaxed text-muted md:mb-4 lg:text-sm">
         {isDesktop ? (
           <>
-            全牌分为上下两行，滚轮浏览
+            全牌分为上下两行，<span className="text-accent">拖动下方圆点</span>或按住卡面拖拽浏览
             <br />
             <span className="text-frost/80">
               点击选牌 · 按选择顺序对应牌阵位置 · 选满 {pickCount} 张后确认
@@ -246,7 +312,7 @@ export function DeckScrollPicker({
           </>
         ) : (
           <>
-            <span className="text-accent">① 左右滑动</span> 浏览上下两行牌背
+            <span className="text-accent">① 左右滑动</span>或拖动下方圆点浏览牌背
             <br />
             <span className="text-frost/80">
               <span className="text-accent">② 轻触牌背</span> 选中（角标为顺序）· 选满{" "}

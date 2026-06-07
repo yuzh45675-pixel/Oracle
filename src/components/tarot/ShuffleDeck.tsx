@@ -11,17 +11,22 @@ interface ShuffleDeckProps {
 const DESKTOP_STACK = 9;
 const MOBILE_STACK = 4;
 
-/** 手机端：轻量卡背 + CSS 动画，避免 9 张 SVG 卡背 + Framer 无限循环卡顿 */
+/**
+ * 手机端：轻量卡背 + CSS 动画。
+ * 洗牌时用 lite 卡背（无 mix-blend，避免手机端闪烁/重绘卡顿）；
+ * 静止待机用完整卡背（细节更好看）。运动模糊会掩盖切换差异。
+ */
 function MobileShuffleStack({ isShuffling }: { isShuffling: boolean }) {
+  const backDetail = isShuffling ? "lite" : "static";
   return (
     <div
-      className="relative mx-auto mt-10 h-[168px] w-[120px] origin-top"
+      className="relative mx-auto mt-10 h-[168px] w-[120px] origin-top [transform:translateZ(0)]"
       aria-label={isShuffling ? "正在洗牌" : "牌组"}
     >
       {Array.from({ length: MOBILE_STACK }).map((_, i) => (
         <div
           key={i}
-          className={`absolute h-[140px] w-[96px] ${
+          className={`absolute h-[140px] w-[96px] [backface-visibility:hidden] ${
             isShuffling ? "shuffle-card-mobile" : ""
           }`}
           style={{
@@ -38,7 +43,7 @@ function MobileShuffleStack({ isShuffling }: { isShuffling: boolean }) {
         >
           <CardFace
             back
-            backDetail="static"
+            backDetail={backDetail}
             className="h-full w-full rounded-xl shadow-card"
           />
         </div>
@@ -49,6 +54,7 @@ function MobileShuffleStack({ isShuffling }: { isShuffling: boolean }) {
 
 function DesktopShuffleStack({ isShuffling }: { isShuffling: boolean }) {
   const amp = 1;
+  const backDetail = isShuffling ? "lite" : "static";
   return (
     <div
       className="relative mx-auto h-[340px] w-[250px] origin-center"
@@ -106,7 +112,7 @@ function DesktopShuffleStack({ isShuffling }: { isShuffling: boolean }) {
             <div className="h-[280px] w-[190px]">
               <CardFace
                 back
-                backDetail="static"
+                backDetail={backDetail}
                 className="h-full w-full rounded-xl shadow-card"
               />
             </div>

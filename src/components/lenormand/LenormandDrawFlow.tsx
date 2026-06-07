@@ -108,7 +108,7 @@ export function LenormandDrawFlow() {
       }
       wide={isTableau || ritualPhase === "spread" || ritualPhase === "cutting"}
       dissolve={ritualParticleDissolve(ritualPhase)}
-      performanceMode={ritualPhase === "cutting"}
+      performanceMode={ritualPhase === "cutting" || ritualPhase === "shuffling"}
     >
       <AnimatePresence mode="wait">
         {ritualPhase === "idle" && (
