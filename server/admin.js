@@ -2,6 +2,7 @@ const store = require("./store");
 const feedback = require("./feedback");
 const activity = require("./activity");
 const billing = require("./billing");
+const restore = require("./restore");
 
 /** 内置管理密钥；Render 上设置 ADMIN_PASSWORD 可覆盖 */
 const DEFAULT_ADMIN_PASSWORD = "Oracle-0defcbcb-6b4b3bf4";
@@ -43,6 +44,26 @@ function registerAdminRoutes(app) {
       return;
     }
     res.json({ ok: true });
+  });
+
+  app.post("/api/admin/restore", adminMiddleware, (req, res) => {
+    try {
+      const result = restore.restoreFromSeed({
+        force: Boolean(req.body?.force),
+      });
+      if (!result.ok && result.skipped) {
+        res.json({
+          ok: false,
+          skipped: true,
+          message: "数据库里已有数据。若要合并历史备份，请传 { \"force\": true }",
+        });
+        return;
+      }
+      res.json(result);
+    } catch (e) {
+      console.error("[admin restore]", e);
+      res.status(500).json({ ok: false, error: "恢复失败" });
+    }
   });
 
   app.get("/api/admin/overview", adminMiddleware, (_req, res) => {

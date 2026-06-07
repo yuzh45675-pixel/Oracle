@@ -7,6 +7,7 @@ const store = require("./store");
 const feedback = require("./feedback");
 const activity = require("./activity");
 const admin = require("./admin");
+const restore = require("./restore");
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DEEPSEEK_BASE =
@@ -15,6 +16,10 @@ const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL ?? "deepseek-chat";
 
 function registerRoutes(app) {
   store.ensureDataDir();
+  const restored = restore.restoreFromSeed();
+  if (restored.ok) {
+    console.log("[server] Restored historical data from seed backup");
+  }
 
   app.get("/api/health", (_req, res) => {
     res.json({

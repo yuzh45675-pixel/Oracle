@@ -83,8 +83,39 @@ function stats() {
   };
 }
 
+function importReadings(entries) {
+  const readings = readAll();
+  const ids = new Set(readings.map((r) => r.id));
+  let added = 0;
+
+  for (const entry of entries) {
+    if (!entry?.id || ids.has(entry.id)) continue;
+    readings.push({
+      cardNames: [],
+      deck: null,
+      spreadTitle: null,
+      question: null,
+      kind: "initial",
+      billing: "unknown",
+      source: "web",
+      username: "匿名",
+      ...entry,
+    });
+    ids.add(entry.id);
+    added += 1;
+  }
+
+  readings.sort((a, b) =>
+    (b.createdAt ?? "").localeCompare(a.createdAt ?? ""),
+  );
+  if (readings.length > MAX_READINGS) readings.length = MAX_READINGS;
+  writeAll(readings);
+  return { added, total: readings.length };
+}
+
 module.exports = {
   logReading,
   listReadings,
   stats,
+  importReadings,
 };

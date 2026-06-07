@@ -167,6 +167,7 @@ function markOrderPaid(orderId, tradeNo, channel = "alipay") {
 module.exports = {
   ensureDataDir,
   getUsers,
+  saveUsers,
   findUserByUsername,
   findUserById,
   findUserByOpenId,

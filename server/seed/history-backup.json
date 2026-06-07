@@ -1,0 +1,181 @@
+{
+  "exportedAt": "2026-06-07T00:00:00.000Z",
+  "note": "从本地开发机 data/ 与 feedback.json 导出的内测历史；AI 解读明细在上线管理后台前未记录，解读条数按用户免费额度还原。",
+  "users": [
+    {
+      "id": "usr_04a0dd0e-f970-4bd9-8d8c-e246f31321b3",
+      "username": "oktest",
+      "passwordHash": "$2b$10$SK4/EwsXzpRdj49DGhaSJOOB/ds1tFLqlijxb0IrOQ6pKrg5WIbY6",
+      "credits": 0,
+      "lastFreeDate": null,
+      "createdAt": "2026-05-19T13:40:37.042Z"
+    },
+    {
+      "id": "usr_32ef6865-37be-49e3-a4cd-fa98c5bc3973",
+      "username": "u1779198058067",
+      "passwordHash": "$2b$10$wsMNqgonZijAN55fpD56QuEpD8F9tJli.PdWS66/Ck8l2JlJsZqXi",
+      "credits": 0,
+      "lastFreeDate": null,
+      "createdAt": "2026-05-19T13:40:58.141Z"
+    },
+    {
+      "id": "usr_2884ebd0-f27b-4c9c-ab87-6cf79ffe990f",
+      "username": "哈哈哈",
+      "passwordHash": "$2b$10$CIVHmo.IqwI.uXC8wUfPguruwPs8Q/bFhxIzlkxJvqMbd5zlsPV4a",
+      "credits": 0,
+      "lastFreeDate": "2026-05-19",
+      "createdAt": "2026-05-19T13:41:26.798Z"
+    },
+    {
+      "id": "usr_a07cc61b-82fb-4160-b7b6-82392d6fea3a",
+      "username": "玉子哈",
+      "passwordHash": "$2b$10$w9D/KxjcPIIroWf.Y8MXgeaXeZ6tMizPm8/X2sMmKginzAjhreXtm",
+      "credits": 0,
+      "lastFreeDate": "2026-05-20",
+      "freeQuotaDate": "2026-05-20",
+      "freeUsedToday": 3,
+      "createdAt": "2026-05-20T03:00:08.571Z"
+    },
+    {
+      "id": "usr_846710f7-1fc1-4f7d-9e8d-479f67826c5e",
+      "username": "111",
+      "passwordHash": "$2b$10$MvlXP0bGHJ4WcF6cNoZKe.4T57w34cVbKaQltRrfvCyEvI3DZr6M.",
+      "credits": 0,
+      "lastFreeDate": "2026-05-22",
+      "freeQuotaDate": "2026-05-22",
+      "freeUsedToday": 2,
+      "createdAt": "2026-05-22T13:40:22.903Z"
+    },
+    {
+      "id": "usr_8035c8fb-4ab2-4502-9b14-b9381c601d68",
+      "username": "999",
+      "passwordHash": "$2b$10$EeOTmqUBwBztWmCDo/1ZPepFgw/3DGyx6nnhEG0UnHRCLwq/BeXGe",
+      "credits": 0,
+      "lastFreeDate": null,
+      "freeQuotaDate": null,
+      "freeUsedToday": 0,
+      "createdAt": "2026-05-22T14:00:40.529Z"
+    },
+    {
+      "id": "usr_1e23bd26-d8d8-4b5c-b5fd-ace582a76daf",
+      "username": "11111",
+      "passwordHash": "$2b$10$K4RDRyxUl6MET.MtYMAr.u0kjHcmZXiYl/mhZx5aE0.fW3nXew8N.",
+      "avatarType": "theme",
+      "avatarTheme": "astral-void",
+      "avatarData": null,
+      "credits": 0,
+      "lastFreeDate": "2026-05-27",
+      "freeQuotaDate": "2026-05-27",
+      "freeUsedToday": 1,
+      "createdAt": "2026-05-27T06:18:23.256Z"
+    }
+  ],
+  "feedback": [
+    {
+      "accuracy": "很准",
+      "dislike": "",
+      "price": "不愿意",
+      "userId": "usr_a07cc61b-82fb-4160-b7b6-82392d6fea3a",
+      "username": "玉子哈",
+      "source": "web",
+      "timestamp": "2026-05-20T04:13:25.319Z"
+    },
+    {
+      "accuracy": "还行",
+      "dislike": "我觉得挺准的，希望这一次，能是好结果，怎么他妈非要填20",
+      "price": "接受一次0.2元的付费制度",
+      "userId": "usr_a07cc61b-82fb-4160-b7b6-82392d6fea3a",
+      "username": "玉子哈",
+      "source": "web",
+      "timestamp": "2026-05-20T04:15:47.723Z"
+    },
+    {
+      "accuracy": "还行",
+      "dislike": "",
+      "price": "接受一次0.2元的付费制度",
+      "userId": "usr_a07cc61b-82fb-4160-b7b6-82392d6fea3a",
+      "username": "玉子哈",
+      "source": "web",
+      "timestamp": "2026-05-20T09:41:24.050Z"
+    }
+  ],
+  "readings": [
+    {
+      "id": "rd_hist_2884_1",
+      "userId": "usr_2884ebd0-f27b-4c9c-ab87-6cf79ffe990f",
+      "username": "哈哈哈",
+      "spreadTitle": "（历史还原）",
+      "billing": "free",
+      "kind": "initial",
+      "source": "web",
+      "restored": true,
+      "createdAt": "2026-05-19T13:45:00.000Z"
+    },
+    {
+      "id": "rd_hist_yuzi_1",
+      "userId": "usr_a07cc61b-82fb-4160-b7b6-82392d6fea3a",
+      "username": "玉子哈",
+      "spreadTitle": "（历史还原）",
+      "billing": "free",
+      "kind": "initial",
+      "source": "web",
+      "restored": true,
+      "createdAt": "2026-05-20T03:15:00.000Z"
+    },
+    {
+      "id": "rd_hist_yuzi_2",
+      "userId": "usr_a07cc61b-82fb-4160-b7b6-82392d6fea3a",
+      "username": "玉子哈",
+      "spreadTitle": "（历史还原）",
+      "billing": "free",
+      "kind": "initial",
+      "source": "web",
+      "restored": true,
+      "createdAt": "2026-05-20T04:10:00.000Z"
+    },
+    {
+      "id": "rd_hist_yuzi_3",
+      "userId": "usr_a07cc61b-82fb-4160-b7b6-82392d6fea3a",
+      "username": "玉子哈",
+      "spreadTitle": "（历史还原）",
+      "billing": "free",
+      "kind": "initial",
+      "source": "web",
+      "restored": true,
+      "createdAt": "2026-05-20T09:35:00.000Z"
+    },
+    {
+      "id": "rd_hist_111_1",
+      "userId": "usr_846710f7-1fc1-4f7d-9e8d-479f67826c5e",
+      "username": "111",
+      "spreadTitle": "（历史还原）",
+      "billing": "free",
+      "kind": "initial",
+      "source": "web",
+      "restored": true,
+      "createdAt": "2026-05-22T13:50:00.000Z"
+    },
+    {
+      "id": "rd_hist_111_2",
+      "userId": "usr_846710f7-1fc1-4f7d-9e8d-479f67826c5e",
+      "username": "111",
+      "spreadTitle": "（历史还原）",
+      "billing": "free",
+      "kind": "initial",
+      "source": "web",
+      "restored": true,
+      "createdAt": "2026-05-22T14:20:00.000Z"
+    },
+    {
+      "id": "rd_hist_11111_1",
+      "userId": "usr_1e23bd26-d8d8-4b5c-b5fd-ace582a76daf",
+      "username": "11111",
+      "spreadTitle": "（历史还原）",
+      "billing": "free",
+      "kind": "initial",
+      "source": "web",
+      "restored": true,
+      "createdAt": "2026-05-27T06:25:00.000Z"
+    }
+  ]
+}
