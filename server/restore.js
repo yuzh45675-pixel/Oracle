@@ -60,11 +60,8 @@ function mergeFeedback(seedFeedback) {
     added += 1;
   }
 
-  fs.writeFileSync(
-    feedback.FEEDBACK_FILE,
-    JSON.stringify({ feedback: list }, null, 2),
-    "utf8",
-  );
+  const persistence = require("./persistence");
+  persistence.set("feedback", { feedback: list });
   return { added, total: list.length };
 }
 

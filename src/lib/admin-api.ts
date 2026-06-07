@@ -17,6 +17,7 @@ export function clearAdminKey() {
 
 export type AdminOverview = {
   ok: boolean;
+  storage?: "postgres" | "file";
   stats: {
     users: number;
     wechatUsers: number;
@@ -25,7 +26,17 @@ export type AdminOverview = {
     feedback: number;
     totalReadings: number;
     todayReadings: number;
+    totalEvents?: number;
+    todayEvents?: number;
   };
+  eventLog?: Array<{
+    id: string;
+    kind: string;
+    username: string;
+    summary: string;
+    source: string;
+    createdAt: string;
+  }>;
   readings: Array<{
     id: string;
     username: string;

@@ -1,39 +1,16 @@
-const fs = require("fs");
-const path = require("path");
 const crypto = require("crypto");
+const persistence = require("./persistence");
 
-const DATA_DIR = path.join(__dirname, "..", "data");
-const ACTIVITY_FILE = path.join(DATA_DIR, "activity.json");
 const MAX_READINGS = 800;
 
-function ensureFile() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(ACTIVITY_FILE)) {
-    fs.writeFileSync(
-      ACTIVITY_FILE,
-      JSON.stringify({ readings: [] }, null, 2),
-      "utf8",
-    );
-  }
-}
-
 function readAll() {
-  ensureFile();
-  try {
-    const data = JSON.parse(fs.readFileSync(ACTIVITY_FILE, "utf8"));
-    return Array.isArray(data.readings) ? data.readings : [];
-  } catch {
-    return [];
-  }
+  persistence.ensureReady();
+  const data = persistence.get("activity");
+  return Array.isArray(data.readings) ? data.readings : [];
 }
 
 function writeAll(readings) {
-  ensureFile();
-  fs.writeFileSync(
-    ACTIVITY_FILE,
-    JSON.stringify({ readings }, null, 2),
-    "utf8",
-  );
+  persistence.set("activity", { readings });
 }
 
 function appendEntry(entry) {

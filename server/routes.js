@@ -6,8 +6,10 @@ const wechat = require("./wechat");
 const store = require("./store");
 const feedback = require("./feedback");
 const activity = require("./activity");
+const events = require("./events");
 const admin = require("./admin");
 const restore = require("./restore");
+const persistence = require("./persistence");
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 const DEEPSEEK_BASE =
@@ -16,9 +18,12 @@ const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL ?? "deepseek-chat";
 
 function registerRoutes(app) {
   store.ensureDataDir();
-  const restored = restore.restoreFromSeed();
-  if (restored.ok) {
-    console.log("[server] Restored historical data from seed backup");
+
+  if (process.env.RESTORE_SEED === "true") {
+    const restored = restore.restoreFromSeed({ force: true });
+    if (restored.ok) {
+      console.log("[server] Restored historical data from seed (RESTORE_SEED=true)");
+    }
   }
 
   app.get("/api/health", (_req, res) => {
@@ -32,7 +37,10 @@ function registerRoutes(app) {
         "payment",
         "wechat-pay",
         "feedback",
+        "activity",
+        "events",
       ],
+      storage: persistence.getMode(),
       hasApiKey: Boolean(DEEPSEEK_API_KEY),
       model: DEEPSEEK_MODEL,
       auth: Boolean(process.env.JWT_SECRET),
@@ -64,6 +72,19 @@ function registerRoutes(app) {
         cardNames: Array.isArray(body.cardNames) ? body.cardNames : [],
         source: body.source ?? "web",
       });
+      events.logEvent({
+        kind: "draw",
+        userId: req.user?.id,
+        username: req.user?.username ?? "访客",
+        summary: `抽牌 · ${body.spreadTitle ?? "牌阵"}`,
+        detail: {
+          sessionId,
+          deck: body.deck,
+          cardNames: body.cardNames,
+          question: body.question,
+        },
+        source: body.source ?? "web",
+      });
       res.json({ ok: true, entry });
     } catch (e) {
       console.error("[activity draw]", e);
@@ -89,6 +110,14 @@ function registerRoutes(app) {
         question: meta.question ?? null,
         source: meta.source ?? "web",
       });
+      events.logEvent({
+        kind: "feedback",
+        userId: req.user?.id ?? meta.userId,
+        username: req.user?.username ?? meta.username ?? "访客",
+        summary: `反馈 · ${validated.accuracy}`,
+        detail: { accuracy: validated.accuracy, price: validated.price },
+        source: meta.source ?? "web",
+      });
       res.json({ code: 0, msg: "反馈成功" });
     } catch (e) {
       console.error("[feedback]", e);
@@ -103,6 +132,15 @@ function registerRoutes(app) {
         req.body?.password,
         req.body?.avatar,
       );
+      if (result.code === 0 && result.user) {
+        events.logEvent({
+          kind: "register",
+          userId: result.user.id,
+          username: result.user.username,
+          summary: `注册 · ${result.user.username}`,
+          source: "web",
+        });
+      }
       res.json(result);
     } catch (e) {
       console.error("[register]", e);
@@ -113,6 +151,13 @@ function registerRoutes(app) {
   app.post("/api/login", async (req, res) => {
     try {
       const result = await auth.login(req.body?.username, req.body?.password);
+      events.logEvent({
+        kind: "login",
+        userId: result.user.id,
+        username: result.user.username,
+        summary: `登录 · ${result.user.username}`,
+        source: "web",
+      });
       res.json({ ok: true, ...result });
     } catch (e) {
       res.status(e.status ?? 500).json({ error: e.message });
@@ -316,6 +361,19 @@ function registerRoutes(app) {
         billing: consumed.type,
         source: meta.source ?? "web",
         sessionId: meta.sessionId ?? null,
+      });
+      events.logEvent({
+        kind: meta.kind === "followup" ? "ai_followup" : "ai_reading",
+        userId: req.user.id,
+        username: req.user.username,
+        summary: `${meta.kind === "followup" ? "AI追问" : "AI解读"} · ${meta.spreadTitle ?? "牌阵"}`,
+        detail: {
+          deck: meta.deck,
+          question: meta.question,
+          cardNames: meta.cardNames,
+          billing: consumed.type,
+        },
+        source: meta.source ?? "web",
       });
 
       res.json({

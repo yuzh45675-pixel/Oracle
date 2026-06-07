@@ -3,6 +3,8 @@ const feedback = require("./feedback");
 const activity = require("./activity");
 const billing = require("./billing");
 const restore = require("./restore");
+const events = require("./events");
+const persistence = require("./persistence");
 
 /** 内置管理密钥；Render 上设置 ADMIN_PASSWORD 可覆盖 */
 const DEFAULT_ADMIN_PASSWORD = "Oracle-0defcbcb-6b4b3bf4";
@@ -73,8 +75,10 @@ function registerAdminRoutes(app) {
     const act = activity.stats();
     const paidOrders = orders.filter((o) => o.status === "paid").length;
 
+    const ev = events.stats();
     res.json({
       ok: true,
+      storage: persistence.getMode(),
       stats: {
         users: users.length,
         wechatUsers: users.filter((u) => u.authProvider === "wechat").length,
@@ -82,8 +86,10 @@ function registerAdminRoutes(app) {
         pendingOrders: orders.filter((o) => o.status === "pending").length,
         feedback: fb.length,
         ...act,
+        ...ev,
       },
       readings: activity.listReadings(80),
+      eventLog: events.listEvents(120),
       feedback: fb.slice(-80).reverse(),
       users: users
         .slice()

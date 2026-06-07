@@ -24,15 +24,27 @@ function activityKindLabel(kind: string) {
   return kind || "—";
 }
 
+function eventKindLabel(kind: string) {
+  const map: Record<string, string> = {
+    register: "注册",
+    login: "登录",
+    draw: "抽牌",
+    ai_reading: "AI解读",
+    ai_followup: "AI追问",
+    feedback: "反馈",
+  };
+  return map[kind] ?? kind;
+}
+
 export default function ManagePage() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AdminOverview | null>(null);
-  const [tab, setTab] = useState<"readings" | "feedback" | "users" | "orders">(
-    "readings",
-  );
+  const [tab, setTab] = useState<
+    "events" | "readings" | "feedback" | "users" | "orders"
+  >("events");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -164,19 +176,27 @@ export default function ManagePage() {
           </p>
         )}
 
+        {data?.storage === "file" && (
+          <p className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+            当前数据存在服务器临时硬盘上，重新部署会丢失（例如用户从 9 个变回 7 个）。
+            请在 Render 设置 <code className="text-amber-200">DATABASE_URL</code>{" "}
+            接入免费 PostgreSQL 后数据才永久保存。
+          </p>
+        )}
+
         <p className="mb-6 rounded-xl border border-accent/20 bg-accent/5 px-4 py-3 text-sm text-frost/85">
           <span className="text-accent">记录说明：</span>
-          抽牌到结果页会记入「活动记录」；点「生成解读」并成功返回会记为 AI 解读。
-          仅注册未抽牌不会出现在活动里——请点「注册用户」查看。
-          页面每 30 秒自动刷新。
+          「全部操作」记录注册、登录、抽牌、AI 解读、反馈。
+          存储：{data?.storage === "postgres" ? "PostgreSQL（永久）" : "临时文件"}。
+          每 30 秒自动刷新。
         </p>
 
         <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {[
             ["用户", stats?.users],
             ["微信用户", stats?.wechatUsers],
-            ["今日解读", stats?.todayReadings],
-            ["累计解读", stats?.totalReadings],
+            ["今日操作", stats?.todayEvents],
+            ["累计操作", stats?.totalEvents],
             ["反馈", stats?.feedback],
             ["已付款", stats?.paidOrders],
           ].map(([label, value]) => (
@@ -195,6 +215,7 @@ export default function ManagePage() {
         <nav className="mb-4 flex flex-wrap gap-2">
           {(
             [
+              ["events", "全部操作"],
               ["readings", "活动记录"],
               ["feedback", "用户反馈"],
               ["users", "注册用户"],
@@ -217,6 +238,19 @@ export default function ManagePage() {
         </nav>
 
         <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02]">
+          {tab === "events" && (
+            <Table
+              empty="暂无操作记录"
+              rows={data?.eventLog ?? []}
+              columns={[
+                ["时间", (r) => fmtTime(r.createdAt)],
+                ["用户", (r) => r.username],
+                ["操作", (r) => eventKindLabel(r.kind)],
+                ["摘要", (r) => r.summary],
+                ["来源", (r) => r.source],
+              ]}
+            />
+          )}
           {tab === "readings" && (
             <Table
               empty="暂无活动（用户抽牌到结果页，或完成 AI 解读后会出现在这里）"

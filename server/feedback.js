@@ -1,38 +1,24 @@
 /**
- * 内测反馈：追加写入项目根目录 feedback.json（不覆盖历史记录）
+ * 内测反馈：通过 persistence 写入（PostgreSQL 或 feedback.json）
  */
-const fs = require("fs");
 const path = require("path");
-
-const FEEDBACK_FILE = path.join(__dirname, "..", "feedback.json");
+const persistence = require("./persistence");
 
 const ACCURACY_OPTIONS = ["很准", "还行", "不准"];
 const PRICE_OPTIONS = ["不愿意", "接受一次0.2元的付费制度"];
 
-/** 若 feedback.json 不存在则创建空列表结构 */
+const FEEDBACK_FILE = path.join(__dirname, "..", "feedback.json");
+
 function ensureFeedbackFile() {
-  if (!fs.existsSync(FEEDBACK_FILE)) {
-    fs.writeFileSync(
-      FEEDBACK_FILE,
-      JSON.stringify({ feedback: [] }, null, 2),
-      "utf8",
-    );
-  }
+  persistence.ensureReady();
 }
 
-/** 读取当前全部反馈（管理/调试用） */
 function readAll() {
   ensureFeedbackFile();
-  try {
-    return JSON.parse(fs.readFileSync(FEEDBACK_FILE, "utf8"));
-  } catch {
-    return { feedback: [] };
-  }
+  const data = persistence.get("feedback");
+  return Array.isArray(data.feedback) ? data : { feedback: [] };
 }
 
-/**
- * 校验 POST body，返回 { ok, msg? } 或 { ok, accuracy, dislike, price }
- */
 function validatePayload(body) {
   const accuracy = String(body?.accuracy ?? "").trim();
   const dislike = String(body?.dislike ?? "").trim();
@@ -44,7 +30,6 @@ function validatePayload(body) {
   if (!PRICE_OPTIONS.includes(price)) {
     return { ok: false, msg: "请选择付费意愿" };
   }
-  // 选填：有内容时限制 20～200 字
   if (dislike && (dislike.length < 20 || dislike.length > 200)) {
     return {
       ok: false,
@@ -55,7 +40,6 @@ function validatePayload(body) {
   return { ok: true, accuracy, dislike, price };
 }
 
-/** 追加一条反馈并写回文件 */
 function appendFeedback({
   accuracy,
   dislike,
@@ -67,7 +51,6 @@ function appendFeedback({
   question,
   source,
 }) {
-  ensureFeedbackFile();
   const data = readAll();
   if (!Array.isArray(data.feedback)) data.feedback = [];
 
@@ -85,7 +68,7 @@ function appendFeedback({
   };
 
   data.feedback.push(entry);
-  fs.writeFileSync(FEEDBACK_FILE, JSON.stringify(data, null, 2), "utf8");
+  persistence.set("feedback", data);
   return entry;
 }
 

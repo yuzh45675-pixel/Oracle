@@ -1,5 +1,5 @@
 /**
- * Oracle API server ? DeepSeek / Auth / Alipay
+ * Oracle API server — DeepSeek / Auth / Alipay
  * Run: npm run server
  */
 
@@ -7,11 +7,11 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const persistence = require("./server/persistence");
 const { registerRoutes } = require("./server/routes");
 const alipay = require("./server/alipay");
 const billing = require("./server/billing");
 const wechat = require("./server/wechat");
-const admin = require("./server/admin");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3002;
@@ -56,7 +56,7 @@ app.listen(PORT, HOST, () => {
   console.log(`[server] listening on ${HOST}:${PORT}`);
   console.log("[server] Auth: POST /api/register  POST /api/login  GET /api/me");
   if (!process.env.JWT_SECRET) {
-    console.warn("[server] JWT_SECRET not set ? using default dev_secret_key");
+    console.warn("[server] JWT_SECRET not set — using default dev_secret_key");
   }
   if (!process.env.DEEPSEEK_API_KEY) {
     console.warn("[server] DEEPSEEK_API_KEY not set");
@@ -77,4 +77,17 @@ app.listen(PORT, HOST, () => {
   } else if (process.env.PAYMENT_DEV_MODE === "true") {
     console.log("[server] WeChat dev login: POST /api/wechat/login { code: dev_test }");
   }
+
+  void persistence.init().then(({ mode }) => {
+    console.log(`[server] Storage: ${mode}`);
+    if (mode === "file" && persistence.isPostgres()) {
+      console.warn(
+        "[server] DATABASE_URL is set but DB not ready — check Neon URL / network",
+      );
+    } else if (mode === "file") {
+      console.warn(
+        "[server] Set DATABASE_URL on Render to keep users/events after redeploy",
+      );
+    }
+  });
 });

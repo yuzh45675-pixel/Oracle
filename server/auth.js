@@ -42,7 +42,7 @@ function authMiddleware(req, res, next) {
       res.status(401).json({
         error: "用户不存在或已失效",
         code: "AUTH_STALE",
-        hint: "内测服务器重启后账号数据会清空，请重新注册或登录",
+        hint: "登录已失效，请重新登录；若仍失败请重新注册",
       });
       return;
     }

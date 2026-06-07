@@ -1,45 +1,20 @@
-const fs = require("fs");
-const path = require("path");
 const crypto = require("crypto");
-
-const DATA_DIR = path.join(__dirname, "..", "data");
-const USERS_FILE = path.join(DATA_DIR, "users.json");
-const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
+const persistence = require("./persistence");
 
 function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(USERS_FILE)) {
-    fs.writeFileSync(USERS_FILE, JSON.stringify({ users: [] }, null, 2), "utf8");
-  }
-  if (!fs.existsSync(ORDERS_FILE)) {
-    fs.writeFileSync(ORDERS_FILE, JSON.stringify({ orders: [] }, null, 2), "utf8");
-  }
+  persistence.ensureReady();
 }
 
-function readJson(file, fallback) {
-  ensureDataDir();
-  try {
-    return JSON.parse(fs.readFileSync(file, "utf8"));
-  } catch {
-    return fallback;
-  }
+function getUsers() {
+  return persistence.get("users").users ?? [];
 }
 
-function writeJson(file, data) {
-  ensureDataDir();
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), "utf8");
+function saveUsers(users) {
+  persistence.set("users", { users });
 }
 
 function newId(prefix) {
   return `${prefix}_${crypto.randomUUID()}`;
-}
-
-function getUsers() {
-  return readJson(USERS_FILE, { users: [] }).users;
-}
-
-function saveUsers(users) {
-  writeJson(USERS_FILE, { users });
 }
 
 function findUserByUsername(username) {
@@ -118,11 +93,11 @@ function updateUser(user) {
 }
 
 function getOrders() {
-  return readJson(ORDERS_FILE, { orders: [] }).orders;
+  return persistence.get("orders").orders ?? [];
 }
 
 function saveOrders(orders) {
-  writeJson(ORDERS_FILE, { orders });
+  persistence.set("orders", { orders });
 }
 
 function findOrderById(id) {
