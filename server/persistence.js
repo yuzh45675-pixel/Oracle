@@ -159,39 +159,61 @@ async function runPgInit(connectionString) {
   driver = "pg";
 }
 
+function poolerFallbackUrl(url) {
+  if (!url.includes("neon.tech") || url.includes("-pooler.")) return null;
+  return url.replace(/\.neon\.tech\b/, "-pooler.neon.tech");
+}
+
+async function tryConnect(connectionString, useNeon) {
+  if (useNeon) {
+    await runNeonInit(connectionString);
+  } else {
+    await runPgInit(connectionString);
+  }
+}
+
 async function initPostgres() {
   const connectionString = getDatabaseUrl();
   const useNeon =
     connectionString.includes("neon.tech") ||
     process.env.USE_NEON_DRIVER === "true";
 
-  const attempts = 3;
+  const urls = [connectionString];
+  const pooler = poolerFallbackUrl(connectionString);
+  if (pooler) urls.push(pooler);
+
   let lastError = null;
 
-  for (let i = 1; i <= attempts; i += 1) {
-    try {
-      if (useNeon) {
-        await runNeonInit(connectionString);
-      } else {
-        await runPgInit(connectionString);
+  for (const url of urls) {
+    for (let i = 1; i <= 2; i += 1) {
+      try {
+        console.log(
+          `[persistence] connecting (${useNeon ? "neon" : "pg"}) attempt ${i}…`,
+        );
+        await tryConnect(url, useNeon);
+        lastDbError = null;
+        return;
+      } catch (e) {
+        lastError = e;
+        lastDbError = e instanceof Error ? e.message : String(e);
+        console.error(`[persistence] DB failed (${url.slice(0, 40)}…):`, lastDbError);
+        pool = null;
+        neonSql = null;
+        driver = null;
+        if (i < 2) await sleep(4000);
       }
-      lastDbError = null;
-      return;
-    } catch (e) {
-      lastError = e;
-      lastDbError = e instanceof Error ? e.message : String(e);
-      console.error(
-        `[persistence] DB connect attempt ${i}/${attempts} failed:`,
-        lastDbError,
-      );
-      pool = null;
-      neonSql = null;
-      driver = null;
-      if (i < attempts) await sleep(3000 * i);
     }
   }
 
   throw lastError ?? new Error("PostgreSQL connect failed");
+}
+
+async function reconnect() {
+  ready = false;
+  pool = null;
+  neonSql = null;
+  driver = null;
+  return init();
 }
 
 async function saveToPostgres(key, value) {
@@ -285,7 +307,7 @@ function getStatus() {
     mode,
     driver,
     hasDatabaseUrl: isPostgres(),
-    lastDbError: mode === "postgres" ? null : lastDbError,
+    lastDbError: mode === "postgres" ? null : (lastDbError ?? "connecting or not started"),
   };
 }
 
@@ -317,6 +339,7 @@ function ensureReady() {
 
 module.exports = {
   init,
+  reconnect,
   get,
   set,
   getMode,

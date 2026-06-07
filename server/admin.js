@@ -48,6 +48,19 @@ function registerAdminRoutes(app) {
     res.json({ ok: true });
   });
 
+  app.post("/api/admin/reconnect-db", adminMiddleware, async (_req, res) => {
+    try {
+      const result = await persistence.reconnect();
+      res.json({ ok: true, ...persistence.getStatus(), ...result });
+    } catch (e) {
+      res.status(500).json({
+        ok: false,
+        ...persistence.getStatus(),
+        error: e instanceof Error ? e.message : "reconnect failed",
+      });
+    }
+  });
+
   app.post("/api/admin/restore", adminMiddleware, (req, res) => {
     try {
       const result = restore.restoreFromSeed({
