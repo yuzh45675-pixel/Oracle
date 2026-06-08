@@ -81,7 +81,8 @@ function registerAdminRoutes(app) {
     }
   });
 
-  app.get("/api/admin/overview", adminMiddleware, (_req, res) => {
+  app.get("/api/admin/overview", adminMiddleware, async (_req, res) => {
+    await persistence.ensureConnected();
     const users = store.getUsers();
     const orders = store.getOrders();
     const fb = feedback.readAll().feedback ?? [];

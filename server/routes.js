@@ -52,6 +52,19 @@ function registerRoutes(app) {
     });
   });
 
+  app.use(async (req, res, next) => {
+    if (!req.path.startsWith("/api/")) {
+      next();
+      return;
+    }
+    try {
+      await persistence.ensureConnected();
+    } catch (e) {
+      console.error("[routes] ensureConnected:", e);
+    }
+    next();
+  });
+
   admin.registerAdminRoutes(app);
 
   /** 抽牌完成：记入活动（登录可选，匿名显示为「访客」） */

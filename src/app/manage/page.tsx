@@ -149,7 +149,10 @@ export default function ManagePage() {
             <p className="text-[10px] tracking-[0.35em] text-accent uppercase">
               Oracle Console
             </p>
-            <h1 className="font-display text-3xl font-light">运营总览</h1>
+            <h1 className="font-display text-3xl font-light">
+              运营总览
+              <span className="ml-2 text-[10px] text-muted">v2</span>
+            </h1>
           </div>
           <div className="flex gap-2">
             <button
@@ -212,7 +215,7 @@ export default function ManagePage() {
           ))}
         </div>
 
-        <nav className="mb-4 flex flex-wrap gap-2">
+        <nav className="mb-4 flex flex-wrap gap-2" aria-label="后台数据分类">
           {(
             [
               ["events", "全部操作"],

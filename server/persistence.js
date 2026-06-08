@@ -239,8 +239,6 @@ async function init() {
   if (ready) return { mode };
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-  loadFileCache();
-
   if (isPostgres()) {
     try {
       await Promise.race([
@@ -259,13 +257,15 @@ async function init() {
     } catch (e) {
       lastDbError = e instanceof Error ? e.message : String(e);
       console.error(
-        "[persistence] PostgreSQL init failed, using files for now:",
+        "[persistence] PostgreSQL init failed, will retry on next request:",
         lastDbError,
       );
       mode = "file";
+      loadFileCache();
       void retryPostgresLater();
     }
   } else {
+    loadFileCache();
     mode = "file";
     lastDbError = "DATABASE_URL not configured on server";
     console.warn(
@@ -278,24 +278,49 @@ async function init() {
 }
 
 let retryTimer = null;
+let connecting = null;
 
 function retryPostgresLater() {
   if (!isPostgres() || mode === "postgres" || retryTimer) return;
   retryTimer = setTimeout(() => {
     retryTimer = null;
-    void (async () => {
-      try {
-        await initPostgres();
-        mode = "postgres";
-        lastDbError = null;
-        console.log("[persistence] PostgreSQL connected on retry");
-      } catch (e) {
-        lastDbError = e instanceof Error ? e.message : String(e);
-        console.error("[persistence] PostgreSQL retry failed:", lastDbError);
-        retryPostgresLater();
-      }
-    })();
-  }, 45_000);
+    void ensureConnected();
+  }, 5_000);
+}
+
+/** 每次 API 请求前确保已连上数据库，避免刷新后显示空用户 */
+async function ensureConnected() {
+  if (!isPostgres()) return { mode };
+  if (mode === "postgres") return { mode };
+  if (connecting) return connecting;
+  connecting = (async () => {
+    try {
+      pool = null;
+      neonSql = null;
+      driver = null;
+      await Promise.race([
+        initPostgres(),
+        new Promise((_, reject) => {
+          setTimeout(
+            () => reject(new Error("PostgreSQL connect timeout (20s)")),
+            20_000,
+          );
+        }),
+      ]);
+      mode = "postgres";
+      lastDbError = null;
+      console.log("[persistence] PostgreSQL connected via ensureConnected");
+      return { mode };
+    } catch (e) {
+      lastDbError = e instanceof Error ? e.message : String(e);
+      console.error("[persistence] ensureConnected failed:", lastDbError);
+      retryPostgresLater();
+      return { mode };
+    } finally {
+      connecting = null;
+    }
+  })();
+  return connecting;
 }
 
 function getMode() {
@@ -340,6 +365,7 @@ function ensureReady() {
 module.exports = {
   init,
   reconnect,
+  ensureConnected,
   get,
   set,
   getMode,
