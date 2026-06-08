@@ -22,6 +22,11 @@ jobs:
             body="$(curl -fsS --max-time 90 "$URL" || true)"
             if echo "$body" | grep -q '"ok"[[:space:]]*:[[:space:]]*true'; then
               echo "Backend OK: $body"
+              if echo "$body" | grep -q '"storage"[[:space:]]*:[[:space:]]*"postgres"'; then
+                echo "PostgreSQL connected"
+              else
+                echo "Warning: storage is not postgres — check DATABASE_URL on Render"
+              fi
               exit 0
             fi
             echo "Not ready yet, waiting 15s..."

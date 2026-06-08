@@ -26,7 +26,12 @@ function registerRoutes(app) {
     }
   }
 
-  app.get("/api/health", (_req, res) => {
+  app.get("/api/health", async (_req, res) => {
+    try {
+      await persistence.ensureConnected();
+    } catch (e) {
+      console.error("[health] ensureConnected:", e);
+    }
     res.json({
       ok: true,
       features: [

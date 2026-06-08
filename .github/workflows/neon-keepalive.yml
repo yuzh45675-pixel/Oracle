@@ -1,0 +1,32 @@
+# 每 2 天直接 ping 一次 Neon 数据库，保持项目活跃、减轻休眠
+name: Neon Keepalive
+
+on:
+  schedule:
+    # 每 2 天 UTC 08:00（北京时间 16:00）执行
+    - cron: "0 8 */2 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping-neon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Neon driver only
+        run: npm install @neondatabase/serverless --no-save
+
+      - name: Ping Neon database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: node scripts/neon-keepalive.mjs
