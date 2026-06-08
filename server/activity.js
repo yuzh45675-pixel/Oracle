@@ -56,6 +56,34 @@ function logReading({
   });
 }
 
+function logExportImage({
+  userId,
+  username,
+  deck,
+  spreadTitle,
+  question,
+  cardNames,
+  filename,
+  source = "web",
+  sessionId,
+}) {
+  return appendEntry({
+    id: `ex_${crypto.randomUUID()}`,
+    sessionId: sessionId ?? null,
+    userId: userId ?? null,
+    username: username ?? "访客",
+    deck: deck ?? null,
+    spreadTitle: spreadTitle ?? null,
+    question: String(question ?? "").slice(0, 200) || null,
+    cardNames: Array.isArray(cardNames) ? cardNames.slice(0, 24) : [],
+    kind: "export_image",
+    billing: "none",
+    filename: String(filename ?? "").slice(0, 120) || null,
+    source,
+    createdAt: new Date().toISOString(),
+  });
+}
+
 function logDrawSession({
   sessionId,
   userId,
@@ -129,6 +157,7 @@ function importReadings(entries) {
 module.exports = {
   logReading,
   logDrawSession,
+  logExportImage,
   listReadings,
   stats,
   importReadings,

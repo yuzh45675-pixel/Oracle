@@ -7,7 +7,7 @@ import { LenormandDrawFlow } from "@/components/lenormand/LenormandDrawFlow";
 import { ReadingLayout } from "@/components/tarot/ReadingLayout";
 import { ShuffleDeck } from "@/components/tarot/ShuffleDeck";
 import { CutRitualPanel } from "@/components/tarot/CutRitualPanel";
-import { JumpCardEffect } from "@/components/tarot/JumpCardEffect";
+import { TarotCard } from "@/components/tarot/TarotCard";
 import { TarotSpreadRenderer } from "@/components/tarot/TarotSpreadRenderer";
 import { RitualStepGuide } from "@/components/tarot/RitualStepGuide";
 import { RitualStepGuideToggle } from "@/components/tarot/RitualStepGuideToggle";
@@ -222,22 +222,28 @@ export default function DrawPage() {
             exit={{ opacity: 0, filter: "blur(6px)" }}
             className="relative flex flex-col items-center"
           >
-            <div className="relative w-full max-w-[17rem] overflow-visible sm:max-w-md lg:max-w-xl">
-              <ShuffleDeck isShuffling={isShuffling} />
-              <JumpCardEffect
-                jumpCard={jumpCard}
-                showNotice={showJumpNotice}
-                active={!!jumpCard}
-              />
-            </div>
-            {showJumpNotice && (
-              <motion.p
-                className="mt-6 max-w-sm text-center text-xs leading-relaxed text-muted"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+            <ShuffleDeck isShuffling={isShuffling} />
+            {showJumpNotice && jumpCard && (
+              <motion.div
+                className="mt-8 flex flex-col items-center gap-3"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
               >
-                {"\u4f60\u4f3c\u4e4e\u9057\u6f0f\u4e86\u67d0\u79cd\u4fe1\u606f\u3002\u6b64\u724c\u5c06\u7eb3\u5165\u89e3\u8bfb\u3002"}
-              </motion.p>
+                <p className="max-w-sm text-center text-xs leading-relaxed text-muted">
+                  有一张牌主动出现，将纳入本次解读。
+                </p>
+                <TarotCard
+                  card={jumpCard.card}
+                  reversed={jumpCard.reversed}
+                  flipped
+                  settled
+                  size="sm"
+                  interactive={false}
+                  faceVariant="ritual"
+                  instant
+                />
+                <p className="text-xs text-accent/80">{jumpCard.card.name}</p>
+              </motion.div>
             )}
           </motion.div>
         )}

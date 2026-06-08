@@ -21,6 +21,7 @@ function activityKindLabel(kind: string) {
   if (kind === "draw") return "抽牌";
   if (kind === "followup") return "AI追问";
   if (kind === "initial") return "AI解读";
+  if (kind === "export_image") return "保存长图";
   return kind || "—";
 }
 
@@ -31,6 +32,7 @@ function eventKindLabel(kind: string) {
     draw: "抽牌",
     ai_reading: "AI解读",
     ai_followup: "AI追问",
+    export_image: "保存长图",
     feedback: "反馈",
   };
   return map[kind] ?? kind;
@@ -265,6 +267,12 @@ export default function ManagePage() {
                 { header: "牌阵", render: (r) => r.spreadTitle ?? "—" },
                 { header: "牌面", render: (r) => r.cardNames?.join("、") || "—", wrap: true },
                 { header: "问题", render: (r) => r.question ?? "—", wrap: true },
+                {
+                  header: "文件",
+                  render: (r) =>
+                    r.kind === "export_image" && r.filename ? r.filename : "—",
+                  wrap: true,
+                },
                 { header: "计费", render: (r) => r.billing },
               ]}
             />

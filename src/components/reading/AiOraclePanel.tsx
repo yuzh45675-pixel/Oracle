@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   buildFollowUpMessage,
@@ -79,7 +79,17 @@ export function AiOraclePanel({
     messages: ChatMessage[];
     display: DisplayMessage[];
   } | null>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const followUpRef = useRef<HTMLDivElement>(null);
   const { user, openAuth, refreshUser, logout } = useAuth();
+
+  useEffect(() => {
+    if (followUpPath !== "drawing") return;
+    const timer = window.setTimeout(() => {
+      followUpRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [followUpPath]);
 
   const excludeCardIds = useMemo(() => {
     const ids = new Set<string>();
@@ -159,6 +169,9 @@ export function AiOraclePanel({
           }
         }
         setStarted(true);
+        if (!isFirstReply) {
+          setFollowUpPath("choose");
+        }
         await refreshUser();
       } catch (e) {
         const err = e as Error & { code?: string; status?: number };
@@ -304,7 +317,7 @@ export function AiOraclePanel({
 
     setFollowUp("");
     setPendingSupplement(null);
-    setFollowUpPath("choose");
+    setFollowUpPath("plain");
     void runChat(nextChat, nextDisplay);
   };
 
@@ -409,15 +422,28 @@ export function AiOraclePanel({
         </p>
       )}
 
-      <AnimatePresence>{loading && <ReadingLoader />}</AnimatePresence>
+      <AnimatePresence>
+        {loading && !started && <ReadingLoader />}
+      </AnimatePresence>
 
       <AnimatePresence>
         {displayMessages.length > 0 && (
-          <motion.ul
-            className="space-y-4"
+          <motion.div
+            ref={messagesRef}
+            className={`space-y-4 ${
+              followUpPath === "drawing"
+                ? "max-h-[min(42vh,22rem)] overflow-y-auto rounded-xl border border-white/[0.06] bg-black/10 p-3 pr-2"
+                : ""
+            }`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
+            {followUpPath === "drawing" && (
+              <p className="sticky top-0 z-10 -mx-1 mb-2 rounded-lg bg-void/90 px-2 py-1.5 text-center text-[10px] text-muted backdrop-blur-sm">
+                下方为补牌仪式 · 此处可回看已有解读
+              </p>
+            )}
+            <motion.ul className="space-y-4">
             {displayMessages.map((msg, i) => (
               <li
                 key={`${msg.role}-${i}`}
@@ -466,16 +492,21 @@ export function AiOraclePanel({
                 )}
               </li>
             ))}
-          </motion.ul>
+            </motion.ul>
+          </motion.div>
         )}
       </AnimatePresence>
 
       {started && (
         <motion.div
+          ref={followUpRef}
           className="mt-6 border-t border-white/[0.06] pt-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
+          <AnimatePresence>
+            {loading && started && <ReadingLoader />}
+          </AnimatePresence>
           <label className="mb-3 block text-xs tracking-widest text-muted uppercase">
             继续追问
           </label>

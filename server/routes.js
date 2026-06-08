@@ -111,6 +111,46 @@ function registerRoutes(app) {
     }
   });
 
+  /** 保存解读长图：记入活动与操作日志 */
+  app.post("/api/activity/export-image", auth.optionalAuthMiddleware, (req, res) => {
+    try {
+      const body = req.body ?? {};
+      const cardNames = Array.isArray(body.cardNames) ? body.cardNames : [];
+      const spreadTitle = body.spreadTitle ?? "牌阵";
+      const filename = body.filename ?? null;
+      const entry = activity.logExportImage({
+        userId: req.user?.id ?? null,
+        username: req.user?.username ?? "访客",
+        deck: body.deck ?? null,
+        spreadTitle,
+        question: body.question ?? null,
+        cardNames,
+        filename,
+        source: body.source ?? "web",
+        sessionId: body.sessionId ?? null,
+      });
+      events.logEvent({
+        kind: "export_image",
+        userId: req.user?.id,
+        username: req.user?.username ?? "访客",
+        summary: `保存长图 · ${spreadTitle} · ${cardNames.join("、") || "无牌面"}`,
+        detail: {
+          sessionId: body.sessionId,
+          deck: body.deck,
+          spreadTitle,
+          question: body.question,
+          cardNames,
+          filename,
+        },
+        source: body.source ?? "web",
+      });
+      res.json({ ok: true, entry });
+    } catch (e) {
+      console.error("[activity export-image]", e);
+      res.status(500).json({ error: "记录失败" });
+    }
+  });
+
   /** 内测反馈：追加写入 feedback.json */
   app.post("/api/feedback", auth.optionalAuthMiddleware, (req, res) => {
     try {
