@@ -1,9 +1,8 @@
-# 每 2 天直接 ping 一次 Neon 数据库，保持项目活跃、减轻休眠
+# 每 2 天唤醒 API + PostgreSQL（无需 GitHub Secrets，走 Render 上的 DATABASE_URL）
 name: Neon Keepalive
 
 on:
   schedule:
-    # 每 2 天 UTC 08:00（北京时间 16:00）执行
     - cron: "0 8 */2 * *"
   workflow_dispatch:
 
@@ -13,20 +12,26 @@ permissions:
 jobs:
   ping-neon:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Install Neon driver only
-        run: npm install @neondatabase/serverless --no-save
-
-      - name: Ping Neon database
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: node scripts/neon-keepalive.mjs
+      - name: Wake Render API and PostgreSQL
+        run: |
+          for url in \
+            "https://oracle-api-ug81.onrender.com/api/health" \
+            "https://oracle-tarot-xi.vercel.app/api-server/api/health"; do
+            echo "Pinging $url"
+            for attempt in 1 2 3; do
+              body="$(curl -fsS --max-time 90 "$url" || true)"
+              if echo "$body" | grep -q '"storage"[[:space:]]*:[[:space:]]*"postgres"'; then
+                echo "OK (postgres): $body"
+                break
+              fi
+              if echo "$body" | grep -q '"ok"[[:space:]]*:[[:space:]]*true'; then
+                echo "API up but storage not postgres yet: $body"
+                break
+              fi
+              echo "Attempt $attempt failed, retry in 15s..."
+              sleep 15
+            done
+          done
+          echo "Neon keepalive done"

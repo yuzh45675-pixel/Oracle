@@ -151,7 +151,7 @@ export default function ManagePage() {
             </p>
             <h1 className="font-display text-3xl font-light">
               运营总览
-              <span className="ml-2 text-[10px] text-muted">v2</span>
+              <span className="ml-2 text-[10px] text-muted">v3</span>
             </h1>
           </div>
           <div className="flex gap-2">
@@ -246,11 +246,11 @@ export default function ManagePage() {
               empty="暂无操作记录"
               rows={data?.eventLog ?? []}
               columns={[
-                ["时间", (r) => fmtTime(r.createdAt)],
-                ["用户", (r) => r.username],
-                ["操作", (r) => eventKindLabel(r.kind)],
-                ["摘要", (r) => r.summary],
-                ["来源", (r) => r.source],
+                { header: "时间", render: (r) => fmtTime(r.createdAt) },
+                { header: "用户", render: (r) => r.username },
+                { header: "操作", render: (r) => eventKindLabel(r.kind) },
+                { header: "摘要", render: (r) => r.summary, wrap: true },
+                { header: "来源", render: (r) => r.source },
               ]}
             />
           )}
@@ -259,40 +259,32 @@ export default function ManagePage() {
               empty="暂无活动（用户抽牌到结果页，或完成 AI 解读后会出现在这里）"
               rows={data?.readings ?? []}
               columns={[
-                ["时间", (r) => fmtTime(r.createdAt)],
-                ["用户", (r) => r.username],
-                ["类型", (r) => activityKindLabel(r.kind)],
-                ["牌阵", (r) => r.spreadTitle ?? "—"],
-                ["牌面", (r) => r.cardNames?.join("、") || "—"],
-                ["问题", (r) => r.question ?? "—"],
-                ["计费", (r) => r.billing],
+                { header: "时间", render: (r) => fmtTime(r.createdAt) },
+                { header: "用户", render: (r) => r.username },
+                { header: "类型", render: (r) => activityKindLabel(r.kind) },
+                { header: "牌阵", render: (r) => r.spreadTitle ?? "—" },
+                { header: "牌面", render: (r) => r.cardNames?.join("、") || "—", wrap: true },
+                { header: "问题", render: (r) => r.question ?? "—", wrap: true },
+                { header: "计费", render: (r) => r.billing },
               ]}
             />
           )}
           {tab === "feedback" && (
-            <Table
-              empty="暂无反馈"
-              rows={data?.feedback ?? []}
-              columns={[
-                ["时间", (r) => fmtTime(r.timestamp)],
-                ["用户", (r) => r.username ?? "匿名"],
-                ["准确度", (r) => r.accuracy],
-                ["付费意愿", (r) => r.price],
-                ["牌阵", (r) => r.spreadTitle ?? "—"],
-                ["意见", (r) => r.dislike || "—"],
-              ]}
-            />
+            <FeedbackList items={data?.feedback ?? []} />
           )}
           {tab === "users" && (
             <Table
               empty="暂无用户"
               rows={data?.users ?? []}
               columns={[
-                ["注册", (r) => fmtTime(r.createdAt)],
-                ["用户名", (r) => r.username],
-                ["登录方式", (r) => (r.authProvider === "wechat" ? "微信" : "账号")],
-                ["额度", (r) => String(r.credits)],
-                ["今日已用", (r) => String(r.freeUsedToday)],
+                { header: "注册", render: (r) => fmtTime(r.createdAt) },
+                { header: "用户名", render: (r) => r.username },
+                {
+                  header: "登录方式",
+                  render: (r) => (r.authProvider === "wechat" ? "微信" : "账号"),
+                },
+                { header: "额度", render: (r) => String(r.credits) },
+                { header: "今日已用", render: (r) => String(r.freeUsedToday) },
               ]}
             />
           )}
@@ -301,23 +293,29 @@ export default function ManagePage() {
               empty="暂无订单"
               rows={data?.orders ?? []}
               columns={[
-                ["时间", (r) => fmtTime(r.createdAt)],
-                ["用户", (r) => r.username],
-                ["金额", (r) => `¥${r.amount}`],
-                ["状态", (r) => r.status],
-                ["渠道", (r) => r.channel],
+                { header: "时间", render: (r) => fmtTime(r.createdAt) },
+                { header: "用户", render: (r) => r.username },
+                { header: "金额", render: (r) => `¥${r.amount}` },
+                { header: "状态", render: (r) => r.status },
+                { header: "渠道", render: (r) => r.channel },
               ]}
             />
           )}
         </div>
 
         <p className="mt-6 text-center text-xs text-muted">
-          数据保存在 API 服务器本地文件（users / orders / activity / feedback.json）
+          数据保存在 PostgreSQL（Neon）永久库；刷新页面可拉取最新记录
         </p>
       </div>
     </div>
   );
 }
+
+type ColumnDef<T> = {
+  header: string;
+  render: (row: T) => string;
+  wrap?: boolean;
+};
 
 function Table<T extends Record<string, unknown>>({
   rows,
@@ -325,7 +323,7 @@ function Table<T extends Record<string, unknown>>({
   empty,
 }: {
   rows: T[];
-  columns: [string, (row: T) => string][];
+  columns: ColumnDef<T>[];
   empty: string;
 }) {
   if (rows.length === 0) {
@@ -336,9 +334,9 @@ function Table<T extends Record<string, unknown>>({
       <table className="w-full min-w-[720px] text-left text-sm">
         <thead>
           <tr className="border-b border-white/[0.08] text-[10px] tracking-widest text-muted uppercase">
-            {columns.map(([h]) => (
-              <th key={h} className="px-4 py-3 font-normal">
-                {h}
+            {columns.map((col) => (
+              <th key={col.header} className="px-4 py-3 font-normal">
+                {col.header}
               </th>
             ))}
           </tr>
@@ -349,9 +347,16 @@ function Table<T extends Record<string, unknown>>({
               key={i}
               className="border-b border-white/[0.04] hover:bg-white/[0.03]"
             >
-              {columns.map(([h, render]) => (
-                <td key={h} className="max-w-[240px] truncate px-4 py-3 text-frost/90">
-                  {render(row)}
+              {columns.map((col) => (
+                <td
+                  key={col.header}
+                  className={`px-4 py-3 text-frost/90 ${
+                    col.wrap
+                      ? "max-w-md whitespace-pre-wrap break-words align-top"
+                      : "max-w-[200px] truncate"
+                  }`}
+                >
+                  {col.render(row)}
                 </td>
               ))}
             </tr>
@@ -359,5 +364,62 @@ function Table<T extends Record<string, unknown>>({
         </tbody>
       </table>
     </div>
+  );
+}
+
+function FeedbackList({
+  items,
+}: {
+  items: Array<{
+    timestamp: string;
+    username: string | null;
+    accuracy: string;
+    price: string;
+    spreadTitle: string | null;
+    question: string | null;
+    dislike: string;
+  }>;
+}) {
+  if (items.length === 0) {
+    return <p className="p-8 text-center text-sm text-muted">暂无反馈</p>;
+  }
+  return (
+    <ul className="divide-y divide-white/[0.06]">
+      {items.map((fb, i) => (
+        <li key={i} className="space-y-3 px-4 py-5 sm:px-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
+            <span className="text-sm text-frost">{fb.username ?? "匿名"}</span>
+            <time>{fmtTime(fb.timestamp)}</time>
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <span className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-accent">
+              {fb.accuracy}
+            </span>
+            <span className="rounded-full border border-white/10 px-3 py-1 text-muted">
+              {fb.price}
+            </span>
+            {fb.spreadTitle && (
+              <span className="rounded-full border border-white/10 px-3 py-1 text-muted">
+                {fb.spreadTitle}
+              </span>
+            )}
+          </div>
+          {fb.question && (
+            <p className="text-sm text-frost/80">
+              <span className="text-muted">问题：</span>
+              {fb.question}
+            </p>
+          )}
+          <div className="rounded-xl border border-white/[0.08] bg-black/20 px-4 py-3">
+            <p className="text-[10px] tracking-widest text-muted uppercase">
+              用户意见
+            </p>
+            <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-frost/95">
+              {fb.dislike?.trim() ? fb.dislike : "（未填写文字意见）"}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }
