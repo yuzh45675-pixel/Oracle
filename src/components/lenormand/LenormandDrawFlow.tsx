@@ -135,7 +135,9 @@ export function LenormandDrawFlow() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <ShuffleDeck isShuffling={isShuffling} />
+            <div className="mx-auto max-w-[11rem] overflow-hidden sm:max-w-[12rem]">
+              <ShuffleDeck isShuffling={isShuffling} />
+            </div>
             {showJumpNotice && jumpCard && (
               <motion.div
                 className="mt-8 flex flex-col items-center gap-3"

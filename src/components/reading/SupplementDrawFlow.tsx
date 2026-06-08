@@ -191,7 +191,7 @@ export function SupplementDrawFlow({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex justify-center"
+            className="mx-auto flex max-w-[11rem] justify-center overflow-hidden sm:max-w-[12rem]"
           >
             <ShuffleDeck isShuffling={isShuffling} />
           </motion.div>

@@ -48,16 +48,18 @@ export function Hero() {
         if (t) setPointer(t.clientX, t.clientY);
       }}
     >
-      <ParticleBackground intensity={isTouch ? 0.82 : 1.05} />
+      <ParticleBackground
+        intensity={isTouch ? 0.65 : 1.05}
+        pauseLoop={isTouch}
+        showGlow={!isTouch}
+      />
 
-      <motion.div
+      <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-30"
+        className="pointer-events-none absolute inset-0 opacity-25"
         style={{
           background: `radial-gradient(ellipse 100% 80% at 50% 100%, color-mix(in srgb, var(--mystic) 80%, transparent) 0%, transparent 60%)`,
         }}
-        animate={{ opacity: [0.2, 0.35, 0.2] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
 
       <div className="lg:hidden">

@@ -48,18 +48,11 @@ export function ReadingLayout({
         pauseLoop={performanceMode}
       />
       {!performanceMode && (
-        <>
-          <FloatingGlow
-            className="left-1/2 top-[22%] -translate-x-1/2 lg:scale-110"
-            size={480}
-            color={theme.colors.glowPrimary}
-          />
-          <FloatingGlow
-            className="right-[-15%] bottom-[10%]"
-            color={theme.colors.glowSecondary}
-            size={320}
-          />
-        </>
+        <FloatingGlow
+          className="left-1/2 top-[22%] -translate-x-1/2 lg:scale-110"
+          size={480}
+          color={theme.colors.glowPrimary}
+        />
       )}
 
       <motion.div

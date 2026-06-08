@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { useVisualReduced } from "@/hooks/useVisualReduced";
 
 interface FloatingGlowProps {
   className?: string;
@@ -13,6 +14,10 @@ export function FloatingGlow({
   color = "rgba(110, 91, 255, 0.35)",
   size = 480,
 }: FloatingGlowProps) {
+  const reducedMotion = useReducedMotion();
+  const visualReduced = useVisualReduced();
+  const staticGlow = reducedMotion || visualReduced;
+
   return (
     <motion.div
       aria-hidden
@@ -21,13 +26,18 @@ export function FloatingGlow({
         width: size,
         height: size,
         background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
+        opacity: staticGlow ? 0.35 : undefined,
       }}
-      animate={{
-        scale: [1, 1.12, 1],
-        opacity: [0.35, 0.55, 0.35],
-      }}
+      animate={
+        staticGlow
+          ? undefined
+          : {
+              scale: [1, 1.08, 1],
+              opacity: [0.3, 0.45, 0.3],
+            }
+      }
       transition={{
-        duration: 8,
+        duration: 12,
         repeat: Infinity,
         ease: "easeInOut",
       }}

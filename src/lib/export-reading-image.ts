@@ -133,6 +133,15 @@ function estimateHeight(
     h += 120 + lines.length * 44;
   }
 
+  for (const fu of session.aiFollowUps ?? []) {
+    h += 72;
+    ctx.font = "22px sans-serif";
+    h += wrapLines(ctx, `问：${fu.question}`, CONTENT_W - 48).length * 34;
+    ctx.font = "28px sans-serif";
+    h += wrapLines(ctx, fu.answer, CONTENT_W - 48).length * 42;
+    h += 32;
+  }
+
   h += 120;
   return Math.max(h, 1400);
 }
@@ -351,7 +360,49 @@ export async function exportReadingImage(
     y += 32;
   }
 
-  y = height - 80;
+  for (const fu of session.aiFollowUps ?? []) {
+    y += 24;
+    ctx.textAlign = "left";
+    ctx.fillStyle = COLORS.accent;
+    ctx.font = "bold 24px sans-serif";
+    ctx.fillText("✦ 追问解读（含补牌）", PAD, y);
+    y += 36;
+
+    ctx.fillStyle = COLORS.muted;
+    ctx.font = "italic 22px Georgia, serif";
+    y = drawWrappedText(
+      ctx,
+      `问：${fu.question}`,
+      PAD + 8,
+      y,
+      CONTENT_W - 32,
+      34,
+    );
+    y += 12;
+
+    const boxTop = y;
+    ctx.font = "28px sans-serif";
+    const answerLines = wrapLines(ctx, fu.answer, CONTENT_W - 48);
+    const boxH = Math.max(answerLines.length * 42 + 48, 80);
+    roundRect(ctx, PAD, boxTop, CONTENT_W, boxH, 14);
+    ctx.fillStyle = "rgba(255,255,255,0.04)";
+    ctx.fill();
+    ctx.strokeStyle = COLORS.line;
+    ctx.stroke();
+
+    ctx.fillStyle = COLORS.frost;
+    y = drawWrappedText(
+      ctx,
+      fu.answer,
+      PAD + 24,
+      boxTop + 40,
+      CONTENT_W - 48,
+      42,
+    );
+    y += 32;
+  }
+
+  y = Math.max(y + 48, height - 80);
   ctx.textAlign = "center";
   ctx.fillStyle = COLORS.accent;
   ctx.font = "22px sans-serif";

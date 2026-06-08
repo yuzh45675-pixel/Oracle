@@ -24,21 +24,17 @@ function BreathePulseRings({ ellipse = false }: { ellipse?: boolean }) {
             : "radial-gradient(circle, var(--glow-primary) 0%, transparent 68%)",
         }}
       />
-      <motion.span
+      <span
         aria-hidden
-        className={`absolute rounded-full border border-accent/25 ${
+        className={`absolute rounded-full border border-accent/25 opacity-40 ${
           ellipse ? "-inset-x-1 -inset-y-2" : "-inset-2"
         }`}
-        animate={{ scale: [1, 1.28, 1], opacity: [0.55, 0, 0.55] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
       />
-      <motion.span
+      <span
         aria-hidden
-        className={`absolute rounded-full border border-accent/40 bg-accent/[0.06] ${
+        className={`absolute rounded-full border border-accent/30 bg-accent/[0.05] ${
           ellipse ? "inset-x-3 inset-y-1.5" : "inset-2"
         }`}
-        animate={{ scale: [1, 1.14, 1], opacity: [0.72, 0.28, 0.72] }}
-        transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
       />
     </>
   );
@@ -94,13 +90,9 @@ export function BreatheEntry({
   return (
     <motion.div
       className={`fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-5 z-40 ${className}`}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1, y: [0, -5, 0] }}
-      transition={{
-        opacity: { delay: 1.3, duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-        scale: { delay: 1.3, duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-        y: { duration: 5.5, repeat: Infinity, ease: "easeInOut" },
-      }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 1.3, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
       <Link
         href="/breathe"

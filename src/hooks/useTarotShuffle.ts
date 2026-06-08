@@ -10,7 +10,7 @@ import {
 import { getSpreadLayout } from "@/lib/spreadLayouts";
 import type { DeckType, DrawnCard, SpreadType, TarotCard } from "@/types/tarot";
 
-const JUMP_CHANCE = 0.1;
+const JUMP_CHANCE = 0;
 const SHUFFLE_MS = 3200;
 
 export function useTarotShuffle() {

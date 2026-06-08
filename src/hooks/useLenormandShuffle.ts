@@ -10,7 +10,7 @@ import { getCardById, LENORMAND_DECK, shuffleDeck } from "@/lib/tarot";
 import type { DrawnCard, TarotCard } from "@/types/tarot";
 import type { LenormandSpreadType } from "@/types/lenormand";
 
-const JUMP_CHANCE = 0.1;
+const JUMP_CHANCE = 0;
 const SHUFFLE_MS = 1800;
 
 export function useLenormandShuffle() {

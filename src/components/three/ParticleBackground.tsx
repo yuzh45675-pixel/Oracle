@@ -95,7 +95,7 @@ export function ParticleBackground({
     return () => document.removeEventListener("visibilitychange", onVis);
   }, []);
 
-  const runLoop = tabVisible && !pauseLoop;
+  const runLoop = tabVisible && !pauseLoop && !isMobile;
 
   return (
     <motion.div
@@ -135,30 +135,23 @@ export function ParticleBackground({
         </Canvas>
       </Suspense>
 
-      {showGlow && (
+      {showGlow && !isMobile && (
         <>
-          <motion.div
+          <div
             aria-hidden
             className="pointer-events-none absolute inset-0 bg-gradient-to-b from-void/25 via-transparent to-void"
           />
-          <motion.div
+          <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-50"
+            className="pointer-events-none absolute inset-0 opacity-40"
             style={{
               background: `radial-gradient(ellipse 72% 48% at 50% 38%, ${c.glowPrimary} 0%, transparent 70%)`,
             }}
-            animate={{ opacity: [0.35, 0.6, 0.35] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           />
           <FloatingGlow
             className="left-1/2 top-[35%] -translate-x-1/2 opacity-80"
             size={520}
             color={c.glowPrimary}
-          />
-          <FloatingGlow
-            className="right-[-5%] bottom-[15%] opacity-70"
-            size={320}
-            color={c.glowSecondary}
           />
         </>
       )}

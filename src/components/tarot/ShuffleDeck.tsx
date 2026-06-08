@@ -17,8 +17,7 @@ const IDLE_OFFSETS = [
 ];
 
 /**
- * 洗牌：精美 static 卡背 + 纯 CSS 位移动画（GPU 合成层，无 Framer 无限循环）。
- * 动画时仅 3 张参与；外层 scale 略降以减轻手机像素填充压力。
+ * 洗牌：轻量卡背 + CSS 位移动画；洗牌时裁剪溢出，避免角落闪出牌影。
  */
 function ShuffleStack({ isShuffling }: { isShuffling: boolean }) {
   const count = isShuffling ? SHUFFLE_STACK : IDLE_STACK;
@@ -27,7 +26,7 @@ function ShuffleStack({ isShuffling }: { isShuffling: boolean }) {
     <div
       className={`relative mx-auto origin-center ${
         isShuffling
-          ? "shuffle-deck-perf mt-8 h-[200px] w-[156px] overflow-visible sm:mt-10 sm:h-[220px] sm:w-[172px]"
+          ? "shuffle-deck-perf mt-8 h-[200px] w-[156px] sm:mt-10 sm:h-[220px] sm:w-[172px]"
           : "shuffle-stack-idle mt-10 h-[168px] w-[120px] sm:mt-0 sm:h-[340px] sm:w-[250px]"
       }`}
       aria-label={isShuffling ? "正在洗牌" : "牌组"}
@@ -53,7 +52,7 @@ function ShuffleStack({ isShuffling }: { isShuffling: boolean }) {
           >
             <CardFace
               back
-              backDetail="static"
+              backDetail={isShuffling ? "lite" : "static"}
               className="h-full w-full rounded-xl shadow-card"
             />
           </div>
@@ -64,5 +63,15 @@ function ShuffleStack({ isShuffling }: { isShuffling: boolean }) {
 }
 
 export function ShuffleDeck({ isShuffling }: ShuffleDeckProps) {
-  return <ShuffleStack isShuffling={isShuffling} />;
+  return (
+    <div
+      className={
+        isShuffling
+          ? "mx-auto max-w-[11rem] overflow-hidden sm:max-w-[12rem]"
+          : undefined
+      }
+    >
+      <ShuffleStack isShuffling={isShuffling} />
+    </div>
+  );
 }
