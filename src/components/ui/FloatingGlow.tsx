@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { useVisualReduced } from "@/hooks/useVisualReduced";
+import { useReducedMotion } from "framer-motion";
+import { useVisualProfile } from "@/hooks/useVisualProfile";
 
 interface FloatingGlowProps {
   className?: string;
@@ -9,37 +9,27 @@ interface FloatingGlowProps {
   size?: number;
 }
 
+/** 光晕：全机型保留；手机仅 scale 动画，避免 opacity 脉冲导致整屏闪 */
 export function FloatingGlow({
   className = "",
   color = "rgba(110, 91, 255, 0.35)",
   size = 480,
 }: FloatingGlowProps) {
   const reducedMotion = useReducedMotion();
-  const visualReduced = useVisualReduced();
-  const staticGlow = reducedMotion || visualReduced;
+  const profile = useVisualProfile();
+  const animate = profile.glowMotion && !reducedMotion;
 
   return (
-    <motion.div
+    <div
       aria-hidden
-      className={`pointer-events-none absolute rounded-full blur-[100px] ${className}`}
+      className={`pointer-events-none absolute rounded-full blur-[100px] ${
+        animate ? "glow-breathe-slow" : ""
+      } ${className}`}
       style={{
         width: size,
         height: size,
+        opacity: profile.tier === "full" ? 0.42 : 0.34,
         background: `radial-gradient(circle, ${color} 0%, transparent 70%)`,
-        opacity: staticGlow ? 0.35 : undefined,
-      }}
-      animate={
-        staticGlow
-          ? undefined
-          : {
-              scale: [1, 1.08, 1],
-              opacity: [0.3, 0.45, 0.3],
-            }
-      }
-      transition={{
-        duration: 12,
-        repeat: Infinity,
-        ease: "easeInOut",
       }}
     />
   );

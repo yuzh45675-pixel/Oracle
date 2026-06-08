@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LenormandDrawFlow } from "@/components/lenormand/LenormandDrawFlow";
 import { ReadingLayout } from "@/components/tarot/ReadingLayout";
 import { ShuffleDeck } from "@/components/tarot/ShuffleDeck";
+import { TarotCard } from "@/components/tarot/TarotCard";
 import { CutRitualPanel } from "@/components/tarot/CutRitualPanel";
 import { TarotSpreadRenderer } from "@/components/tarot/TarotSpreadRenderer";
 import { RitualStepGuide } from "@/components/tarot/RitualStepGuide";
@@ -224,6 +225,28 @@ export default function DrawPage() {
             <div className="mx-auto max-w-[11rem] overflow-hidden sm:max-w-[12rem]">
               <ShuffleDeck isShuffling={isShuffling} />
             </div>
+            {showJumpNotice && jumpCard && (
+              <motion.div
+                className="mt-8 flex flex-col items-center gap-3"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <p className="max-w-sm text-center text-xs leading-relaxed text-muted">
+                  有一张牌主动出现，将纳入本次解读。
+                </p>
+                <TarotCard
+                  card={jumpCard.card}
+                  reversed={jumpCard.reversed}
+                  flipped
+                  settled
+                  size="sm"
+                  interactive={false}
+                  faceVariant="ritual"
+                  instant
+                />
+                <p className="text-xs text-accent/80">{jumpCard.card.name}</p>
+              </motion.div>
+            )}
           </motion.div>
         )}
 

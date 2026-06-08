@@ -1,15 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import {
-  motion,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ParticleBackground } from "@/components/three/ParticleBackground";
 import { useTheme } from "@/context/ThemeContext";
 import { useIsTouchDevice } from "@/hooks/useIsTouchDevice";
+import { useVisualProfile } from "@/hooks/useVisualProfile";
 import type { ReadingSystemChoice } from "@/components/hero/ReadingSystemSelector";
 import { HeroMobile } from "@/components/hero/HeroMobile";
 import { HeroDesktop } from "@/components/hero/HeroDesktop";
@@ -18,6 +14,7 @@ import { BreatheEntry } from "@/components/hero/BreatheEntry";
 export function Hero() {
   const { theme } = useTheme();
   const isTouch = useIsTouchDevice();
+  const profile = useVisualProfile();
   const [system, setSystem] = useState<ReadingSystemChoice>("tarot");
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
@@ -49,14 +46,15 @@ export function Hero() {
       }}
     >
       <ParticleBackground
-        intensity={isTouch ? 0.65 : 1.05}
-        pauseLoop={isTouch}
-        showGlow={!isTouch}
+        intensity={(isTouch ? 0.82 : 1.05) * profile.particleScale}
+        showGlow
       />
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-25"
+        className={`pointer-events-none absolute inset-0 ${
+          profile.glowMotion ? "hero-mist-glow" : "opacity-28"
+        }`}
         style={{
           background: `radial-gradient(ellipse 100% 80% at 50% 100%, color-mix(in srgb, var(--mystic) 80%, transparent) 0%, transparent 60%)`,
         }}

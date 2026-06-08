@@ -5,6 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import { FloatingGlow } from "@/components/ui/FloatingGlow";
+import { useVisualProfile } from "@/hooks/useVisualProfile";
 
 const Canvas = dynamic(
   () => import("@react-three/fiber").then((m) => m.Canvas),
@@ -16,7 +17,6 @@ const CosmicParticles = dynamic(
   { ssr: false },
 );
 
-/** 同步检测移动/触摸设备（Canvas 仅客户端渲染，无 SSR 水合问题） */
 function detectMobileSync() {
   if (typeof window === "undefined") return false;
   const coarse = window.matchMedia("(pointer: coarse)").matches;
@@ -36,7 +36,6 @@ interface ParticleBackgroundProps {
   tremble?: number;
   interactive?: boolean;
   showGlow?: boolean;
-  /** 后台标签或仪式阶段：暂停 WebGL 帧循环，减轻主线程与 GC */
   pauseLoop?: boolean;
 }
 
@@ -86,6 +85,7 @@ export function ParticleBackground({
 }: ParticleBackgroundProps) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const profile = useVisualProfile();
   const [isMobile] = useState(detectMobileSync);
   const [tabVisible, setTabVisible] = useState(true);
 
@@ -95,7 +95,8 @@ export function ParticleBackground({
     return () => document.removeEventListener("visibilitychange", onVis);
   }, []);
 
-  const runLoop = tabVisible && !pauseLoop && !isMobile;
+  const runLoop = tabVisible && !pauseLoop;
+  const scaledIntensity = intensity * profile.particleScale;
 
   return (
     <motion.div
@@ -125,7 +126,7 @@ export function ParticleBackground({
         >
           <Scene
             dissolve={dissolve}
-            intensity={intensity}
+            intensity={scaledIntensity}
             fogColor={c.fog}
             breathAmount={breathAmount}
             breathMode={breathMode}
@@ -135,7 +136,7 @@ export function ParticleBackground({
         </Canvas>
       </Suspense>
 
-      {showGlow && !isMobile && (
+      {showGlow && (
         <>
           <div
             aria-hidden
@@ -143,15 +144,21 @@ export function ParticleBackground({
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-40"
+            className="pointer-events-none absolute inset-0"
             style={{
+              opacity: profile.tier === "full" ? 0.5 : 0.38,
               background: `radial-gradient(ellipse 72% 48% at 50% 38%, ${c.glowPrimary} 0%, transparent 70%)`,
             }}
           />
           <FloatingGlow
-            className="left-1/2 top-[35%] -translate-x-1/2 opacity-80"
-            size={520}
+            className="left-1/2 top-[35%] -translate-x-1/2"
+            size={isMobile ? 400 : 520}
             color={c.glowPrimary}
+          />
+          <FloatingGlow
+            className="right-[-8%] bottom-[12%] sm:right-[-5%]"
+            size={isMobile ? 240 : 320}
+            color={c.glowSecondary}
           />
         </>
       )}

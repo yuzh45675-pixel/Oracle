@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 
 interface BreatheEntryProps {
   variant?: "floating" | "inline";
-  /** inline 时：circle 正圆 / ellipse 扁椭圆 */
   shape?: "circle" | "ellipse";
   className?: string;
 }
@@ -26,13 +25,13 @@ function BreathePulseRings({ ellipse = false }: { ellipse?: boolean }) {
       />
       <span
         aria-hidden
-        className={`absolute rounded-full border border-accent/25 opacity-40 ${
+        className={`breathe-ring-pulse absolute rounded-full border border-accent/25 ${
           ellipse ? "-inset-x-1 -inset-y-2" : "-inset-2"
         }`}
       />
       <span
         aria-hidden
-        className={`absolute rounded-full border border-accent/30 bg-accent/[0.05] ${
+        className={`breathe-ring-pulse-slow absolute rounded-full border border-accent/35 bg-accent/[0.06] ${
           ellipse ? "inset-x-3 inset-y-1.5" : "inset-2"
         }`}
       />
@@ -52,22 +51,10 @@ export function BreatheEntry({
       <motion.div
         className={`flex w-full justify-center ${className}`}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, -4, 0] }}
-        transition={{
-          opacity: { delay: 0.95, duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-          y: {
-            delay: 1.55,
-            duration: 5.5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          },
-        }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.95, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        <motion.div
-          animate={{ scale: [1, 1.04, 1] }}
-          transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
-          className="w-full"
-        >
+        <div className="breathe-float-slow w-full">
           <Link
             href="/breathe"
             className={`group relative flex items-center justify-center border border-accent/40 bg-white/[0.06] text-frost backdrop-blur-xl transition-colors hover:border-accent/65 hover:bg-accent/10 ${
@@ -82,14 +69,14 @@ export function BreatheEntry({
               呼吸
             </span>
           </Link>
-        </motion.div>
+        </div>
       </motion.div>
     );
   }
 
   return (
     <motion.div
-      className={`fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-5 z-40 ${className}`}
+      className={`breathe-float-slow fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-5 z-40 ${className}`}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 1.3, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}

@@ -218,8 +218,77 @@ body {
   }
 }
 
+/* 全机型光晕：只动画 transform，不脉冲 opacity，减轻 GPU 闪烁 */
+@keyframes glow-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.glow-breathe-slow {
+  animation: glow-breathe 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes hero-mist-shift {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+  50% {
+    opacity: 0.32;
+  }
+}
+
+.hero-mist-glow {
+  animation: hero-mist-shift 14s ease-in-out infinite;
+}
+
+@keyframes breathe-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.breathe-float-slow {
+  animation: breathe-float 6s ease-in-out infinite;
+}
+
+@keyframes breathe-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+.breathe-ring-pulse {
+  animation: breathe-ring 4.2s ease-out infinite;
+}
+
+.breathe-ring-pulse-slow {
+  animation: breathe-ring 5.8s ease-out infinite;
+  animation-delay: 1.2s;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .shuffle-card-mobile {
+  .shuffle-card-mobile,
+  .glow-breathe-slow,
+  .hero-mist-glow,
+  .breathe-float-slow,
+  .breathe-ring-pulse,
+  .breathe-ring-pulse-slow {
     animation: none;
   }
 }

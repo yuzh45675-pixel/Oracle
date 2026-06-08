@@ -17,7 +17,7 @@ const IDLE_OFFSETS = [
 ];
 
 /**
- * 洗牌：轻量卡背 + CSS 位移动画；洗牌时裁剪溢出，避免角落闪出牌影。
+ * 洗牌：精美卡背 + CSS 位移动画；裁剪溢出避免牌影闪到屏幕角落。
  */
 function ShuffleStack({ isShuffling }: { isShuffling: boolean }) {
   const count = isShuffling ? SHUFFLE_STACK : IDLE_STACK;
@@ -52,7 +52,7 @@ function ShuffleStack({ isShuffling }: { isShuffling: boolean }) {
           >
             <CardFace
               back
-              backDetail={isShuffling ? "lite" : "static"}
+              backDetail="static"
               className="h-full w-full rounded-xl shadow-card"
             />
           </div>
