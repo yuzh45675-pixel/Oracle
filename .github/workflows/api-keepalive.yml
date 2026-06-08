@@ -1,25 +1,30 @@
-# 每 14 分钟 ping 一次 Render 后端，减轻免费版休眠导致登录卡死
+# Render 免费版 15 分钟无请求会休眠；本 workflow 每 10 分钟 ping 一次，尽量保持在线。
+# 在 GitHub 仓库 Settings → Actions → General 中需启用 Actions。
 name: API Keepalive
 
 on:
   schedule:
-    - cron: "*/14 * * * *"
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: api-keepalive
+  cancel-in-progress: false
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Check Render API health
+      - name: Wake Render API + PostgreSQL
         run: |
           URL="https://oracle-api-ug81.onrender.com/api/health"
-          for attempt in 1 2 3; do
+          for attempt in 1 2 3 4; do
             echo "Attempt $attempt: $URL"
-            body="$(curl -fsS --max-time 90 "$URL" || true)"
+            body="$(curl -fsS --max-time 120 "$URL" || true)"
             if echo "$body" | grep -q '"ok"[[:space:]]*:[[:space:]]*true'; then
               echo "Backend OK: $body"
               if echo "$body" | grep -q '"storage"[[:space:]]*:[[:space:]]*"postgres"'; then
@@ -29,15 +34,19 @@ jobs:
               fi
               exit 0
             fi
-            echo "Not ready yet, waiting 15s..."
-            sleep 15
+            echo "Not ready yet, waiting 20s..."
+            sleep 20
           done
-          echo "Backend health check failed after 3 attempts"
+          echo "Backend health check failed after 4 attempts"
           exit 1
 
-      - name: Check Vercel API proxy
+      - name: Wake Vercel API proxy
+        continue-on-error: true
         run: |
           URL="https://oracle-tarot-xi.vercel.app/api-server/api/health"
-          body="$(curl -fsS --max-time 30 "$URL")"
-          echo "$body" | grep -q '"ok"[[:space:]]*:[[:space:]]*true'
-          echo "Vercel proxy OK: $body"
+          body="$(curl -fsS --max-time 60 "$URL" || true)"
+          if echo "$body" | grep -q '"ok"[[:space:]]*:[[:space:]]*true'; then
+            echo "Vercel proxy OK: $body"
+          else
+            echo "Vercel proxy not ready (non-fatal): $body"
+          fi

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ApiWarmup } from "@/components/ApiWarmup";
 import { Navbar } from "@/components/layout/Navbar";
 import { NoiseOverlay } from "@/components/ui/NoiseOverlay";
 import { AuthProvider } from "@/context/AuthContext";
@@ -9,7 +10,7 @@ import { ParticleInteractionProvider } from "@/context/ParticleInteractionContex
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Oracle — 现代塔罗",
+  title: "Oracle — 现代塔塔",
   description: "AI 引导的沉浸式数字神秘仪式空间。",
 };
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ParticleInteractionProvider>
             <AuthProvider>
+              <ApiWarmup />
               <ReadingProvider>
                 <Navbar />
                 <main className="relative">{children}</main>

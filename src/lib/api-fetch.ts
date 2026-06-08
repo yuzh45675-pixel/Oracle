@@ -49,12 +49,35 @@ export async function fetchWithTimeout(
 
 /** 后台 ping，提前唤醒 Render，不阻塞 UI */
 export function pingApiHealth(): void {
+  warmApiInBackground();
+}
+
+/** 打开网站时在后台多次重试，尽量在用户点登录前唤醒 API */
+export function warmApiInBackground(): void {
   if (typeof window === "undefined") return;
-  void fetchWithTimeout(`${getApiBase()}/api/health`, { method: "GET" }, 20_000).catch(
-    () => {
-      /* 唤醒失败可忽略 */
-    },
-  );
+  const url = `${getApiBase()}/api/health`;
+
+  void (async () => {
+    for (let attempt = 1; attempt <= 4; attempt += 1) {
+      try {
+        const res = await fetchWithTimeout(
+          url,
+          { method: "GET", cache: "no-store" },
+          attempt === 1 ? 90_000 : 60_000,
+        );
+        const data = (await res.json().catch(() => null)) as {
+          ok?: boolean;
+          storage?: string;
+        } | null;
+        if (data?.ok) return;
+      } catch {
+        /* 冷启动中，继续重试 */
+      }
+      if (attempt < 4) {
+        await new Promise((resolve) => setTimeout(resolve, 8_000));
+      }
+    }
+  })();
 }
 
 export async function fetchApiWithRetry(
