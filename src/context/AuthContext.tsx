@@ -15,9 +15,10 @@ import {
   loginUser,
   registerUser,
   setStoredToken,
+  shouldClearAuthSession,
   type AuthUser,
 } from "@/lib/auth-client";
-import { pingApiHealth } from "@/lib/api-fetch";
+import { ApiNetworkError, pingApiHealth } from "@/lib/api-fetch";
 import type { AvatarSelection } from "@/lib/avatars";
 
 type AuthContextValue = {
@@ -52,9 +53,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { user: me } = await fetchMe();
       setUser(me);
-    } catch {
-      setStoredToken(null);
-      setUser(null);
+    } catch (e) {
+      if (shouldClearAuthSession(e)) {
+        setStoredToken(null);
+        setUser(null);
+        return;
+      }
+      if (e instanceof ApiNetworkError) {
+        /* 冷启动/网络慢：保留 token，避免每次都要重新登录 */
+        return;
+      }
     }
   }, []);
 

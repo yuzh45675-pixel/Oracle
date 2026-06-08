@@ -30,7 +30,8 @@ services:
       - key: DATABASE_URL
         sync: false
       # 若 Neon 用 pooler 地址，也可填 NEON_DATABASE_URL
+      # 固定密钥：不要用 generateValue，否则每次部署所有用户都要重新登录
       - key: JWT_SECRET
-        generateValue: true
+        sync: false
       - key: DEEPSEEK_API_KEY
         sync: false

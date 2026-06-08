@@ -2,10 +2,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const store = require("./store");
 const billing = require("./billing");
+const persistence = require("./persistence");
 const { normalizeAvatar } = require("./avatar");
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_key";
-const JWT_EXPIRES = process.env.JWT_EXPIRES ?? "7d";
+const JWT_EXPIRES = process.env.JWT_EXPIRES ?? "30d";
 
 function signToken(user) {
   return jwt.sign({ sub: user.id, username: user.username }, JWT_SECRET, {
@@ -13,50 +14,73 @@ function signToken(user) {
   });
 }
 
+async function ensureStoreReady() {
+  await persistence.ensureConnected();
+}
+
 function optionalAuthMiddleware(req, res, next) {
-  const header = req.headers.authorization;
-  if (!header?.startsWith("Bearer ")) {
-    next();
-    return;
-  }
-  try {
-    const payload = jwt.verify(header.slice(7), JWT_SECRET);
-    const user = store.findUserById(payload.sub);
-    if (user) req.user = user;
-  } catch {
-    /* ignore invalid token for optional auth */
-  }
-  next();
+  void ensureStoreReady()
+    .then(() => {
+      const header = req.headers.authorization;
+      if (!header?.startsWith("Bearer ")) {
+        next();
+        return;
+      }
+      try {
+        const payload = jwt.verify(header.slice(7), JWT_SECRET);
+        const user = store.findUserById(payload.sub);
+        if (user) req.user = user;
+      } catch {
+        /* ignore invalid token for optional auth */
+      }
+      next();
+    })
+    .catch((e) => {
+      console.error("[auth] ensureStoreReady:", e);
+      next();
+    });
 }
 
 function authMiddleware(req, res, next) {
-  const header = req.headers.authorization;
-  if (!header?.startsWith("Bearer ")) {
-    res.status(401).json({ error: "请先登录" });
-    return;
-  }
-  try {
-    const payload = jwt.verify(header.slice(7), JWT_SECRET);
-    const user = store.findUserById(payload.sub);
-    if (!user) {
-      res.status(401).json({
-        error: "用户不存在或已失效",
-        code: "AUTH_STALE",
-        hint: "登录已失效，请重新登录；若仍失败请重新注册",
+  void ensureStoreReady()
+    .then(() => {
+      const header = req.headers.authorization;
+      if (!header?.startsWith("Bearer ")) {
+        res.status(401).json({ error: "请先登录" });
+        return;
+      }
+      try {
+        const payload = jwt.verify(header.slice(7), JWT_SECRET);
+        const user = store.findUserById(payload.sub);
+        if (!user) {
+          res.status(401).json({
+            error: "用户不存在或已失效",
+            code: "AUTH_STALE",
+            hint: "请用原账号密码重新登录",
+          });
+          return;
+        }
+        req.user = user;
+        next();
+      } catch {
+        res.status(401).json({ error: "登录已过期，请重新登录" });
+      }
+    })
+    .catch((e) => {
+      console.error("[auth] ensureStoreReady:", e);
+      res.status(503).json({
+        error: "服务正在连接数据库，请 10 秒后重试",
+        code: "DB_WARMING",
       });
-      return;
-    }
-    req.user = user;
-    next();
-  } catch {
-    res.status(401).json({ error: "登录已过期，请重新登录" });
-  }
+    });
 }
 
 /**
  * @returns {{ code: 0, msg: string, token: string, user: object } | { code: 1|2, msg: string }}
  */
 async function register(username, password, avatarInput) {
+  await ensureStoreReady();
+
   const name = String(username ?? "").trim();
   const pass = String(password ?? "");
 
@@ -65,7 +89,7 @@ async function register(username, password, avatarInput) {
   }
 
   if (store.findUserByUsername(name)) {
-    return { code: 1, msg: "用户名已被注册" };
+    return { code: 1, msg: "用户名已被注册，请直接登录" };
   }
 
   const parsed = normalizeAvatar(avatarInput);
@@ -90,12 +114,20 @@ async function register(username, password, avatarInput) {
 }
 
 async function login(username, password) {
+  await ensureStoreReady();
+
   const name = String(username ?? "").trim();
   const pass = String(password ?? "");
   const user = store.findUserByUsername(name);
 
   if (!user) {
-    const err = new Error("用户名或密码错误");
+    const err = new Error("用户名或密码错误，请检查拼写或先注册");
+    err.status = 401;
+    throw err;
+  }
+
+  if (!user.passwordHash) {
+    const err = new Error("该账号请使用原注册方式登录");
     err.status = 401;
     throw err;
   }

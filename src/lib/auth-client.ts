@@ -160,6 +160,7 @@ export async function loginUser(username: string, password: string) {
         method: "POST",
         body: JSON.stringify({ username, password }),
       },
+      { timeoutMs: 75_000, retry: true },
     );
   } catch (error) {
     if (error instanceof ApiNetworkError) throw error;
@@ -167,10 +168,30 @@ export async function loginUser(username: string, password: string) {
   }
 }
 
+type ApiError = Error & {
+  status?: number;
+  payload?: { code?: string; hint?: string };
+};
+
+/** 仅在这些情况下清除本地 token；网络超时/冷启动不清除 */
+export function shouldClearAuthSession(error: unknown): boolean {
+  if (error instanceof ApiNetworkError) return false;
+  const err = error as ApiError;
+  if (err.payload?.code === "DB_WARMING") return false;
+  if (err.payload?.code === "AUTH_STALE") return true;
+  if (err.status === 503) return false;
+  if (err.status === 401) {
+    const msg = err.message ?? "";
+    if (msg.includes("用户名或密码错误")) return false;
+    return true;
+  }
+  return false;
+}
+
 export async function fetchMe() {
   return apiFetch<{ ok: boolean; user: AuthUser }>("/api/me", undefined, {
-    timeoutMs: 15_000,
-    retry: false,
+    timeoutMs: 75_000,
+    retry: true,
   });
 }
 

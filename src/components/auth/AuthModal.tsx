@@ -83,7 +83,7 @@ export function AuthModal() {
               登录 Oracle
             </h2>
             <p className="mt-2 text-xs leading-relaxed text-muted">
-              登录后每日 3 次免费 AI 解读；内测超出次数可免费继续，正式版将接入支付宝。
+              老用户请点「登录」；只有第一次使用才需要「注册」。登录后每日 3 次免费 AI 解读。
             </p>
 
             <div className="mt-5 space-y-3">
@@ -123,9 +123,9 @@ export function AuthModal() {
                 type="button"
                 disabled={busy}
                 onClick={() => void run("login")}
-                className="flex-1 rounded-xl border border-accent/40 bg-accent/20 py-2.5 text-sm text-frost disabled:opacity-50"
+                className="flex-1 rounded-xl border border-accent/40 bg-accent/25 py-2.5 text-sm font-medium text-frost disabled:opacity-50"
               >
-                {busy ? "连接中…" : "登录"}
+                {busy ? "连接中…" : "登录（老用户）"}
               </button>
               <button
                 type="button"
@@ -133,7 +133,7 @@ export function AuthModal() {
                 onClick={() => void run("register")}
                 className="flex-1 rounded-xl border border-white/[0.12] py-2.5 text-sm text-muted hover:text-frost disabled:opacity-50"
               >
-                {busy ? "连接中…" : "注册"}
+                {busy ? "连接中…" : "注册（新用户）"}
               </button>
             </div>
           </motion.div>
