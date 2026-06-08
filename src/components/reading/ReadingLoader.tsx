@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const PHRASES = [
   "正在校准星象……",
@@ -8,8 +9,19 @@ const PHRASES = [
   "把符号译成语言……",
 ];
 
+const PHRASE_MS = 3200;
+
 /** AI 解读等待时的轻量过渡动画：流光卡 + 呼吸光点，缓解等待卡顿感 */
 export function ReadingLoader() {
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setPhraseIndex((i) => (i + 1) % PHRASES.length);
+    }, PHRASE_MS);
+    return () => window.clearInterval(timer);
+  }, []);
+
   return (
     <motion.div
       className="mb-4 overflow-hidden rounded-xl border border-accent/20 bg-white/[0.03] px-4 py-4"
@@ -53,23 +65,19 @@ export function ReadingLoader() {
             ))}
           </div>
 
-          <div className="relative mt-2 h-3 overflow-hidden">
-            {PHRASES.map((phrase, i) => (
+          <div className="mt-2 min-h-[1.25rem]">
+            <AnimatePresence mode="wait" initial={false}>
               <motion.p
-                key={phrase}
-                className="absolute inset-0 text-xs text-muted"
-                animate={{ opacity: [0, 1, 1, 0] }}
-                transition={{
-                  duration: 6,
-                  times: [0, 0.08, 0.28, 0.36],
-                  repeat: Infinity,
-                  delay: i * 2,
-                  ease: "easeInOut",
-                }}
+                key={phraseIndex}
+                className="text-xs text-muted"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
               >
-                {phrase}
+                {PHRASES[phraseIndex]}
               </motion.p>
-            ))}
+            </AnimatePresence>
           </div>
         </div>
       </div>

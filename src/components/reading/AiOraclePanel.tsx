@@ -24,6 +24,7 @@ import {
   type ChatMessage,
 } from "@/lib/ai-chat";
 import { useAuth } from "@/context/AuthContext";
+import { ritualFaceUrl } from "@/lib/card-face-url";
 import { ReadingLoader } from "@/components/reading/ReadingLoader";
 import { SupplementDrawFlow } from "@/components/reading/SupplementDrawFlow";
 import type { LenormandCombination } from "@/types/lenormand";
@@ -447,7 +448,7 @@ export function AiOraclePanel({
                               >
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
-                                  src={d.card.image}
+                                  src={ritualFaceUrl(d.card.image) ?? d.card.image}
                                   alt={d.card.name}
                                   className="h-12 w-8 rounded object-contain bg-[#f5f0e8]"
                                 />
@@ -525,7 +526,7 @@ export function AiOraclePanel({
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={d.card.image}
+                      src={ritualFaceUrl(d.card.image) ?? d.card.image}
                       alt={d.card.name}
                       className="h-10 w-7 rounded object-contain bg-[#f5f0e8]"
                     />

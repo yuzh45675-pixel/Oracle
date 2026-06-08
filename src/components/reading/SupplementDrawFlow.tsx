@@ -1,15 +1,20 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { DeckScrollPicker } from "@/components/tarot/DeckScrollPicker";
 import { ShuffleDeck } from "@/components/tarot/ShuffleDeck";
-import { SwipeCutRitual } from "@/components/tarot/SwipeCutRitual";
 import { TarotCard } from "@/components/tarot/TarotCard";
 import { AnimatedButton } from "@/components/ui/AnimatedButton";
 import { useSupplementShuffle } from "@/hooks/useSupplementShuffle";
+import { ritualFaceUrl } from "@/lib/card-face-url";
+import {
+  prefetchCardFaces,
+  prefetchRevealBatch,
+} from "@/lib/prefetch-card-images";
 import type { DeckType, DrawnCard } from "@/types/tarot";
 
-type Phase = "pick" | "idle" | "shuffling" | "cutting" | "reveal" | "done";
+type Phase = "pick" | "idle" | "shuffling" | "selecting" | "reveal" | "done";
 
 type SupplementDrawFlowProps = {
   deck: DeckType;
@@ -31,7 +36,7 @@ export function SupplementDrawFlow({
   const [drawn, setDrawn] = useState<DrawnCard[]>([]);
   const [revealed, setRevealed] = useState(0);
 
-  const { isShuffling, runShuffle, drawFromPool, resetShuffle } =
+  const { isShuffling, runShuffle, drawPickedCards, shuffledPool, resetShuffle } =
     useSupplementShuffle();
 
   const handlePickCount = (n: 1 | 2 | 3) => {
@@ -42,18 +47,25 @@ export function SupplementDrawFlow({
   const handleStartShuffle = async () => {
     setPhase("shuffling");
     await runShuffle(deck, excludeCardIds);
-    setPhase("cutting");
+    setPhase("selecting");
   };
 
-  const handleCut = useCallback(
-    (_pileIndex: number) => {
-      const cards = drawFromPool(deck, cardCount, excludeCardIds);
+  const handlePick = useCallback(
+    (ids: string[]) => {
+      const cards = drawPickedCards(deck, ids);
+      prefetchCardFaces(cards, "ritual");
       setDrawn(cards);
       setRevealed(0);
       setPhase("reveal");
     },
-    [deck, cardCount, excludeCardIds, drawFromPool],
+    [deck, drawPickedCards],
   );
+
+  useEffect(() => {
+    if (phase === "reveal" && drawn.length > 0) {
+      prefetchRevealBatch(drawn, revealed, "ritual");
+    }
+  }, [phase, drawn, revealed]);
 
   const handleRevealNext = () => {
     if (revealed >= drawn.length) return;
@@ -82,8 +94,8 @@ export function SupplementDrawFlow({
         ? "准备补牌"
         : phase === "shuffling"
           ? "洗牌"
-          : phase === "cutting"
-            ? "切牌"
+          : phase === "selecting"
+            ? "选牌"
             : phase === "reveal"
               ? "揭示补牌"
               : "补牌完成";
@@ -95,8 +107,8 @@ export function SupplementDrawFlow({
         ? "静心片刻，然后开始洗牌"
         : phase === "shuffling"
           ? "感受牌在指间流动……"
-          : phase === "cutting"
-            ? "凭直觉选择一堆，完成切牌"
+          : phase === "selecting"
+            ? "轻触牌背选中 · 选满后点「确认选牌」"
             : phase === "reveal"
               ? revealed < drawn.length
                 ? `轻触牌面，揭示第 ${revealed + 1} 张`
@@ -185,16 +197,18 @@ export function SupplementDrawFlow({
           </motion.div>
         )}
 
-        {phase === "cutting" && (
+        {phase === "selecting" && shuffledPool.length > 0 && (
           <motion.div
-            key="cut"
+            key="select"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
-            <SwipeCutRitual
-              spreadCardCount={cardCount}
-              onCutComplete={handleCut}
+            <DeckScrollPicker
+              pool={shuffledPool}
+              pickCount={cardCount}
+              excludeIds={excludeCardIds}
+              onConfirm={handlePick}
             />
           </motion.div>
         )}
@@ -218,6 +232,9 @@ export function SupplementDrawFlow({
                     onFlip={i === revealed ? handleRevealNext : undefined}
                     size="md"
                     interactive={i === revealed}
+                    faceVariant="ritual"
+                    priority={i <= revealed + 1}
+                    instant={i < revealed}
                   />
                   {i < revealed && (
                     <p className="max-w-[8rem] text-center text-xs text-muted">
@@ -249,9 +266,11 @@ export function SupplementDrawFlow({
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={d.card.image}
+                    src={ritualFaceUrl(d.card.image) ?? d.card.image}
                     alt={d.card.name}
                     className="h-24 w-16 rounded object-contain bg-[#f5f0e8]"
+                    loading="eager"
+                    decoding="async"
                   />
                   <span className="text-xs text-frost">
                     {d.card.name}

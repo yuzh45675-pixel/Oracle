@@ -1,3 +1,4 @@
+import { ritualFaceUrl, fullFaceUrl } from "@/lib/card-face-url";
 import {
   getSessionDeckLabel,
   getSessionSpreadLabel,
@@ -7,6 +8,7 @@ import type { CardReadingSnapshot, ReadingSession } from "@/types/tarot";
 const WIDTH = 1080;
 const PAD = 72;
 const CONTENT_W = WIDTH - PAD * 2;
+const IMAGE_LOAD_MS = 2000;
 
 const COLORS = {
   bg: "#0c0b14",
@@ -21,17 +23,54 @@ const COLORS = {
 
 const SITE_URL = "oracle-tarot-xi.vercel.app";
 
-function loadImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
+const imageCache = new Map<string, Promise<HTMLImageElement | null>>();
+
+function exportFaceUrl(image?: string): string {
+  return ritualFaceUrl(image) ?? fullFaceUrl(image) ?? image ?? "";
+}
+
+function absoluteUrl(src: string): string {
+  if (src.startsWith("http")) return src;
+  return `${window.location.origin}${src.startsWith("/") ? src : `/${src}`}`;
+}
+
+function loadImageFast(src: string, timeoutMs = IMAGE_LOAD_MS): Promise<HTMLImageElement | null> {
+  const key = absoluteUrl(src);
+  const cached = imageCache.get(key);
+  if (cached) return cached;
+
+  const promise = new Promise<HTMLImageElement | null>((resolve) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
-    const url = src.startsWith("http")
-      ? src
-      : `${window.location.origin}${src.startsWith("/") ? src : `/${src}`}`;
-    img.src = url;
+    img.decoding = "async";
+    const timer = window.setTimeout(() => resolve(null), timeoutMs);
+    img.onload = () => {
+      window.clearTimeout(timer);
+      resolve(img);
+    };
+    img.onerror = () => {
+      window.clearTimeout(timer);
+      resolve(null);
+    };
+    img.src = key;
   });
+
+  imageCache.set(key, promise);
+  return promise;
+}
+
+/** 结果页展示导出按钮时预加载牌面，点击保存几乎秒出 */
+export function prefetchExportImages(session: ReadingSession): void {
+  if (typeof window === "undefined") return;
+  const readings =
+    session.cardReadings ??
+    session.cards.map((d) => ({
+      image: d.card.image,
+    }));
+  for (const r of readings.slice(0, 8)) {
+    const url = exportFaceUrl(r.image);
+    if (url) void loadImageFast(url, IMAGE_LOAD_MS);
+  }
 }
 
 function wrapLines(
@@ -122,6 +161,25 @@ function roundRect(
 export async function exportReadingImage(
   session: ReadingSession,
 ): Promise<Blob> {
+  const cardReadings: CardReadingSnapshot[] =
+    session.cardReadings ??
+    session.cards.map((d) => ({
+      cardId: d.card.id,
+      cardName: d.card.name,
+      image: d.card.image,
+      position: d.position,
+      reversed: d.reversed,
+      summary: "",
+      detail: "",
+    }));
+
+  const cardUrls = cardReadings
+    .slice(0, 8)
+    .map((r) => exportFaceUrl(r.image));
+  const cardImagesPromise = Promise.all(
+    cardUrls.map((url) => (url ? loadImageFast(url) : Promise.resolve(null))),
+  );
+
   const measureCanvas = document.createElement("canvas");
   measureCanvas.width = WIDTH;
   const measureCtx = measureCanvas.getContext("2d");
@@ -147,19 +205,13 @@ export async function exportReadingImage(
 
   let y = PAD + 20;
 
-  try {
-    const logo = await loadImage("/share/oracle-logo.svg");
-    ctx.drawImage(logo, WIDTH / 2 - 48, y, 96, 96);
-    y += 112;
-  } catch {
-    ctx.fillStyle = COLORS.accent;
-    ctx.beginPath();
-    ctx.arc(WIDTH / 2, y + 24, 8, 0, Math.PI * 2);
-    ctx.fill();
-    y += 48;
-  }
-
   ctx.textAlign = "center";
+  ctx.fillStyle = COLORS.accent;
+  ctx.beginPath();
+  ctx.arc(WIDTH / 2, y + 24, 10, 0, Math.PI * 2);
+  ctx.fill();
+  y += 56;
+
   ctx.fillStyle = COLORS.frost;
   ctx.font = "bold 42px Georgia, 'Times New Roman', serif";
   ctx.fillText("Oracle", WIDTH / 2, y);
@@ -208,18 +260,6 @@ export async function exportReadingImage(
     y += 24;
   }
 
-  const cardReadings =
-    session.cardReadings ??
-    session.cards.map((d) => ({
-      cardId: d.card.id,
-      cardName: d.card.name,
-      image: d.card.image,
-      position: d.position,
-      reversed: d.reversed,
-      summary: "",
-      detail: "",
-    }));
-
   ctx.textAlign = "left";
   ctx.fillStyle = COLORS.accent;
   ctx.font = "bold 24px sans-serif";
@@ -233,15 +273,7 @@ export async function exportReadingImage(
   const gap = cols <= 3 ? 32 : 22;
   const rowGap = 118;
 
-  const cardImages = await Promise.all(
-    cardReadings.slice(0, 8).map(async (r) => {
-      try {
-        return await loadImage(r.image);
-      } catch {
-        return null;
-      }
-    }),
-  );
+  const cardImages = await cardImagesPromise;
 
   for (let i = 0; i < cardCount; i++) {
     const r = cardReadings[i];
@@ -334,8 +366,8 @@ export async function exportReadingImage(
         if (blob) resolve(blob);
         else reject(new Error("Failed to create image"));
       },
-      "image/png",
-      1,
+      "image/jpeg",
+      0.9,
     );
   });
 }
@@ -343,5 +375,5 @@ export async function exportReadingImage(
 export function downloadReadingImageFilename(session: ReadingSession): string {
   const d = new Date(session.createdAt);
   const stamp = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}_${String(d.getHours()).padStart(2, "0")}${String(d.getMinutes()).padStart(2, "0")}`;
-  return `Oracle解读_${stamp}.png`;
+  return `Oracle解读_${stamp}.jpg`;
 }

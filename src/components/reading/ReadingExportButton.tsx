@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   downloadReadingImageFilename,
   exportReadingImage,
+  prefetchExportImages,
 } from "@/lib/export-reading-image";
 import type { ReadingSession } from "@/types/tarot";
 
@@ -22,6 +23,10 @@ export function ReadingExportButton({
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
+  useEffect(() => {
+    prefetchExportImages(session);
+  }, [session]);
+
   const handleDownload = async () => {
     if (loading) return;
     setLoading(true);
@@ -29,7 +34,7 @@ export function ReadingExportButton({
     try {
       const blob = await exportReadingImage(session);
       const filename = downloadReadingImageFilename(session);
-      const file = new File([blob], filename, { type: "image/png" });
+      const file = new File([blob], filename, { type: "image/jpeg" });
 
       // 手机浏览器优先打开系统分享面板，用户可直接保存到相册。
       if (
